@@ -1,1 +1,260 @@
-/* You can add global styles to this file, and also import other style files */
+// Lavrel design tokens. The palette comes straight from the app icon: the ink tile and the
+// cream line work. Gold is reserved for "unlock" moments: the cube flashes and keyboard focus.
+:root {
+  color-scheme: dark;
+
+  --ink: #1c1c1c;          // app icon tile, page background
+  --ink-raised: #262624;   // inputs and secondary surfaces
+  --line: #f2f0ea;         // cube strokes, primary text, primary buttons
+  --muted: #a19e95;        // secondary text
+  --hairline: rgb(242 240 234 / 0.14);
+  --unlock: #e8b84a;       // achievement gold
+  --danger: #f0907e;
+
+  --font-ui: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mark: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --radius: 0.875rem;
+  --tap: 3.25rem;          // minimum height for anything you press with a thumb
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--ink);
+  // A faint isometric grid: the same angles the cubes are drawn on.
+  background-image:
+    repeating-linear-gradient(30deg, var(--hairline) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(150deg, var(--hairline) 0 1px, transparent 1px 44px);
+  background-attachment: fixed;
+  color: var(--line);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// Fade the grid out towards the bottom so the actions sit on a quiet surface.
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, rgb(28 28 28 / 0.55), var(--ink) 70%);
+  pointer-events: none;
+}
+
+// One column, phone first. On wider screens it simply stays a phone-width column.
+.page {
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 0.5rem)
+    1.5rem
+    calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+}
+
+a {
+  color: var(--line);
+  font-weight: 600;
+  text-underline-offset: 0.2em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--unlock);
+  outline-offset: 3px;
+}
+
+// Buttons
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: var(--tap);
+  padding: 0 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 120ms ease, background-color 160ms ease, opacity 160ms ease;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.55;
+  }
+}
+
+.btn-primary {
+  background: var(--line);
+  color: var(--ink);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--line);
+  border-color: rgb(242 240 234 / 0.35);
+
+  &:hover:not(:disabled) {
+    background: rgb(242 240 234 / 0.06);
+  }
+}
+
+.link-btn {
+  min-height: 2.75rem;
+  padding: 0 0.5rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    color: var(--line);
+  }
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-left: -0.625rem;
+  border-radius: 50%;
+  color: var(--line);
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+// Form fields
+.field {
+  display: grid;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    min-height: var(--tap);
+    padding: 0 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--hairline);
+    background: var(--ink-raised);
+    color: var(--line);
+    font: inherit;
+    font-size: 1rem; // 16px stops iOS zooming into the field
+
+    &:focus {
+      outline: none;
+      border-color: var(--unlock);
+    }
+  }
+
+  &.invalid input {
+    border-color: var(--danger);
+  }
+}
+
+.field-error {
+  min-height: 1.25rem;
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.875rem;
+}
+
+.alert,
+.notice {
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.alert {
+  background: rgb(240 144 126 / 0.12);
+  border: 1px solid rgb(240 144 126 / 0.35);
+  color: var(--danger);
+}
+
+.notice {
+  background: rgb(232 184 74 / 0.1);
+  border: 1px solid rgb(232 184 74 / 0.3);
+  color: var(--line);
+}
+
+.switch {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// Used by animate.enter / animate.leave on the loading screens.
+.fade-in {
+  animation: fade-in 200ms ease-out;
+}
+
+.fade-out {
+  animation: fade-in 200ms ease-in reverse;
+}
+
+.splash-out {
+  animation: splash-out 420ms ease-in forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes splash-out {
+  to {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-out { animation-name: fade-in; animation-direction: reverse; }
+}
