@@ -1,0 +1,28 @@
+<main class="page welcome">
+  <header class="brand">
+    <app-wordmark [mode]="markMode" />
+  </header>
+
+  <section class="pitch">
+    <h1>Every achievement,<br />one profile.</h1>
+    <p>Track your progress on Steam today. Xbox and PlayStation are on the way.</p>
+  </section>
+
+  <section class="actions" aria-label="Sign in">
+    @if (flow.error(); as error) {
+      <p class="alert" role="alert">{{ error }}</p>
+    }
+
+    <app-google-button
+      [busy]="flow.busy() === 'google'"
+      [disabled]="flow.busy() !== null"
+      (pressed)="flow.signInWithGoogle()"
+    />
+    <a class="btn btn-secondary" routerLink="/sign-in">Sign in with e-mail</a>
+    <p class="switch">New to Lavrel? <a routerLink="/register">Create an account</a></p>
+  </section>
+</main>
+
+@if (flow.busy() === 'google') {
+  <app-loading-screen message="Waiting for Google" animate.enter="fade-in" animate.leave="fade-out" />
+}
