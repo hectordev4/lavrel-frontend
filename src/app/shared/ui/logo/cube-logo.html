@@ -1,0 +1,11 @@
+<svg viewBox="-28 -19 140 262" [attr.role]="label() ? 'img' : null" [attr.aria-label]="label() || null" [attr.aria-hidden]="label() ? null : 'true'">
+  @for (cube of cubes; track $index) {
+    <g [attr.transform]="'translate(' + cube[0] + ',' + cube[1] + ')'">
+      <g class="cube" [style.--i]="$index">
+        <path class="top" d="M0,-13 L22,0 L0,13 L-22,0 Z" />
+        <path class="left" d="M-22,0 L0,13 L0,43 L-22,30 Z" />
+        <path class="right" d="M0,13 L22,0 L22,30 L0,43 Z" />
+      </g>
+    </g>
+  }
+</svg>

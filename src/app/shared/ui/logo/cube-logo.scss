@@ -1,0 +1,120 @@
+// Timing is shared so the wordmark letters can follow the cubes.
+$step: 95ms;          // gap between one cube and the next
+$drop: 560ms;         // one cube landing
+
+:host {
+  display: inline-block;
+  color: var(--line);
+  line-height: 0;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+path {
+  fill: var(--unlock);
+  fill-opacity: 0;
+  stroke: currentColor;
+  stroke-width: var(--cube-stroke, 2.4);
+  stroke-linejoin: round;
+}
+
+.cube {
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+}
+
+// boot: build the L one cube at a time (the light chase follows below).
+:host(.mode-boot) .cube {
+  animation: drop $drop cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+  animation-delay: calc(var(--i) * #{$step});
+}
+
+:host(.mode-intro) .top {
+  animation: unlock 900ms ease-out both;
+  animation-delay: calc(var(--i) * #{$step} + 380ms);
+}
+
+// intro continues into the idle shake once built.
+:host(.mode-intro) .cube {
+  animation:
+    drop $drop cubic-bezier(0.2, 0.9, 0.3, 1.3) both,
+    shake 7s ease-in-out infinite;
+  animation-delay:
+    calc(var(--i) * #{$step}),
+    calc(2.6s + var(--i) * 110ms);
+}
+
+:host(.mode-idle) .cube {
+  animation: shake 7s ease-in-out infinite;
+  animation-delay: calc(0.6s + var(--i) * 110ms);
+}
+
+// loading: a light runs down the stem and along the foot, then rests and goes again.
+:host(.mode-loading) .top {
+  animation: chase 1.7s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 120ms);
+}
+
+:host(.mode-loading) .cube {
+  animation: lift 1.7s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 120ms);
+}
+
+:host(.mode-boot) .top {
+  animation: chase 1.7s ease-in-out infinite;
+  animation-delay: calc(1.1s + var(--i) * 120ms);
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-42px);
+  }
+  55% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes unlock {
+  0% { fill-opacity: 0; }
+  25% { fill-opacity: 0.9; }
+  100% { fill-opacity: 0; }
+}
+
+@keyframes chase {
+  0%, 45%, 100% { fill-opacity: 0; }
+  12% { fill-opacity: 0.85; }
+}
+
+@keyframes lift {
+  0%, 45%, 100% { transform: none; }
+  12% { transform: translateY(-4px); }
+}
+
+// A short wobble at the start of a long cycle; the per-cube delay turns it into a wave.
+@keyframes shake {
+  0%, 8%, 100% { transform: none; }
+  1.5% { transform: rotate(-7deg) translateY(-3px); }
+  3% { transform: rotate(6deg); }
+  4.5% { transform: rotate(-4deg); }
+  6% { transform: rotate(2deg); }
+}
+
+// No movement for people who asked for less: keep the light, drop the motion.
+@media (prefers-reduced-motion: reduce) {
+  :host .cube {
+    animation: none !important;
+  }
+
+  :host(.mode-intro) .top {
+    animation: none;
+  }
+}
