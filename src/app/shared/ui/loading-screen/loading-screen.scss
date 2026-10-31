@@ -1,0 +1,31 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+
+.stage {
+  display: grid;
+  justify-items: center;
+  gap: 1.75rem;
+}
+
+app-cube-logo {
+  height: 7.5rem;
+  width: 4rem;
+}
+
+.message {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--muted);
+  min-height: 1.4em;
+}
+
+.hidden {
+  color: transparent;
+}
