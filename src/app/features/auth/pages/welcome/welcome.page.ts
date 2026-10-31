@@ -5,7 +5,7 @@ import { CubeLogoMode } from '../../../../shared/ui/cube-logo/models/cube-logo-m
 import { Wordmark } from '../../../../shared/ui/wordmark/wordmark';
 import { LoadingScreen } from '../../../../shared/ui/loading-screen/loading-screen';
 import { AuthFlow } from '../../data-access/auth-flow';
-import { GoogleButton } from '../../ui/google-button';
+import { GoogleButton } from '../../ui/google-button/google-button';
 
 @Component({
   selector: 'app-welcome-page',
