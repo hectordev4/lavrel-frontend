@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { APP_ENV } from '../config/app-env';
+import { APP_ENV } from '../config/app-env.token';
 
 /**
  * GET /api/currentuser. The first call after sign-up is also what creates the user row

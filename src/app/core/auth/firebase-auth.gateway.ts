@@ -17,7 +17,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { Observable, shareReplay } from 'rxjs';
-import { APP_ENV } from '../config/app-env';
+import { APP_ENV } from '../config/app-env.token';
 import { AuthGateway } from './auth-gateway';
 import { AuthError, AuthErrorCode, AuthUser } from './auth-user';
 
