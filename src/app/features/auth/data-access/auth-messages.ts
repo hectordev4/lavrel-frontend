@@ -1,4 +1,5 @@
-import { AuthError, AuthErrorCode } from '../../../core/auth/auth-user';
+import { AuthError } from '../../../core/auth/auth-error';
+import { AuthErrorCode } from '../../../core/auth/models/auth-error-code.model';
 
 /** What to tell the person, per failure. Says what happened and what to do next. */
 const MESSAGES: Record<AuthErrorCode, string | null> = {

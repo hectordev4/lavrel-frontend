@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, from, switchMap, throwError } from 'rxjs';
-import { APP_ENV } from '../config/app-env';
+import { APP_ENV } from '../config/app-env.token';
 import { AuthGateway } from './auth-gateway';
 
 /**

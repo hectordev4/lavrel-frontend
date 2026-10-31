@@ -3,11 +3,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
-import { CubeLogo } from '../../../../shared/ui/logo/cube-logo';
+import { CubeLogo } from '../../../../shared/ui/cube-logo/cube-logo';
 import { LoadingScreen } from '../../../../shared/ui/loading-screen/loading-screen';
 import { AuthFlow } from '../../data-access/auth-flow';
-
-export type EmailAuthMode = 'sign-in' | 'register';
+import { EmailAuthMode } from '../../models/email-auth-mode.model';
 
 /** One page for both e-mail sign-in and registration; the route data picks the mode. */
 @Component({

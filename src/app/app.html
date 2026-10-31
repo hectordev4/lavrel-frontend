@@ -1,0 +1,5 @@
+@if (booting()) {
+  <app-loading-screen mode="boot" animate.leave="splash-out" />
+} @else {
+  <router-outlet />
+}

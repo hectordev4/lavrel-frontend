@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { AuthUser } from './auth-user';
+import { AuthUser } from './models/auth-user.model';
 
 /**
  * Port for the identity provider. The app depends on this, never on Firebase directly,

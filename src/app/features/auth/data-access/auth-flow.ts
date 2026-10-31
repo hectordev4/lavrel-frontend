@@ -2,11 +2,10 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthGateway } from '../../../core/auth/auth-gateway';
 import { AuthSession } from '../../../core/auth/auth-session';
-import { AuthUser } from '../../../core/auth/auth-user';
+import { AuthUser } from '../../../core/auth/models/auth-user.model';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { AuthTask } from '../models/auth-task.model';
 import { messageFor } from './auth-messages';
-
-export type AuthTask = 'google' | 'email' | 'register' | 'reset' | 'resend' | 'check' | 'sign-out';
 
 /**
  * Facade for the auth feature: runs one task at a time, exposes busy/error/notice

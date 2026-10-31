@@ -6,7 +6,7 @@ import { routes } from './app.routes';
 import { AuthGateway } from './core/auth/auth-gateway';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { FirebaseAuthGateway } from './core/auth/firebase-auth.gateway';
-import { APP_ENV } from './core/config/app-env';
+import { APP_ENV } from './core/config/app-env.token';
 
 export const appConfig: ApplicationConfig = {
   providers: [

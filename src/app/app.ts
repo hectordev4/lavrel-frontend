@@ -11,13 +11,7 @@ const MIN_SPLASH_MS = 1500;
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, LoadingScreen],
-  template: `
-    @if (booting()) {
-      <app-loading-screen mode="boot" animate.leave="splash-out" />
-    } @else {
-      <router-outlet />
-    }
-  `,
+  templateUrl: './app.html',
 })
 export class App {
   private readonly store = inject(AuthStore);

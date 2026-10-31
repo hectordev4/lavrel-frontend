@@ -6,6 +6,6 @@ export const HOME_ROUTES: Routes = [
     path: 'home',
     canMatch: [verifiedGuard],
     title: 'Lavrel',
-    loadComponent: () => import('./home.page').then((m) => m.HomePage),
+    loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
   },
 ];

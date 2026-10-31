@@ -1,5 +1,4 @@
-import { InjectionToken } from '@angular/core';
-
+/** Settings that differ per environment. Values live in src/environments. */
 export interface AppEnv {
   production: boolean;
   /** Base URL of the Lavrel API, without a trailing slash. Empty means same origin. */
@@ -11,5 +10,3 @@ export interface AppEnv {
     appId: string;
   };
 }
-
-export const APP_ENV = new InjectionToken<AppEnv>('APP_ENV');

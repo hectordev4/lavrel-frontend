@@ -1,0 +1,4 @@
+<div class="stage" role="status" aria-live="polite">
+  <app-cube-logo [mode]="mode()" label="" />
+  <p class="message" [class.hidden]="!message()">{{ message() || 'Loading' }}</p>
+</div>

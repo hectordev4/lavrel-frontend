@@ -1,0 +1,28 @@
+<main class="page home">
+  @switch (profile.state().kind) {
+    @case ('loading') {
+      <div class="center" role="status">
+        <app-cube-logo class="mark" mode="loading" label="" />
+        <p class="muted">Setting up your profile</p>
+      </div>
+    }
+    @case ('error') {
+      <div class="center">
+        <app-cube-logo class="mark" mode="still" label="" />
+        <p class="alert" role="alert">{{ profile.errorMessage() }}</p>
+        <button type="button" class="btn btn-secondary" (click)="profile.load()">Try again</button>
+      </div>
+    }
+    @case ('ready') {
+      <app-cube-logo class="mark" mode="intro" label="" />
+      <h1>You’re in{{ profile.username() ? ', ' + profile.username() : '' }}.</h1>
+      <p class="muted">
+        Signed in as {{ store.user()?.email }}. Next up: choosing your name and country.
+      </p>
+    }
+  }
+
+  <button type="button" class="link-btn sign-out" [disabled]="signingOut()" (click)="signOut()">
+    Sign out
+  </button>
+</main>
