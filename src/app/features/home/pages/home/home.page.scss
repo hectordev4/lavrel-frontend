@@ -1,0 +1,36 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  padding-top: clamp(3rem, 14vh, 7rem);
+}
+.center {
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  margin: auto 0;
+  text-align: center;
+}
+.mark {
+  height: 5.5rem;
+  width: 3rem;
+  margin-bottom: 1.5rem;
+}
+.center .mark {
+  margin-bottom: 0;
+}
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.sign-out {
+  margin-top: auto;
+  justify-self: center;
+  align-self: center;
+}
