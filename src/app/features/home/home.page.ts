@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CurrentUser, CurrentUserApi } from '../../core/api/current-user.api';
+import { CurrentUserApi } from '../../core/api/current-user.api';
+import { CurrentUser } from '../../core/api/models/current-user.model';
 import { AuthSession } from '../../core/auth/auth-session';
 import { AuthStore } from '../../core/auth/auth.store';
 import { CubeLogo } from '../../shared/ui/logo/cube-logo';

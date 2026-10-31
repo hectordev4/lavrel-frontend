@@ -19,7 +19,9 @@ import {
 import { Observable, shareReplay } from 'rxjs';
 import { APP_ENV } from '../config/app-env.token';
 import { AuthGateway } from './auth-gateway';
-import { AuthError, AuthErrorCode, AuthUser } from './auth-user';
+import { AuthError } from './auth-error';
+import { AuthErrorCode } from './models/auth-error-code.model';
+import { AuthUser } from './models/auth-user.model';
 
 /** Adapter: the only file in the app that imports firebase/auth. */
 @Injectable()

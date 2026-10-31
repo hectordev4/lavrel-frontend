@@ -1,17 +1,16 @@
 import { inject } from '@angular/core';
 import { CanMatchFn, Router } from '@angular/router';
 import { AuthStore } from './auth.store';
-
-type Place = '/welcome' | '/verify-email' | '/home';
+import { AuthPlace } from './models/auth-place.model';
 
 /** Where a user belongs right now: welcome when signed out, verify-email until verified, else home. */
-function placeFor(store: AuthStore): Place {
+function placeFor(store: AuthStore): AuthPlace {
   const user = store.user();
   if (!user) return '/welcome';
   return user.emailVerified ? '/home' : '/verify-email';
 }
 
-function only(target: Place): CanMatchFn {
+function only(target: AuthPlace): CanMatchFn {
   return async () => {
     const store = inject(AuthStore);
     const router = inject(Router);

@@ -1,8 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { AuthGateway } from './auth-gateway';
-import { AuthUser } from './auth-user';
-
-export type AuthStatus = 'unknown' | 'signed-out' | 'signed-in';
+import { AuthStatus } from './models/auth-status.model';
+import { AuthUser } from './models/auth-user.model';
 
 /** App-wide auth state as signals. Features read from here and act through their own facades. */
 @Injectable({ providedIn: 'root' })
