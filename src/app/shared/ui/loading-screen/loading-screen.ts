@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { CubeLogo, CubeLogoMode } from '../logo/cube-logo';
+import { CubeLogo } from '../cube-logo/cube-logo';
+import { CubeLogoMode } from '../cube-logo/models/cube-logo-mode.model';
 
 /**
  * Full-screen loading page: the cube L with the light chasing through it.

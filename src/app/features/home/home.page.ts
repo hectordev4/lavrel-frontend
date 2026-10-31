@@ -4,7 +4,7 @@ import { CurrentUserApi } from '../../core/api/current-user.api';
 import { CurrentUser } from '../../core/api/models/current-user.model';
 import { AuthSession } from '../../core/auth/auth-session';
 import { AuthStore } from '../../core/auth/auth.store';
-import { CubeLogo } from '../../shared/ui/logo/cube-logo';
+import { CubeLogo } from '../../shared/ui/cube-logo/cube-logo';
 
 type State =
   | { kind: 'loading' }

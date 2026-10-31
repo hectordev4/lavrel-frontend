@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { CubeLogo, CubeLogoMode } from './cube-logo';
+import { CubeLogo } from '../cube-logo/cube-logo';
+import { CubeLogoMode } from '../cube-logo/models/cube-logo-mode.model';
 
 /** The brand lockup: the cube L leading "avrel", read as Lavrel. */
 @Component({

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppBoot } from '../../../../core/boot';
-import { CubeLogoMode } from '../../../../shared/ui/logo/cube-logo';
-import { Wordmark } from '../../../../shared/ui/logo/wordmark';
+import { CubeLogoMode } from '../../../../shared/ui/cube-logo/models/cube-logo-mode.model';
+import { Wordmark } from '../../../../shared/ui/wordmark/wordmark';
 import { LoadingScreen } from '../../../../shared/ui/loading-screen/loading-screen';
 import { AuthFlow } from '../../data-access/auth-flow';
 import { GoogleButton } from '../../ui/google-button';

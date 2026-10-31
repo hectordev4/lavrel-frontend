@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { AuthStore } from '../../../../core/auth/auth.store';
-import { CubeLogo } from '../../../../shared/ui/logo/cube-logo';
+import { CubeLogo } from '../../../../shared/ui/cube-logo/cube-logo';
 import { AuthFlow } from '../../data-access/auth-flow';
 
 const RESEND_COOLDOWN_S = 30;
