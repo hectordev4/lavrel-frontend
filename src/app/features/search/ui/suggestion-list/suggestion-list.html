@@ -4,7 +4,7 @@
       <section aria-labelledby="sg-games">
         <h2 id="sg-games">Games</h2>
         @for (game of results().games; track game.id) {
-          <a class="item" [routerLink]="gameLink(game)">
+          <a class="item" [routerLink]="gameLink(game.slug)">
             <app-game-cover class="cover" [src]="game.coverImageUrl" [title]="game.title" />
             <span class="text">
               <span class="name">{{ game.title }}</span>

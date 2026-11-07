@@ -8,7 +8,7 @@ import { TrackingStatus } from './tracking-status.model';
 export interface LibraryGame {
   gameId: number;
   title: string;
-  slug?: string;
+  slug: string;
   coverImageUrl: string | null;
   releaseDate: string | null;
   playtimeMinutes: number;

@@ -7,6 +7,7 @@ import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
 import { PerfectDiamond } from '../../../../shared/ui/perfect-diamond/perfect-diamond';
 import { ProgressBar } from '../../../../shared/ui/progress-bar/progress-bar';
 import { progressPercent } from '../../../../shared/ui/progress-bar/progress-tier';
+import { gameLink } from '../../../../shared/utils/game-link';
 
 /** A tracked game: status, pin, progress and the easiest achievements left. */
 @Component({
@@ -25,7 +26,7 @@ export class TrackedCard {
 
   protected readonly statuses = TRACKING_STATUSES.map((value) => ({ value, label: TRACKING_STATUS_LABELS[value] }));
   protected readonly revealed = signal<ReadonlySet<number>>(new Set());
-  protected readonly link = computed(() => `/games/${this.game().gameId}-${this.game().slug}`);
+  protected readonly link = computed(() => gameLink(this.game().slug));
   protected readonly percent = computed(() => progressPercent(this.game().unlocked, this.game().total));
   protected readonly pinned = computed(() => this.game().pinPosition !== null);
 

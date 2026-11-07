@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
-import { gameLink } from '../../../../shared/ui/game-row/game-row';
+import { gameLink } from '../../../../shared/utils/game-link';
 import { QuickResults } from '../../models/quick-results.model';
 
 /** Grouped type-ahead results: games open their page, tags and franchises open filtered results. */
