@@ -1,0 +1,16 @@
+<button
+  type="button"
+  class="chip"
+  [class.on]="on()"
+  [attr.aria-pressed]="pressed()"
+  [attr.aria-label]="ariaLabel()"
+  (click)="activate.emit()"
+>
+  <span>{{ label() }}</span>
+  @if (count() !== null) {
+    <span class="count">{{ count() }}</span>
+  }
+  @if (removable()) {
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18" /></svg>
+  }
+</button>
