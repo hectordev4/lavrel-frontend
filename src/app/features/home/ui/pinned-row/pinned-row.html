@@ -1,0 +1,15 @@
+<a class="row" [routerLink]="link()">
+  <app-game-cover class="cover" [src]="game().coverImageUrl" [title]="game().title" />
+  <span class="info">
+    <span class="line">
+      <span class="title">{{ game().title }}</span>
+      @if (percent() === 100) {
+        <span class="perfect"><app-perfect-diamond label="" /><span class="number">100%</span></span>
+      } @else {
+        <span class="number">{{ percent() }}%</span>
+      }
+    </span>
+    <app-progress-bar [percent]="percent()" [label]="game().title + ' achievements unlocked'" />
+    <span class="meta">{{ game().unlocked }} / {{ game().total }} achievements</span>
+  </span>
+</a>
