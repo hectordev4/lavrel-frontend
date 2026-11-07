@@ -61,11 +61,12 @@ src/app
     │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), messages
     │   └── models/           HomeState, DiscoverSection
     └── search/
-        ├── pages/            search (box + suggestions), results
-        ├── ui/               suggestion-list, result-card
-        ├── data-access/      QuickSearchApi → GET /api/search, SearchSuggestions (debounced),
-        │                     SearchResults (paging), search-query (address ↔ filters ↔ API), labels, messages
-        └── models/           QuickResults, TagOption, CreatorOption, CreatorRole, SuggestionsState,
+        ├── pages/            search (box + suggestions), results, filters (full screen)
+        ├── ui/               suggestion-list, result-card, typeahead-field
+        ├── data-access/      QuickSearchApi → GET /api/search, FilterOptionsApi → GET /api/tags, /api/creators,
+        │                     SearchSuggestions and OptionSearch (debounced), SearchResults (paging),
+        │                     search-query (address ↔ filters ↔ API), labels, messages
+        └── models/           QuickResults, TagOption, CreatorOption, CreatorRole, FilterOption, SuggestionsState,
                               SearchFilters, NamedFilter, PlayerMode, ResultsState
 ```
 
@@ -96,7 +97,7 @@ tabs show a sign-in screen.
 | `/` | welcome, or home after *Skip for now* | verify-email | home |
 | `/welcome`, `/sign-in`, `/register` | ✓ | verify-email | home |
 | `/home` | discover home | verify-email | member home |
-| `/search`, `/search/results`, `/games/:id-slug` | ✓ | verify-email | ✓ |
+| `/search`, `/search/results`, `/search/filters`, `/games/:id-slug` | ✓ | verify-email | ✓ |
 | `/games`, `/profile` | sign-in screen | verify-email | ✓ |
 
 ## Search
@@ -117,6 +118,10 @@ Every filter lives in the address, so results can be reloaded and shared:
 
 Named filters travel as `id:name` so chips show the name without another request; only the id goes to the
 API. Results load 20 at a time; *Show more* appears while the backend reports `hasMore`.
+
+The **Filters** button opens `/search/filters`, a full-screen sheet (no header or tab bar). Tags and creators
+are picked from type-aheads (`GET /api/tags`, `GET /api/creators?role=`), showing each option's game count.
+Changes stay in a draft until *Show results*; *Clear all* keeps the typed query.
 
 ## Logo modes (`<app-cube-logo mode="…">`)
 
@@ -170,7 +175,7 @@ are example data.
 2. Search, in three branches:
    - `feat/search-suggestions` ✓: search box with grouped suggestions (games, tags, franchises)
    - `feat/search-results` ✓: results with paging, sort and removable filter chips
-   - `feat/search-filters`: filters screen (tags, franchise, developer, publisher, modes, system)
+   - `feat/search-filters` ✓: filters screen (tags, franchise, developer, publisher, modes, system)
 3. `feat/game-page`: details, achievements with worldwide and country percentages
 4. `feat/tracking`: tracked list, statuses, pins, signed-in Home
 5. `feat/library`: My library and collections
