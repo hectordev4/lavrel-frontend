@@ -59,8 +59,7 @@ export const routes: Routes = [
         path: 'profile',
         canMatch: [memberGuard],
         title: 'Profile · Lavrel',
-        data: { heading: 'Profile', branch: 'feat/profile' },
-        loadComponent: () => import('./layout/placeholder-page/placeholder-page').then((m) => m.PlaceholderPage),
+        loadComponent: () => import('./features/profile/pages/profile/profile.page').then((m) => m.ProfilePage),
       },
       {
         path: 'profile',

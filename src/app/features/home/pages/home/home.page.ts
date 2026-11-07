@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  untracked,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthSession } from '../../../../core/auth/auth-session';
 import { PlatformAccounts } from '../../../../core/platforms/platform-accounts';
 import { MAX_PINNED, TrackedGames } from '../../../../core/tracking/tracked-games';
 import { CtaCard } from '../../../../shared/ui/cta-card/cta-card';
@@ -32,9 +38,7 @@ export class HomePage {
   protected readonly tracked = inject(TrackedGames);
   protected readonly almost = inject(AlmostThere);
   protected readonly discover = inject(Discover);
-  private readonly session = inject(AuthSession);
 
-  protected readonly signingOut = signal(false);
   protected readonly maxPinned = MAX_PINNED;
   protected readonly greeting = greetingFor(new Date());
   protected readonly lastSynced = computed(() => {
@@ -42,7 +46,9 @@ export class HomePage {
     return at ? `synced ${relativeTime(at)}` : 'not synced yet';
   });
   /** No Steam account yet: show the connect card and popular games to start from. */
-  protected readonly firstVisit = computed(() => this.accounts.loadState() === 'ready' && !this.accounts.steam());
+  protected readonly firstVisit = computed(
+    () => this.accounts.loadState() === 'ready' && !this.accounts.steam(),
+  );
 
   /** The first GET /api/currentuser creates the user on the backend, so everything else waits for it. */
   private readonly ready = computed(() => this.profile.state().kind === 'ready');
@@ -75,15 +81,6 @@ export class HomePage {
 
   protected connectSteam(): void {
     void this.accounts.link('STEAM');
-  }
-
-  protected async signOut(): Promise<void> {
-    this.signingOut.set(true);
-    try {
-      await this.session.signOut();
-    } finally {
-      this.signingOut.set(false);
-    }
   }
 }
 
