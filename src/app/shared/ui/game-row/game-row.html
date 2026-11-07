@@ -1,0 +1,18 @@
+<a class="row" [routerLink]="link()">
+  <app-game-cover class="cover" [src]="game().coverImageUrl" [title]="game().title" />
+  <span class="info">
+    <span class="title">{{ game().title }}</span>
+    <span class="meta">
+      @if (year()) {
+        {{ year() }}
+      }
+      @if (game().reviewPercentPositive !== null) {
+        · <span class="number">{{ game().reviewPercentPositive }}%</span> positive
+      }
+    </span>
+    @if (systems()) {
+      <span class="systems">{{ systems() }}</span>
+    }
+  </span>
+  <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+</a>
