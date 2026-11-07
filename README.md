@@ -34,10 +34,12 @@ src/app
 │   │   │                     AuthStore, AuthSession (sign-out), GuestMode, guards, interceptor, AuthError
 │   │   └── models/           AuthUser, AuthProvider, AuthErrorCode, AuthStatus, AuthPlace
 │   ├── api/                  CurrentUserApi → GET /api/currentuser, GameCatalogApi → GET /api/games,
-│   │   │                     TrackingApi → /api/currentuser/tracked (list, status, pins)
+│   │   │                     TrackingApi → /api/currentuser/tracked (list, status, pins),
+│   │                     AccountsApi → /api/currentuser/accounts (list, link, sync)
 │   │   └── models/           CurrentUser, GameCard, GamePage, GameSearchParams, GameSort, GameSystem,
-│   │                         TrackedGame, TrackingStatus, NextAchievement
+│   │                         TrackedGame, TrackingStatus, NextAchievement, Platform, PlatformAccount, SyncResult
 │   ├── tracking/             TrackedGames (shared store of the member's tracked games), status labels, messages
+│   ├── platforms/            PlatformAccounts (linked accounts, link, sync with pending rounds), messages
 │   ├── config/               AppEnv model, APP_ENV token
 │   └── boot.ts               splash → welcome hand-off
 ├── layout/                   the frame around in-app pages
@@ -53,6 +55,7 @@ src/app
 │   ├── progress-bar/         tiered progress bar (+ progressTier, progressPercent)
 │   ├── perfect-diamond/      hue-shifting diamond for 100% games
 │   ├── track-control/        Track / status select / Stop tracking / pin (presentational)
+├── shared/utils/             relativeTime ("2 hours ago")
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
@@ -62,6 +65,8 @@ src/app
     │   ├── ui/               google-button
     │   ├── data-access/      AuthFlow facade, error messages
     │   └── models/           AuthTask, EmailAuthMode
+    ├── platforms/
+    │   └── pages/            steam-linked (where Steam's login returns)
     ├── games/                the Games tab for members
     │   ├── pages/            games (tracking list)
     │   ├── ui/               tracked-card
@@ -170,6 +175,19 @@ The **track control** appears on the game page (status select and pin) and, for 
 (status only). *Track* adds the game as Playing; the select changes the status or stops tracking after a
 confirmation. Guests see *Sign in to track* on the game page.
 
+## Linking and syncing Steam
+
+1. *Connect Steam* calls `POST /api/currentuser/accounts/steam/link` and sends the browser to the `redirectUrl`.
+2. After the Steam login, the backend redirects to `{FRONTEND_BASE_URL}/steam/linked?status=success`
+   (or `status=error&reason=…`). Set `FRONTEND_BASE_URL` in the backend to this app's address
+   (`http://localhost:4200` in development).
+3. `/steam/linked` runs the first sync right away. A sync imports a limited number of new games per call, so
+   *Sync now* calls `POST /api/currentuser/accounts/{platform}/{externalId}/sync` again while `gamesPending` is above
+   0 (up to 10 calls), then reloads the accounts and the tracked games.
+
+Errors are explained in words: a private Steam profile (set **Game details** to Public), Steam not answering, or
+too many syncs.
+
 ## Logo modes (`<app-cube-logo mode="…">`)
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs
@@ -230,7 +248,9 @@ are example data.
    - `feat/tracking-core` ✓: tracking API and the shared TrackedGames store
    - `feat/tracking-list` ✓: the Games tab for members (statuses, sort, pins, easiest next achievements)
    - `feat/tracking-actions` ✓: Track and pin on the game page and on search results
-5. `feat/member-home`: greeting, Sync now, totals, Playing now (pinned), Almost there, recent unlocks
+5. Signed-in Home, in two branches:
+   - `feat/platform-accounts` ✓: linked accounts, Connect Steam, Sync now, the /steam/linked return page
+   - `feat/member-home`: greeting, Sync now, Playing now (pinned), Almost there
 6. `feat/library`: My library and collections
 7. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
 8. `feat/public-profile`: public profile and shelves
