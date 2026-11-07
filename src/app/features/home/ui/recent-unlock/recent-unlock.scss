@@ -1,0 +1,74 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 4rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--hairline);
+  color: var(--line);
+  text-decoration: none;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  overflow: hidden;
+  border-radius: 0.625rem;
+  border: 1px solid var(--hairline);
+  color: var(--muted);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+}
+
+.name {
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.meta {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.share {
+  max-width: 6rem;
+  font-size: 0.75rem;
+  text-align: right;
+  color: var(--muted);
+}
+
+.rare {
+  .icon {
+    border-color: var(--unlock);
+    color: var(--unlock);
+  }
+
+  .share {
+    color: var(--unlock);
+  }
+}
