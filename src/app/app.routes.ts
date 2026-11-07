@@ -43,6 +43,14 @@ export const routes: Routes = [
         loadComponent: () => import('./features/game/pages/game/game.page').then((m) => m.GamePage),
       },
       {
+        // Steam's login sends the browser back here after linking.
+        path: 'steam/linked',
+        canMatch: [memberGuard],
+        title: 'Steam · Lavrel',
+        loadComponent: () =>
+          import('./features/platforms/pages/steam-linked/steam-linked.page').then((m) => m.SteamLinkedPage),
+      },
+      {
         path: 'search',
         canMatch: [browseGuard],
         loadChildren: () => import('./features/search/search.routes').then((m) => m.SEARCH_ROUTES),
