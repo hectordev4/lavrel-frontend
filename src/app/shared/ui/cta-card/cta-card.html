@@ -1,0 +1,14 @@
+<section class="cta" [class.centered]="centered()">
+  <div class="intro">
+    <app-cube-logo class="mark" mode="intro" label="" />
+    <div class="copy">
+      <h2>{{ heading() }}</h2>
+      @if (text()) {
+        <p>{{ text() }}</p>
+      }
+    </div>
+  </div>
+  <div class="actions">
+    <ng-content />
+  </div>
+</section>
