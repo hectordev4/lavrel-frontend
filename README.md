@@ -31,26 +31,34 @@ On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: 
 src/app
 ├── core/                     app-wide, no UI
 │   ├── auth/                 AuthGateway (port), FirebaseAuthGateway + mapper (adapter),
-│   │   │                     AuthStore, AuthSession (sign-out), guards, interceptor, AuthError
+│   │   │                     AuthStore, AuthSession (sign-out), GuestMode, guards, interceptor, AuthError
 │   │   └── models/           AuthUser, AuthProvider, AuthErrorCode, AuthStatus, AuthPlace
-│   ├── api/                  CurrentUserApi → GET /api/currentuser
-│   │   └── models/           CurrentUser
+│   ├── api/                  CurrentUserApi → GET /api/currentuser, GameCatalogApi → GET /api/games
+│   │   └── models/           CurrentUser, GameCard, GamePage, GameSearchParams, GameSort, GameSystem
 │   ├── config/               AppEnv model, APP_ENV token
 │   └── boot.ts               splash → welcome hand-off
+├── layout/                   the frame around in-app pages
+│   ├── app-shell/            header + page + tab bar
+│   ├── app-header/           static wordmark, avatar (members) or Sign in (guests)
+│   ├── tab-bar/              Home, Games, Search, Profile
+│   └── placeholder-page/     stands in for tabs whose branch hasn't landed
 ├── shared/ui/                dumb, reusable components
 │   ├── cube-logo/            animated cube L (+ geometry, models/)
 │   ├── wordmark/             cube L + AVREL
+│   ├── cta-card/             call to action with the animated big L
+│   ├── game-cover/           cover image with an initials fallback
+│   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
 └── features/                 one folder per feature, each owns its routes
     ├── auth/
-    │   ├── pages/            welcome, email-auth (sign-in + register), verify-email
+    │   ├── pages/            welcome, email-auth (sign-in + register), verify-email, sign-in-gate
     │   ├── ui/               google-button
     │   ├── data-access/      AuthFlow facade, error messages
     │   └── models/           AuthTask, EmailAuthMode
     └── home/
-        ├── pages/            home (placeholder)
-        ├── data-access/      HomeProfile (loads the current user), messages
-        └── models/           HomeState
+        ├── pages/            home (members, placeholder), guest-home (discover)
+        ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), messages
+        └── models/           HomeState, DiscoverSection
 ```
 
 ### Conventions
@@ -59,7 +67,7 @@ src/app
   components keep their template in `.html` and styles in `.scss`, never inline.
 - **Feature folders:** `pages/` (routed screens), `ui/` (presentational pieces), `data-access/`
   (services, facades, messages), `models/`.
-- **Imports go one way:** features → core and shared; shared never imports features; features never
+- **Imports go one way:** features and layout → core and shared; shared never imports features; features never
   import each other. Only `firebase-auth.gateway.ts` and `firebase-auth.mapper.ts` import Firebase.
 - A data client used by one feature lives in that feature's `data-access/`; it moves to `core/api/`
   once a second feature needs it.
@@ -70,6 +78,18 @@ Splash (logo builds, then a light chases through it) → **/welcome** → Google
 browsers that block popups) or **/sign-in** / **/register** with e-mail. New e-mail accounts get a
 verification e-mail and land on **/verify-email** until they confirm; then the ID token is refreshed so the
 backend sees `email_verified=true`. Verified users land on **/home**.
+
+**Skip for now** on the welcome page opens the app without an account and is remembered in this browser
+(signing in or out forgets it). Guests can use Home (discover), Search and game pages; the Games and Profile
+tabs show a sign-in screen.
+
+| Route | Signed out | Unverified | Member |
+|---|---|---|---|
+| `/` | welcome, or home after *Skip for now* | verify-email | home |
+| `/welcome`, `/sign-in`, `/register` | ✓ | verify-email | home |
+| `/home` | discover home | verify-email | member home |
+| `/search`, `/games/:id-slug` | ✓ | verify-email | ✓ |
+| `/games`, `/profile` | sign-in screen | verify-email | ✓ |
 
 ## Logo modes (`<app-cube-logo mode="…">`)
 
@@ -119,7 +139,7 @@ are example data.
 
 ## Roadmap (one `feat/*` branch each, merged into `dev`)
 
-1. `feat/app-shell`: header, tab bar, browsing without an account, call-to-action cards
+1. `feat/app-shell` ✓: header, tab bar, browsing without an account, call-to-action cards, discover home
 2. `feat/search`: suggestions, results, filters (tags, franchise, developer, publisher, modes, system)
 3. `feat/game-page`: details, achievements with worldwide and country percentages
 4. `feat/tracking`: tracked list, statuses, pins, signed-in Home

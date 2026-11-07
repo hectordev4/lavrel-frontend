@@ -20,6 +20,12 @@
     />
     <a class="btn btn-secondary" routerLink="/sign-in">Sign in with e-mail</a>
     <p class="switch">New to Lavrel? <a routerLink="/register">Create an account</a></p>
+    <p class="skip">
+      <button type="button" class="link-btn" [disabled]="flow.busy() !== null" (click)="flow.browseWithoutAccount()">
+        Skip for now
+      </button>
+      and search games without an account.
+    </p>
   </section>
 </main>
 
