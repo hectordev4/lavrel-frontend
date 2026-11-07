@@ -3,6 +3,7 @@
     <a
       [routerLink]="tab.path"
       routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: tab.exact ?? false }"
       ariaCurrentWhenActive="page"
     >
       <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="tab.icon" /></svg>
