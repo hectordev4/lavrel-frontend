@@ -1,0 +1,35 @@
+<div class="item" [class.unlocked]="achievement().unlocked">
+  <div class="icon" aria-hidden="true">
+    @if (achievement().iconUrl && !blurred()) {
+      <img [src]="achievement().iconUrl" alt="" loading="lazy" />
+    } @else {
+      <svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z M16 5h3v2a3 3 0 0 1-3 3 M8 5H5v2a3 3 0 0 0 3 3 M12 13v4 M9 20h6" /></svg>
+    }
+  </div>
+  <div class="body">
+    @if (personal() && achievement().unlocked) {
+      <span class="visually-hidden">Unlocked. </span>
+    }
+    @if (blurred()) {
+      <button type="button" class="reveal" (click)="reveal.emit()">
+        <span class="blur" aria-hidden="true">{{ achievement().name }}</span>
+        <span class="visually-hidden">Hidden achievement. Reveal it.</span>
+      </button>
+      <span class="desc">Hidden achievement · tap to reveal</span>
+    } @else {
+      <span class="name">{{ achievement().name }}</span>
+      @if (achievement().description) {
+        <span class="desc">{{ achievement().description }}</span>
+      }
+    }
+    <span class="stats">
+      <span><span class="number">{{ achievement().globalPercent !== null ? achievement().globalPercent + '%' : '—' }}</span> worldwide</span>
+      @if (personal()) {
+        <span><span class="number">{{ achievement().countryPercent !== null ? achievement().countryPercent + '%' : '—' }}</span> in your country</span>
+      }
+      @if (achievement().unlockedAt) {
+        <span class="when">Unlocked {{ achievement().unlockedAt | date: 'd MMM y' }}</span>
+      }
+    </span>
+  </div>
+</div>

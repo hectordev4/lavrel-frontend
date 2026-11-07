@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(242 240 234 / 0.12);
+}
+
+.fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.tier-gray {
+  background: #8a877f;
+}
+
+.tier-bronze {
+  background: #c58a5a;
+}
+
+.tier-silver {
+  background: #c9ccd1;
+}
+
+.tier-gold {
+  background: var(--unlock);
+}
+
+.tier-gold-aura {
+  background: var(--unlock);
+  box-shadow: 0 0 8px 1px rgb(232 184 74 / 0.7);
+}
+
+.tier-perfect {
+  background: #8fe3ff;
+  box-shadow: 0 0 8px 1px #8fe3ff;
+  animation: hue-shift 4s linear infinite;
+}
+
+@keyframes hue-shift {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tier-perfect {
+    animation: none;
+  }
+}
