@@ -46,6 +46,7 @@ src/app
 │   ├── cube-logo/            animated cube L (+ geometry, models/)
 │   ├── wordmark/             cube L + AVREL
 │   ├── cta-card/             call to action with the animated big L
+│   ├── chip/                 toggle or removable pill button
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
@@ -60,10 +61,12 @@ src/app
     │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), messages
     │   └── models/           HomeState, DiscoverSection
     └── search/
-        ├── pages/            search (box + suggestions)
-        ├── ui/               suggestion-list
-        ├── data-access/      QuickSearchApi → GET /api/search, SearchSuggestions (debounced), messages
-        └── models/           QuickResults, TagOption, CreatorOption, CreatorRole, SuggestionsState
+        ├── pages/            search (box + suggestions), results
+        ├── ui/               suggestion-list, result-card
+        ├── data-access/      QuickSearchApi → GET /api/search, SearchSuggestions (debounced),
+        │                     SearchResults (paging), search-query (address ↔ filters ↔ API), labels, messages
+        └── models/           QuickResults, TagOption, CreatorOption, CreatorRole, SuggestionsState,
+                              SearchFilters, NamedFilter, PlayerMode, ResultsState
 ```
 
 ### Conventions
@@ -99,8 +102,21 @@ tabs show a sign-in screen.
 ## Search
 
 Typing in the Search tab suggests up to 5 games, 5 tags and 3 franchises after a 250 ms pause (2 characters
-minimum). Filters travel in the address as `id:name` (for example `/search/results?tag=1716:Roguelike`), so
-the results page can show readable chips without another request.
+minimum). Enter or *See all results* opens `/search/results`.
+
+Every filter lives in the address, so results can be reloaded and shared:
+
+| Parameter | Example | Notes |
+|---|---|---|
+| `q` | `q=witcher` | typo tolerant, 2+ characters |
+| `tag` | `tag=1716:Roguelike` | repeat for more, up to 5, all must apply |
+| `franchise`, `developer`, `publisher` | `franchise=55:Monster Hunter` | one each |
+| `mode` | `mode=co-op` | `single-player`, `co-op`, `multiplayer`; repeat, all must apply |
+| `system` | `system=PC` | `PC`, `XBOX`, `PLAYSTATION` |
+| `sort` | `sort=rating` | `relevance` (default with `q`), `popular` (default without), `rating`, `newest`, `name` |
+
+Named filters travel as `id:name` so chips show the name without another request; only the id goes to the
+API. Results load 20 at a time; *Show more* appears while the backend reports `hasMore`.
 
 ## Logo modes (`<app-cube-logo mode="…">`)
 
@@ -153,7 +169,7 @@ are example data.
 1. `feat/app-shell` ✓: header, tab bar, browsing without an account, call-to-action cards, discover home
 2. Search, in three branches:
    - `feat/search-suggestions` ✓: search box with grouped suggestions (games, tags, franchises)
-   - `feat/search-results`: results with paging, sort and removable filter chips
+   - `feat/search-results` ✓: results with paging, sort and removable filter chips
    - `feat/search-filters`: filters screen (tags, franchise, developer, publisher, modes, system)
 3. `feat/game-page`: details, achievements with worldwide and country percentages
 4. `feat/tracking`: tracked list, statuses, pins, signed-in Home
