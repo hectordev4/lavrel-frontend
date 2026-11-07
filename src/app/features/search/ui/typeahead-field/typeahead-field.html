@@ -1,0 +1,38 @@
+<div class="field-wrap">
+  <label class="box" [class.disabled]="disabled()">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
+    <span class="visually-hidden">{{ label() }}</span>
+    <input
+      #field
+      type="text"
+      autocomplete="off"
+      spellcheck="false"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      (focus)="onInput(field.value)"
+      (input)="onInput(field.value)"
+    />
+  </label>
+  @if (open() && !disabled()) {
+    <div class="options" aria-live="polite">
+      @if (loading()) {
+        <p class="note" role="status">Looking…</p>
+      } @else if (failed()) {
+        <p class="note">Couldn’t load the options. Type again to retry.</p>
+      } @else if (options().length === 0) {
+        <p class="note">Nothing matches.</p>
+      } @else {
+        <ul>
+          @for (option of options(); track option.id) {
+            <li>
+              <button type="button" (click)="pick(option, field)">
+                <span>{{ option.name }}</span>
+                <span class="count">{{ option.gameCount }} games</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+</div>
