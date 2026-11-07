@@ -57,6 +57,7 @@ src/app
 │   ├── progress-bar/         tiered progress bar (+ progressTier, progressPercent)
 │   ├── perfect-diamond/      hue-shifting diamond for 100% games
 │   ├── track-control/        Track / status select / Stop tracking / pin (presentational)
+│   ├── modal/                bottom sheet on the native <dialog>
 ├── shared/utils/             relativeTime ("2 hours ago")
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
@@ -72,8 +73,9 @@ src/app
     ├── games/                the Games tab for members
     │   ├── pages/            games (tracking list), library (/games/library)
     │   ├── ui/               tracked-card, library-card
-    │   ├── data-access/      tracked-list (filter and sort), MyLibrary (paging), library labels, messages
-    │   └── models/           StatusFilter, TrackedSort, LibraryQuery, LibraryState
+    │   ├── data-access/      tracked-list (filter and sort), MyLibrary (paging), CollectionsApi, MyCollections,
+    │   │                     library labels, messages
+    │   └── models/           StatusFilter, TrackedSort, LibraryQuery, LibraryState, Collection
     ├── game/
     │   ├── pages/            game (/games/:id-slug)
     │   ├── ui/               progress-card, achievement-item
@@ -185,6 +187,11 @@ confirmation. Guests see *Sign in to track* on the game page.
 characters, after a 300 ms pause) and five sorts: recently played (default), name, most played, most completed and
 newest release. Without Steam it shows *Connect Steam*. The Games tab stays lit on My library but not on game pages.
 
+**Collections** (`/api/currentuser/collections`, owned games only, up to 50): chips above the grid switch between
+*All games* and each collection with its game count; *New collection* opens a sheet for the name (up to 40
+characters). Inside a collection: *Rename*, *Delete* (the games stay in the library) and, per game, *Remove from …*.
+Every game's menu has *Add to collection…*, a sheet listing the collections. Sheets use the shared `Modal`.
+
 ## Home for members
 
 In order: a greeting with the username, the Steam line (*synced 2 hours ago* and **Sync now**, which shows how many
@@ -275,7 +282,7 @@ are example data.
    - `feat/member-home` ✓: greeting, Sync now, Playing now (pinned), Almost there
 6. Library, in two branches:
    - `feat/library-list` ✓: My library grid with name filter, five sorts and paging
-   - `feat/collections`: collections (create, rename, delete, browse, add and remove games)
+   - `feat/collections` ✓: collections (create, rename, delete, browse, add and remove games)
 7. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
 8. `feat/public-profile`: public profile and shelves
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
