@@ -70,10 +70,10 @@ src/app
     ├── platforms/
     │   └── pages/            steam-linked (where Steam's login returns)
     ├── games/                the Games tab for members
-    │   ├── pages/            games (tracking list)
-    │   ├── ui/               tracked-card
-    │   ├── data-access/      tracked-list (filter and sort)
-    │   └── models/           StatusFilter, TrackedSort
+    │   ├── pages/            games (tracking list), library (/games/library)
+    │   ├── ui/               tracked-card, library-card
+    │   ├── data-access/      tracked-list (filter and sort), MyLibrary (paging), library labels, messages
+    │   └── models/           StatusFilter, TrackedSort, LibraryQuery, LibraryState
     ├── game/
     │   ├── pages/            game (/games/:id-slug)
     │   ├── ui/               progress-card, achievement-item
@@ -178,6 +178,13 @@ The **track control** appears on the game page (status select and pin) and, for 
 (status only). *Track* adds the game as Playing; the select changes the status or stops tracking after a
 confirmation. Guests see *Sign in to track* on the game page.
 
+## My library
+
+`/games/library` lists the games owned on linked accounts (`GET /api/currentuser/games`), 48 at a time with
+*Show more*: cover, title, tiered bar, unlocked of total, playtime and the diamond at 100%. A name filter (2+
+characters, after a 300 ms pause) and five sorts: recently played (default), name, most played, most completed and
+newest release. Without Steam it shows *Connect Steam*. The Games tab stays lit on My library but not on game pages.
+
 ## Home for members
 
 In order: a greeting with the username, the Steam line (*synced 2 hours ago* and **Sync now**, which shows how many
@@ -266,7 +273,9 @@ are example data.
 5. Signed-in Home, in two branches:
    - `feat/platform-accounts` ✓: linked accounts, Connect Steam, Sync now, the /steam/linked return page
    - `feat/member-home` ✓: greeting, Sync now, Playing now (pinned), Almost there
-6. `feat/library`: My library and collections
+6. Library, in two branches:
+   - `feat/library-list` ✓: My library grid with name filter, five sorts and paging
+   - `feat/collections`: collections (create, rename, delete, browse, add and remove games)
 7. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
 8. `feat/public-profile`: public profile and shelves
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
