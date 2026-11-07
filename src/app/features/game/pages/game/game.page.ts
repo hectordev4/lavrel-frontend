@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe, Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -9,7 +9,7 @@ import { TrackedGames } from '../../../../core/tracking/tracked-games';
 import { map } from 'rxjs';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
 import { TrackControl } from '../../../../shared/ui/track-control/track-control';
-import { featureNames, gameIdFrom, systemLabel, systemsOf } from '../../data-access/game-facts';
+import { featureNames, systemLabel, systemsOf } from '../../data-access/game-facts';
 import { GameAchievementsStore } from '../../data-access/game-achievements';
 import { GamePage as GamePageStore } from '../../data-access/game-page';
 import { AchievementFilter } from '../../models/achievement-filter.model';
@@ -19,7 +19,7 @@ import { ProgressCard } from '../../ui/progress-card/progress-card';
 
 const SHORT_TAGS = 8;
 
-/** /games/:id-slug: cover, title, release, rating, systems, about, tags, genres and details. */
+/** /games/:slug: cover, title, release, rating, systems, about, tags, genres, details and achievements. */
 @Component({
   selector: 'app-game-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -82,14 +82,21 @@ export class GamePage {
 
   constructor() {
     inject(ActivatedRoute)
-      .paramMap.pipe(map((params) => gameIdFrom(params.get('game'))), takeUntilDestroyed())
-      .subscribe((id) => {
-        this.invalidAddress.set(id === null);
-        if (id !== null) {
-          this.store.load(id);
-          this.achievements.load(id);
-        }
+      .paramMap.pipe(map((params) => params.get('slug')?.trim() ?? ''), takeUntilDestroyed())
+      .subscribe((slug) => {
+        this.invalidAddress.set(!slug);
+        if (slug) this.store.load(slug);
       });
+
+    // The achievements need the game's id, which comes with the game.
+    let loadedId: number | null = null;
+    effect(() => {
+      const id = this.game()?.id ?? null;
+      if (id !== null && id !== loadedId) {
+        loadedId = id;
+        untracked(() => this.achievements.load(id));
+      }
+    });
 
     this.tracked.ensureLoaded();
 

@@ -37,7 +37,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/pages/sign-in-gate/sign-in-gate.page').then((m) => m.SignInGatePage),
       },
       {
-        path: 'games/:game',
+        path: 'games/:slug',
         canMatch: [browseGuard],
         title: 'Game · Lavrel',
         loadComponent: () => import('./features/game/pages/game/game.page').then((m) => m.GamePage),
