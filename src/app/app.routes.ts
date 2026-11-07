@@ -24,9 +24,7 @@ export const routes: Routes = [
       {
         path: 'games',
         canMatch: [memberGuard],
-        title: 'Games · Lavrel',
-        data: { heading: 'Games', branch: 'feat/tracking' },
-        loadComponent: () => import('./layout/placeholder-page/placeholder-page').then((m) => m.PlaceholderPage),
+        loadChildren: () => import('./features/games/games.routes').then((m) => m.GAMES_ROUTES),
       },
       {
         path: 'games',
