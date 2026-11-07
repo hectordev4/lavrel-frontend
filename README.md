@@ -56,6 +56,10 @@ src/app
     │   ├── ui/               google-button
     │   ├── data-access/      AuthFlow facade, error messages
     │   └── models/           AuthTask, EmailAuthMode
+    ├── game/
+    │   ├── pages/            game (/games/:id-slug)
+    │   ├── data-access/      GameDetailsApi → GET /api/games/{id}, GamePage, game-facts, messages
+    │   └── models/           GameDetails, GamePageState
     ├── home/
     │   ├── pages/            home (members, placeholder), guest-home (discover)
     │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), messages
@@ -123,6 +127,13 @@ The **Filters** button opens `/search/filters`, a full-screen sheet (no header o
 are picked from type-aheads (`GET /api/tags`, `GET /api/creators?role=`), showing each option's game count.
 Changes stay in a draft until *Show results*; *Clear all* keeps the typed query.
 
+## Game page
+
+`/games/{id}-{slug}`: only the id matters, the slug keeps addresses readable. Public. The release date shows once,
+under the title; Details lists developer, publisher, franchise, price (free or paid), systems, player modes,
+controller and accessibility, taken from the game's grouped store features. Tapping a tag opens search
+filtered by it. Systems come from the backend's `availableOn`, or PC when Steam lists a desktop platform.
+
 ## Logo modes (`<app-cube-logo mode="…">`)
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs
@@ -176,7 +187,9 @@ are example data.
    - `feat/search-suggestions` ✓: search box with grouped suggestions (games, tags, franchises)
    - `feat/search-results` ✓: results with paging, sort and removable filter chips
    - `feat/search-filters` ✓: filters screen (tags, franchise, developer, publisher, modes, system)
-3. `feat/game-page`: details, achievements with worldwide and country percentages
+3. Game page, in two branches:
+   - `feat/game-page` ✓: cover, title, release date, rating, systems, about, tags, genres, details
+   - `feat/game-achievements`: your progress and the achievement list with worldwide and country percentages
 4. `feat/tracking`: tracked list, statuses, pins, signed-in Home
 5. `feat/library`: My library and collections
 6. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
