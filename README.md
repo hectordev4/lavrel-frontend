@@ -70,6 +70,10 @@ src/app
     │   └── models/           AuthTask, EmailAuthMode
     ├── platforms/
     │   └── pages/            steam-linked (where Steam's login returns)
+    ├── profile/
+    │   ├── pages/            profile (the Profile tab)
+    │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, messages
+    │   └── models/           Country, AccountState
     ├── games/                the Games tab for members
     │   ├── pages/            games (tracking list), library (/games/library)
     │   ├── ui/               tracked-card, library-card
@@ -180,6 +184,14 @@ The **track control** appears on the game page (status select and pin) and, for 
 (status only). *Track* adds the game as Playing; the select changes the status or stops tracking after a
 confirmation. Guests see *Sign in to track* on the game page.
 
+## Profile
+
+The Profile tab shows the initial avatar, display name, player id (copy button, grouped in fours) and country. Rows
+open sheets to change the display name (`PATCH /api/currentuser/username`; names don't need to be unique) and the
+country (`GET /api/countries`, `PATCH /api/currentuser/country`, only used for country statistics). The e-mail is
+shown as private. *Sign out* lives here; *Delete account* asks you to type DELETE, then calls
+`DELETE /api/currentuser?confirm=true` and signs out.
+
 ## My library
 
 `/games/library` lists the games owned on linked accounts (`GET /api/currentuser/games`), 48 at a time with
@@ -283,6 +295,10 @@ are example data.
 6. Library, in two branches:
    - `feat/library-list` ✓: My library grid with name filter, five sorts and paging
    - `feat/collections` ✓: collections (create, rename, delete, browse, add and remove games)
-7. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
+7. Profile, in several branches:
+   - `feat/profile-account` ✓: header, display name, country, e-mail, sign out, delete account
+   - `feat/profile-privacy`: public profile switches
+   - `feat/profile-platforms`: Steam (connected state, Sync now, automatic sync, unlink), Xbox and PlayStation soon
+   - `feat/profile-avatar`: avatar picker (generated, gallery, upload)
 8. `feat/public-profile`: public profile and shelves
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
