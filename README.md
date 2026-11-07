@@ -47,6 +47,8 @@ src/app
 │   ├── wordmark/             cube L + AVREL
 │   ├── cta-card/             call to action with the animated big L
 │   ├── chip/                 toggle or removable pill button
+│   ├── progress-bar/         tiered progress bar (+ progressTier, progressPercent)
+│   ├── perfect-diamond/      hue-shifting diamond for 100% games
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
@@ -58,8 +60,11 @@ src/app
     │   └── models/           AuthTask, EmailAuthMode
     ├── game/
     │   ├── pages/            game (/games/:id-slug)
-    │   ├── data-access/      GameDetailsApi → GET /api/games/{id}, GamePage, game-facts, messages
-    │   └── models/           GameDetails, GamePageState
+    │   ├── ui/               progress-card, achievement-item
+    │   ├── data-access/      GameDetailsApi → GET /api/games/{id}, GameAchievementsApi → …/achievements,
+    │   │                     GamePage, GameAchievementsStore (filter, show all, reveal), game-facts, messages
+    │   └── models/           GameDetails, GamePageState, Achievement, GameAchievements, AchievementFilter,
+    │                         AchievementsState
     ├── home/
     │   ├── pages/            home (members, placeholder), guest-home (discover)
     │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), messages
@@ -134,6 +139,12 @@ under the title; Details lists developer, publisher, franchise, price (free or p
 controller and accessibility, taken from the game's grouped store features. Tapping a tag opens search
 filtered by it. Systems come from the backend's `availableOn`, or PC when Steam lists a desktop platform.
 
+Achievements come from `GET /api/games/{id}/achievements`. Everyone sees the list with worldwide percentages
+(first 10, then *Show all*). Signed in, the token adds a **Your progress** card (tiered bar, diamond at 100%),
+unlock dates, the percentage in your country (“—” until enough players there own the game) and an
+All / Unlocked / Locked filter. Hidden achievements stay blurred until tapped, unless you unlocked them.
+The percentage on the bar is rounded down, so it only reads 100% when everything is unlocked.
+
 ## Logo modes (`<app-cube-logo mode="…">`)
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs
@@ -189,7 +200,7 @@ are example data.
    - `feat/search-filters` ✓: filters screen (tags, franchise, developer, publisher, modes, system)
 3. Game page, in two branches:
    - `feat/game-page` ✓: cover, title, release date, rating, systems, about, tags, genres, details
-   - `feat/game-achievements`: your progress and the achievement list with worldwide and country percentages
+   - `feat/game-achievements` ✓: your progress and the achievement list with worldwide and country percentages
 4. `feat/tracking`: tracked list, statuses, pins, signed-in Home
 5. `feat/library`: My library and collections
 6. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
