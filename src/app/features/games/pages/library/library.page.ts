@@ -14,7 +14,7 @@ import { MyLibrary } from '../../data-access/my-library';
 import { Collection } from '../../models/collection.model';
 import { LibraryCard } from '../../ui/library-card/library-card';
 
-/** /games/library: the games the member owns on linked accounts, with a name filter, five sorts and paging. */
+/** /library: the games the member owns on linked accounts, with a name filter, five sorts and paging. */
 @Component({
   selector: 'app-library-page',
   changeDetection: ChangeDetectionStrategy.OnPush,

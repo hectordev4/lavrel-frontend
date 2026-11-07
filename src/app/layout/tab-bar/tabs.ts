@@ -5,8 +5,8 @@ export const TABS: readonly Tab[] = [
   {
     path: '/games',
     label: 'Games',
-    // The Games tab and My library, but not game pages (/games/{id}-{slug}).
-    activeOn: /^\/games(\/library)?$/,
+    // The Games tab and My library, but not game pages (/games/{slug}).
+    activeOn: /^\/(games|library)$/,
     icon: 'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',
   },
   { path: '/search', label: 'Search', icon: 'M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5' },
