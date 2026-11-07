@@ -33,8 +33,11 @@ src/app
 │   ├── auth/                 AuthGateway (port), FirebaseAuthGateway + mapper (adapter),
 │   │   │                     AuthStore, AuthSession (sign-out), GuestMode, guards, interceptor, AuthError
 │   │   └── models/           AuthUser, AuthProvider, AuthErrorCode, AuthStatus, AuthPlace
-│   ├── api/                  CurrentUserApi → GET /api/currentuser, GameCatalogApi → GET /api/games
-│   │   └── models/           CurrentUser, GameCard, GamePage, GameSearchParams, GameSort, GameSystem
+│   ├── api/                  CurrentUserApi → GET /api/currentuser, GameCatalogApi → GET /api/games,
+│   │   │                     TrackingApi → /api/currentuser/tracked (list, status, pins)
+│   │   └── models/           CurrentUser, GameCard, GamePage, GameSearchParams, GameSort, GameSystem,
+│   │                         TrackedGame, TrackingStatus, NextAchievement
+│   ├── tracking/             TrackedGames (shared store of the member's tracked games), messages
 │   ├── config/               AppEnv model, APP_ENV token
 │   └── boot.ts               splash → welcome hand-off
 ├── layout/                   the frame around in-app pages
@@ -145,6 +148,13 @@ unlock dates, the percentage in your country (“—” until enough players the
 All / Unlocked / Locked filter. Hidden achievements stay blurred until tapped, unless you unlocked them.
 The percentage on the bar is rounded down, so it only reads 100% when everything is unlocked.
 
+## Tracking
+
+Members add catalog games (owned or not) to their tracking list with a status: Playing, Backlog, Completed or
+Dropped, and pin up to 20 of them to Home (quick access). `TrackedGames` in `core/tracking` loads the list once on
+first use and every screen reads from it, so a change on one screen shows everywhere. It clears itself on
+sign-out. Actions return an error message or null; a 21st pin is stopped before calling the backend.
+
 ## Logo modes (`<app-cube-logo mode="…">`)
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs
@@ -201,7 +211,10 @@ are example data.
 3. Game page, in two branches:
    - `feat/game-page` ✓: cover, title, release date, rating, systems, about, tags, genres, details
    - `feat/game-achievements` ✓: your progress and the achievement list with worldwide and country percentages
-4. `feat/tracking`: tracked list, statuses, pins, signed-in Home
+4. Tracking, in three branches:
+   - `feat/tracking-core` ✓: tracking API and the shared TrackedGames store
+   - `feat/tracking-list`: the Games tab for members (statuses, sort, pins, easiest next achievements)
+   - `feat/tracking-actions`: Track and pin on the game page and on search results
 5. `feat/library`: My library and collections
 6. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
 7. `feat/public-profile`: public profile and shelves
