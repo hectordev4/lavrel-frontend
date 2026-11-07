@@ -1,0 +1,74 @@
+<main class="page library">
+  <div class="intro">
+    <h1>Games</h1>
+    <span class="sub">Games you own on your linked accounts</span>
+  </div>
+
+  <nav class="segmented" aria-label="Games views">
+    <a routerLink="/games">Tracked</a>
+    <a routerLink="/games/library" aria-current="page" class="on">My library</a>
+  </nav>
+
+  @if (accounts.loadState() === 'ready' && !accounts.steam()) {
+    <app-cta-card
+      heading="Connect your Steam account"
+      text="Your library fills in from your linked accounts: games, playtime and achievements."
+    >
+      <button type="button" class="btn btn-primary" (click)="connectSteam()">Connect Steam</button>
+    </app-cta-card>
+  } @else {
+    <div class="tools">
+      <label class="box">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
+        <span class="visually-hidden">Find a game in your library</span>
+        <input #box type="search" placeholder="Find in your library" autocomplete="off" (input)="onType(box.value)" />
+      </label>
+      <label class="sort">
+        <span class="visually-hidden">Sort by</span>
+        <select (change)="library.setQuery({ sort: $any($event.target).value })">
+          @for (o of sortOptions; track o.value) {
+            <option [value]="o.value" [selected]="o.value === library.query().sort">{{ o.label }}</option>
+          }
+        </select>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+      </label>
+    </div>
+
+    @switch (library.state().kind) {
+      @case ('loading') {
+        <div class="grid" role="status" aria-label="Loading your library">
+          @for (i of [1, 2, 3, 4]; track i) {
+            <div class="skeleton"></div>
+          }
+        </div>
+      }
+      @case ('error') {
+        <div class="failed">
+          <p class="alert" role="alert">{{ $any(library.state()).message }}</p>
+          <button type="button" class="btn btn-secondary" (click)="library.reload()">Try again</button>
+        </div>
+      }
+      @case ('ready') {
+        @if ($any(library.state()).games.length === 0) {
+          <p class="empty">
+            {{ library.query().q ? 'No games in your library match “' + library.query().q + '”.' : 'No games yet. Sync Steam from Home to bring them in.' }}
+          </p>
+        } @else {
+          <div class="grid">
+            @for (game of $any(library.state()).games; track game.gameId) {
+              <app-library-card [game]="game" />
+            }
+          </div>
+          @if ($any(library.state()).moreError) {
+            <p class="alert" role="alert">{{ $any(library.state()).moreError }}</p>
+          }
+          @if ($any(library.state()).hasMore) {
+            <button type="button" class="btn btn-secondary" [disabled]="$any(library.state()).loadingMore" (click)="library.loadMore()">
+              {{ $any(library.state()).loadingMore ? 'Loading…' : 'Show more' }}
+            </button>
+          }
+        }
+      }
+    }
+  }
+</main>

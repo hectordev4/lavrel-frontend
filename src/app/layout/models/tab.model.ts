@@ -4,6 +4,6 @@ export interface Tab {
   label: string;
   /** SVG path data for a 24×24 stroke icon. */
   icon: string;
-  /** Active only on this exact address (Games, not the game pages under /games/…). */
-  exact?: boolean;
+  /** Addresses where the tab is lit (path only, no query). Defaults to the path and everything under it. */
+  activeOn?: RegExp;
 }

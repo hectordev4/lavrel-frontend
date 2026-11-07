@@ -1,0 +1,27 @@
+<article class="card">
+  <a class="cover-link" [routerLink]="link()" tabindex="-1" aria-hidden="true">
+    <app-game-cover class="cover" [src]="game().coverImageUrl" [title]="game().title" />
+  </a>
+  <div class="head">
+    <a class="title" [routerLink]="link()">{{ game().title }}</a>
+    <ng-content />
+  </div>
+  @if (game().total > 0) {
+    <app-progress-bar [percent]="percent()" [label]="game().title + ' achievements unlocked'" />
+  }
+  <span class="meta">
+    <span>
+      @if (game().total > 0) {
+        {{ game().unlocked }}/{{ game().total }} ·
+      }
+      {{ playtime() }}
+    </span>
+    @if (game().total > 0) {
+      @if (percent() === 100) {
+        <span class="perfect"><app-perfect-diamond label="" /><span class="number">100%</span></span>
+      } @else {
+        <span class="number">{{ percent() }}%</span>
+      }
+    }
+  </span>
+</article>

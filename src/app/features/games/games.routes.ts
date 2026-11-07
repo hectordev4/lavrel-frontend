@@ -10,7 +10,6 @@ export const GAMES_ROUTES: Routes = [
   {
     path: 'library',
     title: 'My library · Lavrel',
-    data: { heading: 'My library', branch: 'feat/library' },
-    loadComponent: () => import('../../layout/placeholder-page/placeholder-page').then((m) => m.PlaceholderPage),
+    loadComponent: () => import('./pages/library/library.page').then((m) => m.LibraryPage),
   },
 ];
