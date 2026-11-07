@@ -1,0 +1,12 @@
+.linked {
+  min-height: calc(100dvh - 10rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.progress {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+}
