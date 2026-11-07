@@ -91,9 +91,10 @@ src/app
     │                         AchievementsState
     ├── home/
     │   ├── pages/            home (members), guest-home (discover)
-    │   ├── ui/               pinned-row, almost-tile
-    │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), AlmostThere, messages
-    │   └── models/           HomeState, DiscoverSection, AlmostThereState
+    │   ├── ui/               pinned-row, almost-tile, stats-row, recent-unlock
+    │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), AlmostThere,
+    │   │                     MemberOverviewApi → /api/currentuser/stats, …/achievements/recent, MemberOverview, messages
+    │   └── models/           HomeState, DiscoverSection, AlmostThereState, MemberStats, RecentUnlock
     └── search/
         ├── pages/            search (box + suggestions), results, filters (full screen)
         ├── ui/               suggestion-list, result-card, typeahead-field
@@ -228,8 +229,11 @@ progress, reloaded after each sync). Until Steam is connected, a *Connect Steam*
 *Popular on Lavrel* and *New releases* follow. Everything waits for the first `GET /api/currentuser`, which creates
 the user on the backend.
 
-Totals (achievements, average completion, perfect games) and recent unlocks are not on Home yet: they need backend
-endpoints for the member's own stats and latest unlocks.
+Under the greeting, **totals** (`GET /api/currentuser/stats`): achievements unlocked, average completion (over games
+with at least one unlock; "—" while there are none) and perfect games with the diamond, shown once you own games.
+After Almost there, **Recent unlocks** (`GET /api/currentuser/achievements/recent`, 3 newest): icon, name, game (links
+to its page), when, and the share of players who have it, in gold as *Rare* under 5%. Hidden achievements aren't
+blurred here: they're your own unlocks. Both reload after each sync. An *All* link waits for a paged list.
 
 ## Linking and syncing Steam
 
@@ -307,6 +311,8 @@ are example data.
 5. Signed-in Home, in two branches:
    - `feat/platform-accounts` ✓: linked accounts, Connect Steam, Sync now, the /steam/linked return page
    - `feat/member-home` ✓: greeting, Sync now, Playing now (pinned), Almost there
+   - `feat/game-slugs` ✓: game pages at /games/{slug}, My library at /library
+   - `feat/home-stats` ✓: totals and recent unlocks
 6. Library, in two branches:
    - `feat/library-list` ✓: My library grid with name filter, five sorts and paging
    - `feat/collections` ✓: collections (create, rename, delete, browse, add and remove games)
