@@ -1,0 +1,44 @@
+@if (!empty()) {
+  <div class="panel">
+    @if (results().games.length) {
+      <section aria-labelledby="sg-games">
+        <h2 id="sg-games">Games</h2>
+        @for (game of results().games; track game.id) {
+          <a class="item" [routerLink]="gameLink(game)">
+            <app-game-cover class="cover" [src]="game.coverImageUrl" [title]="game.title" />
+            <span class="text">
+              <span class="name">{{ game.title }}</span>
+              @if (game.releaseDate) {
+                <span class="meta">{{ game.releaseDate.slice(0, 4) }}</span>
+              }
+            </span>
+          </a>
+        }
+      </section>
+    }
+    @if (results().tags.length) {
+      <section aria-labelledby="sg-tags">
+        <h2 id="sg-tags">Tags</h2>
+        @for (tag of results().tags; track tag.id) {
+          <a class="item" routerLink="/search/results" [queryParams]="{ tag: filterValue(tag.id, tag.name) }">
+            <span class="badge" aria-hidden="true">#</span>
+            <span class="text"><span class="name">{{ tag.name }}</span></span>
+            <span class="count">{{ tag.gameCount }} games</span>
+          </a>
+        }
+      </section>
+    }
+    @if (results().franchises.length) {
+      <section aria-labelledby="sg-franchises">
+        <h2 id="sg-franchises">Franchises</h2>
+        @for (franchise of results().franchises; track franchise.id) {
+          <a class="item" routerLink="/search/results" [queryParams]="{ franchise: filterValue(franchise.id, franchise.name) }">
+            <span class="badge" aria-hidden="true">F</span>
+            <span class="text"><span class="name">{{ franchise.name }}</span></span>
+            <span class="count">{{ franchise.gameCount }} games</span>
+          </a>
+        }
+      </section>
+    }
+  </div>
+}
