@@ -19,6 +19,12 @@
         <h1>{{ profile.username() ?? 'Welcome' }}</h1>
       </section>
 
+      @if (overview.stats(); as s) {
+        @if (s.gamesOwned > 0) {
+          <app-stats-row [stats]="s" />
+        }
+      }
+
       @if (accounts.message(); as m) {
         <p class="alert" role="alert">{{ m }}</p>
       }
@@ -96,6 +102,17 @@
           <div class="carousel">
             @for (game of $any(almost.state()).games; track game.gameId) {
               <app-almost-tile [game]="game" />
+            }
+          </div>
+        </section>
+      }
+
+      @if (overview.recent()?.length) {
+        <section aria-labelledby="recent-title">
+          <div class="section-head"><h2 id="recent-title">Recent unlocks</h2></div>
+          <div>
+            @for (u of overview.recent(); track u.achievementId) {
+              <app-recent-unlock [unlock]="u" />
             }
           </div>
         </section>

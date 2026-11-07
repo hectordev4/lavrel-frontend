@@ -17,8 +17,11 @@ import { relativeTime } from '../../../../shared/utils/relative-time';
 import { AlmostThere } from '../../data-access/almost-there';
 import { Discover } from '../../data-access/discover';
 import { HomeProfile } from '../../data-access/home-profile';
+import { MemberOverview } from '../../data-access/member-overview';
 import { AlmostTile } from '../../ui/almost-tile/almost-tile';
 import { PinnedRow } from '../../ui/pinned-row/pinned-row';
+import { RecentUnlock } from '../../ui/recent-unlock/recent-unlock';
+import { StatsRow } from '../../ui/stats-row/stats-row';
 
 /**
  * Home for members: greeting, Steam sync (or Connect Steam), the pinned games, the games closest to 100%,
@@ -27,8 +30,18 @@ import { PinnedRow } from '../../ui/pinned-row/pinned-row';
 @Component({
   selector: 'app-home-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, CtaCard, CubeLogo, GameRow, GameTile, AlmostTile, PinnedRow],
-  providers: [HomeProfile, AlmostThere, Discover],
+  imports: [
+    RouterLink,
+    CtaCard,
+    CubeLogo,
+    GameRow,
+    GameTile,
+    AlmostTile,
+    PinnedRow,
+    RecentUnlock,
+    StatsRow,
+  ],
+  providers: [HomeProfile, AlmostThere, Discover, MemberOverview],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
 })
@@ -38,6 +51,7 @@ export class HomePage {
   protected readonly tracked = inject(TrackedGames);
   protected readonly almost = inject(AlmostThere);
   protected readonly discover = inject(Discover);
+  protected readonly overview = inject(MemberOverview);
 
   protected readonly maxPinned = MAX_PINNED;
   protected readonly greeting = greetingFor(new Date());
@@ -63,10 +77,14 @@ export class HomePage {
         this.tracked.ensureLoaded();
       });
     });
-    // Almost there: once ready, and again whenever a sync finishes.
+    // Almost there, totals and recent unlocks: once ready, and again whenever a sync finishes.
     effect(() => {
       this.accounts.syncVersion();
-      if (this.ready()) untracked(() => this.almost.load());
+      if (this.ready())
+        untracked(() => {
+          this.almost.load();
+          this.overview.load();
+        });
     });
     // Popular and new games only for the first visit.
     effect(() => {
