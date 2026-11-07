@@ -17,6 +17,31 @@
       <button type="button" class="btn btn-primary" (click)="connectSteam()">Connect Steam</button>
     </app-cta-card>
   } @else {
+    <div class="collections" role="group" aria-label="Collections">
+      <app-chip label="All games" [pressed]="library.query().collection === null" (activate)="browse(null)" />
+      @for (c of collections.list(); track c.id) {
+        <app-chip [label]="c.name" [count]="c.gameCount" [pressed]="library.query().collection === c.id" (activate)="browse(c.id)" />
+      }
+      <button type="button" class="new" (click)="openCreate()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
+        <span>New collection</span>
+      </button>
+    </div>
+
+    @if (current(); as c) {
+      <div class="current">
+        <span>{{ c.name }} · {{ c.gameCount }} {{ c.gameCount === 1 ? 'game' : 'games' }}</span>
+        <span class="current-actions">
+          <button type="button" class="link-btn" (click)="openRename()">Rename</button>
+          <button type="button" class="link-btn danger" (click)="deleteCurrent()">Delete</button>
+        </span>
+      </div>
+    }
+
+    @if (message(); as m) {
+      <p class="notice" role="status">{{ m }}</p>
+    }
+
     <div class="tools">
       <label class="box">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
@@ -51,12 +76,34 @@
       @case ('ready') {
         @if ($any(library.state()).games.length === 0) {
           <p class="empty">
-            {{ library.query().q ? 'No games in your library match “' + library.query().q + '”.' : 'No games yet. Sync Steam from Home to bring them in.' }}
+            @if (library.query().q) {
+              No games here match “{{ library.query().q }}”.
+            } @else if (current()) {
+              {{ current()!.name }} is empty. Open a game’s menu in All games to add it.
+            } @else {
+              No games yet. Sync Steam from Home to bring them in.
+            }
           </p>
         } @else {
           <div class="grid">
             @for (game of $any(library.state()).games; track game.gameId) {
-              <app-library-card [game]="game" />
+              <app-library-card [game]="game">
+                <details class="menu">
+                  <summary [attr.aria-label]="'More for ' + game.title">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01 M12 12h.01 M19 12h.01" /></svg>
+                  </summary>
+                  <div class="menu-panel">
+                    @if (collections.list().length) {
+                      <button type="button" (click)="closeMenu($event); adding.set(game)">Add to collection…</button>
+                    } @else {
+                      <button type="button" (click)="closeMenu($event); openCreate()">Create a collection first</button>
+                    }
+                    @if (current(); as c) {
+                      <button type="button" (click)="closeMenu($event); removeFromCurrent(game)">Remove from {{ c.name }}</button>
+                    }
+                  </div>
+                </details>
+              </app-library-card>
             }
           </div>
           @if ($any(library.state()).moreError) {
@@ -72,3 +119,42 @@
     }
   }
 </main>
+
+<app-modal heading="Rename collection" [open]="renaming()" (closed)="renaming.set(false)">
+  <form class="form" (submit)="$event.preventDefault(); rename(newName.value)">
+    <label class="field">
+      <span>Name</span>
+      <input #newName type="text" maxlength="40" autocomplete="off" [value]="current()?.name ?? ''" (input)="formError.set(null)" />
+    </label>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary">Save name</button>
+  </form>
+</app-modal>
+
+<app-modal [heading]="'Add ' + (adding()?.title ?? '') + ' to…'" [open]="adding() !== null" (closed)="adding.set(null)">
+  <ul class="pick">
+    @for (c of collections.list(); track c.id) {
+      <li>
+        <button type="button" (click)="addTo(c)">
+          <span>{{ c.name }}</span>
+          <span class="count">{{ c.gameCount }} games</span>
+        </button>
+      </li>
+    }
+  </ul>
+</app-modal>
+
+<app-modal heading="New collection" [open]="creating()" (closed)="creating.set(false)">
+  <form class="form" (submit)="$event.preventDefault(); create(name.value)">
+    <label class="field">
+      <span>Name</span>
+      <input #name type="text" maxlength="40" autocomplete="off" placeholder="Cozy games" (input)="formError.set(null)" />
+    </label>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary">Create collection</button>
+  </form>
+</app-modal>
