@@ -35,9 +35,11 @@ src/app
 │   │   └── models/           AuthUser, AuthProvider, AuthErrorCode, AuthStatus, AuthPlace
 │   ├── api/                  CurrentUserApi → GET /api/currentuser, GameCatalogApi → GET /api/games,
 │   │   │                     TrackingApi → /api/currentuser/tracked (list, status, pins),
-│   │                     AccountsApi → /api/currentuser/accounts (list, link, sync)
+│   │                     AccountsApi → /api/currentuser/accounts (list, link, sync),
+│   │                     LibraryApi → GET /api/currentuser/games
 │   │   └── models/           CurrentUser, GameCard, GamePage, GameSearchParams, GameSort, GameSystem,
-│   │                         TrackedGame, TrackingStatus, NextAchievement, Platform, PlatformAccount, SyncResult
+│   │                         TrackedGame, TrackingStatus, NextAchievement, Platform, PlatformAccount, SyncResult,
+│   │                         LibraryGame, LibraryPage, LibraryParams, LibrarySort
 │   ├── tracking/             TrackedGames (shared store of the member's tracked games), status labels, messages
 │   ├── platforms/            PlatformAccounts (linked accounts, link, sync with pending rounds), messages
 │   ├── config/               AppEnv model, APP_ENV token
@@ -80,9 +82,10 @@ src/app
     │   └── models/           GameDetails, GamePageState, Achievement, GameAchievements, AchievementFilter,
     │                         AchievementsState
     ├── home/
-    │   ├── pages/            home (members, placeholder), guest-home (discover)
-    │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), messages
-    │   └── models/           HomeState, DiscoverSection
+    │   ├── pages/            home (members), guest-home (discover)
+    │   ├── ui/               pinned-row, almost-tile
+    │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), AlmostThere, messages
+    │   └── models/           HomeState, DiscoverSection, AlmostThereState
     └── search/
         ├── pages/            search (box + suggestions), results, filters (full screen)
         ├── ui/               suggestion-list, result-card, typeahead-field
@@ -175,6 +178,18 @@ The **track control** appears on the game page (status select and pin) and, for 
 (status only). *Track* adds the game as Playing; the select changes the status or stops tracking after a
 confirmation. Guests see *Sign in to track* on the game page.
 
+## Home for members
+
+In order: a greeting with the username, the Steam line (*synced 2 hours ago* and **Sync now**, which shows how many
+games came in), **Playing now** (pinned games in their pin order, with the tiered bar and the diamond at 100%,
+*Edit* opening Games and *Pin a game*), and **Almost there** (owned games closest to 100%, from the library sorted by
+progress, reloaded after each sync). Until Steam is connected, a *Connect Steam* card replaces the Steam line and
+*Popular on Lavrel* and *New releases* follow. Everything waits for the first `GET /api/currentuser`, which creates
+the user on the backend.
+
+Totals (achievements, average completion, perfect games) and recent unlocks are not on Home yet: they need backend
+endpoints for the member's own stats and latest unlocks.
+
 ## Linking and syncing Steam
 
 1. *Connect Steam* calls `POST /api/currentuser/accounts/steam/link` and sends the browser to the `redirectUrl`.
@@ -250,7 +265,7 @@ are example data.
    - `feat/tracking-actions` ✓: Track and pin on the game page and on search results
 5. Signed-in Home, in two branches:
    - `feat/platform-accounts` ✓: linked accounts, Connect Steam, Sync now, the /steam/linked return page
-   - `feat/member-home`: greeting, Sync now, Playing now (pinned), Almost there
+   - `feat/member-home` ✓: greeting, Sync now, Playing now (pinned), Almost there
 6. `feat/library`: My library and collections
 7. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
 8. `feat/public-profile`: public profile and shelves
