@@ -3,7 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { GameSort } from '../../../../core/api/models/game-sort.model';
+import { TrackingStatus } from '../../../../core/api/models/tracking-status.model';
+import { AuthStore } from '../../../../core/auth/auth.store';
+import { TrackedGames } from '../../../../core/tracking/tracked-games';
 import { Chip } from '../../../../shared/ui/chip/chip';
+import { TrackControl } from '../../../../shared/ui/track-control/track-control';
 import { MODE_LABELS, SORT_LABELS, SYSTEM_LABELS } from '../../data-access/search-labels';
 import { activeFilterCount, emptyFilters, parseFilters, toQueryParams } from '../../data-access/search-query';
 import { SearchResults } from '../../data-access/search-results';
@@ -21,7 +25,7 @@ interface ActiveChip {
 @Component({
   selector: 'app-results-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Chip, ResultCard],
+  imports: [RouterLink, Chip, ResultCard, TrackControl],
   providers: [SearchResults],
   templateUrl: './results.page.html',
   styleUrl: './results.page.scss',
@@ -29,6 +33,9 @@ interface ActiveChip {
 export class ResultsPage {
   private readonly router = inject(Router);
   protected readonly results = inject(SearchResults);
+  protected readonly tracked = inject(TrackedGames);
+  protected readonly signedIn = inject(AuthStore).isVerified;
+  protected readonly trackMessage = signal<string | null>(null);
   protected readonly filters = signal<SearchFilters>(emptyFilters());
 
   protected readonly filterCount = computed(() => activeFilterCount(this.filters()));
@@ -42,6 +49,7 @@ export class ResultsPage {
   protected readonly chips = computed<ActiveChip[]>(() => chipsFor(this.filters()));
 
   constructor() {
+    this.tracked.ensureLoaded();
     inject(ActivatedRoute)
       .queryParamMap.pipe(map(parseFilters), takeUntilDestroyed())
       .subscribe((filters) => {
@@ -52,6 +60,15 @@ export class ResultsPage {
 
   protected apply(filters: SearchFilters): void {
     void this.router.navigate([], { queryParams: toQueryParams(filters) });
+  }
+
+  protected async track(gameId: number, status: TrackingStatus): Promise<void> {
+    this.trackMessage.set(await this.tracked.track(gameId, status));
+  }
+
+  protected async untrack(gameId: number, title: string): Promise<void> {
+    if (!confirm(`Stop tracking ${title}?`)) return;
+    this.trackMessage.set(await this.tracked.untrack(gameId));
   }
 
   protected changeSort(value: string): void {
