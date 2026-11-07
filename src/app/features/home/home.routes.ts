@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { verifiedGuard } from '../../core/auth/auth.guards';
+import { memberGuard } from '../../core/auth/auth.guards';
 
 export const HOME_ROUTES: Routes = [
   {
     path: 'home',
-    canMatch: [verifiedGuard],
+    canMatch: [memberGuard],
     title: 'Lavrel',
     loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
   },

@@ -4,6 +4,7 @@ import { AuthGateway } from '../../../core/auth/auth-gateway';
 import { AuthSession } from '../../../core/auth/auth-session';
 import { AuthUser } from '../../../core/auth/models/auth-user.model';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { GuestMode } from '../../../core/auth/guest-mode';
 import { AuthTask } from '../models/auth-task.model';
 import { messageFor } from './auth-messages';
 
@@ -16,6 +17,7 @@ export class AuthFlow {
   private readonly gateway = inject(AuthGateway);
   private readonly store = inject(AuthStore);
   private readonly session = inject(AuthSession);
+  private readonly guestMode = inject(GuestMode);
   private readonly router = inject(Router);
 
   private readonly _busy = signal<AuthTask | null>(null);
@@ -83,7 +85,14 @@ export class AuthFlow {
     return this.run('sign-out', () => this.session.signOut());
   }
 
+  /** "Skip for now": open the app without an account. */
+  browseWithoutAccount(): Promise<boolean> {
+    this.guestMode.enable();
+    return this.router.navigateByUrl('/home');
+  }
+
   private async enter(user: AuthUser): Promise<void> {
+    this.guestMode.clear();
     this.store.set(user);
     await this.router.navigateByUrl(user.emailVerified ? '/home' : '/verify-email');
   }
