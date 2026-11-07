@@ -55,10 +55,15 @@ src/app
     │   ├── ui/               google-button
     │   ├── data-access/      AuthFlow facade, error messages
     │   └── models/           AuthTask, EmailAuthMode
-    └── home/
-        ├── pages/            home (members, placeholder), guest-home (discover)
-        ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), messages
-        └── models/           HomeState, DiscoverSection
+    ├── home/
+    │   ├── pages/            home (members, placeholder), guest-home (discover)
+    │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), messages
+    │   └── models/           HomeState, DiscoverSection
+    └── search/
+        ├── pages/            search (box + suggestions)
+        ├── ui/               suggestion-list
+        ├── data-access/      QuickSearchApi → GET /api/search, SearchSuggestions (debounced), messages
+        └── models/           QuickResults, TagOption, CreatorOption, CreatorRole, SuggestionsState
 ```
 
 ### Conventions
@@ -88,8 +93,14 @@ tabs show a sign-in screen.
 | `/` | welcome, or home after *Skip for now* | verify-email | home |
 | `/welcome`, `/sign-in`, `/register` | ✓ | verify-email | home |
 | `/home` | discover home | verify-email | member home |
-| `/search`, `/games/:id-slug` | ✓ | verify-email | ✓ |
+| `/search`, `/search/results`, `/games/:id-slug` | ✓ | verify-email | ✓ |
 | `/games`, `/profile` | sign-in screen | verify-email | ✓ |
+
+## Search
+
+Typing in the Search tab suggests up to 5 games, 5 tags and 3 franchises after a 250 ms pause (2 characters
+minimum). Filters travel in the address as `id:name` (for example `/search/results?tag=1716:Roguelike`), so
+the results page can show readable chips without another request.
 
 ## Logo modes (`<app-cube-logo mode="…">`)
 
@@ -140,7 +151,10 @@ are example data.
 ## Roadmap (one `feat/*` branch each, merged into `dev`)
 
 1. `feat/app-shell` ✓: header, tab bar, browsing without an account, call-to-action cards, discover home
-2. `feat/search`: suggestions, results, filters (tags, franchise, developer, publisher, modes, system)
+2. Search, in three branches:
+   - `feat/search-suggestions` ✓: search box with grouped suggestions (games, tags, franchises)
+   - `feat/search-results`: results with paging, sort and removable filter chips
+   - `feat/search-filters`: filters screen (tags, franchise, developer, publisher, modes, system)
 3. `feat/game-page`: details, achievements with worldwide and country percentages
 4. `feat/tracking`: tracked list, statuses, pins, signed-in Home
 5. `feat/library`: My library and collections
