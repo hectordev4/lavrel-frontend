@@ -6,7 +6,7 @@
 
   <nav class="segmented" aria-label="Games views">
     <a routerLink="/games">Tracked</a>
-    <a routerLink="/games/library" aria-current="page" class="on">My library</a>
+    <a routerLink="/library" aria-current="page" class="on">My library</a>
   </nav>
 
   @if (accounts.loadState() === 'ready' && !accounts.steam()) {

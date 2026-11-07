@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { GameCard } from '../../../../core/api/models/game-card.model';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
-import { gameLink } from '../../../../shared/ui/game-row/game-row';
+import { gameLink } from '../../../../shared/utils/game-link';
 import { MODE_LABELS, SYSTEM_LABELS } from '../../data-access/search-labels';
 
 /** A search result: cover, title, year and modes, rating, systems and top tags. Content inside the tag is its action. */
@@ -17,7 +17,7 @@ import { MODE_LABELS, SYSTEM_LABELS } from '../../data-access/search-labels';
 export class ResultCard {
   readonly game = input.required<GameCard>();
 
-  protected readonly link = computed(() => gameLink(this.game()));
+  protected readonly link = computed(() => gameLink(this.game().slug));
   protected readonly year = computed(() => this.game().releaseDate?.slice(0, 4) ?? null);
   protected readonly modes = computed(() => {
     const m = this.game().modes;

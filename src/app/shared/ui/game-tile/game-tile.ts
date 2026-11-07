@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { GameCard } from '../../../core/api/models/game-card.model';
 import { GameCover } from '../game-cover/game-cover';
-import { gameLink } from '../game-row/game-row';
+import { gameLink } from '../../utils/game-link';
 
 /** A game in a sideways-scrolling row: big cover, title, release date. */
 @Component({
@@ -16,5 +16,5 @@ import { gameLink } from '../game-row/game-row';
 export class GameTile {
   readonly game = input.required<GameCard>();
 
-  protected readonly link = computed(() => gameLink(this.game()));
+  protected readonly link = computed(() => gameLink(this.game().slug));
 }

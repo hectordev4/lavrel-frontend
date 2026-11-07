@@ -7,7 +7,7 @@ import { GameSystem } from './game-system.model';
 export interface GameCard {
   id: number;
   title: string;
-  slug?: string;
+  slug: string;
   coverImageUrl: string | null;
   releaseDate: string | null;
   reviewCount: number | null;

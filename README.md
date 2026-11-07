@@ -59,7 +59,7 @@ src/app
 │   ├── track-control/        Track / status select / Stop tracking / pin (presentational)
 │   ├── modal/                bottom sheet on the native <dialog>
 │   ├── switch/               on/off setting (role="switch")
-├── shared/utils/             relativeTime ("2 hours ago")
+├── shared/utils/             relativeTime ("2 hours ago"), gameLink (/games/{slug})
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
@@ -77,13 +77,13 @@ src/app
     │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, PrivacyApi, messages
     │   └── models/           Country, AccountState, ProfileSettings
     ├── games/                the Games tab for members
-    │   ├── pages/            games (tracking list), library (/games/library)
+    │   ├── pages/            games (tracking list), library (/library)
     │   ├── ui/               tracked-card, library-card
     │   ├── data-access/      tracked-list (filter and sort), MyLibrary (paging), CollectionsApi, MyCollections,
     │   │                     library labels, messages
     │   └── models/           StatusFilter, TrackedSort, LibraryQuery, LibraryState, Collection
     ├── game/
-    │   ├── pages/            game (/games/:id-slug)
+    │   ├── pages/            game (/games/:slug)
     │   ├── ui/               progress-card, achievement-item
     │   ├── data-access/      GameDetailsApi → GET /api/games/{id}, GameAchievementsApi → …/achievements,
     │   │                     GamePage, GameAchievementsStore (filter, show all, reveal), game-facts, messages
@@ -131,8 +131,8 @@ tabs show a sign-in screen.
 | `/` | welcome, or home after *Skip for now* | verify-email | home |
 | `/welcome`, `/sign-in`, `/register` | ✓ | verify-email | home |
 | `/home` | discover home | verify-email | member home |
-| `/search`, `/search/results`, `/search/filters`, `/games/:id-slug` | ✓ | verify-email | ✓ |
-| `/games`, `/profile` | sign-in screen | verify-email | ✓ |
+| `/search`, `/search/results`, `/search/filters`, `/games/:slug` | ✓ | verify-email | ✓ |
+| `/games`, `/library`, `/profile` | sign-in screen | verify-email | ✓ |
 
 ## Search
 
@@ -159,7 +159,10 @@ Changes stay in a draft until *Show results*; *Clear all* keeps the typed query.
 
 ## Game page
 
-`/games/{id}-{slug}`: only the id matters, the slug keeps addresses readable. Public. The release date shows once,
+`/games/{slug}`, loaded with `GET /api/games/slug/{slug}`; the returned id is used for the achievements, tracking
+and guides. Slugs are unique and never change (a repeated title gets `-2`, `-3`…). Every link to a game goes
+through `gameLink(slug)` in `shared/utils`. **Nothing else lives under `/games/`** besides the Games tab itself:
+any other page (My library, stats…) gets its own top-level path, so no slug can clash with it. Public. The release date shows once,
 under the title; Details lists developer, publisher, franchise, price (free or paid), systems, player modes,
 controller and accessibility, taken from the game's grouped store features. Tapping a tag opens search
 filtered by it. Systems come from the backend's `availableOn`, or PC when Steam lists a desktop platform.
@@ -206,10 +209,10 @@ show as coming soon.
 
 ## My library
 
-`/games/library` lists the games owned on linked accounts (`GET /api/currentuser/games`), 48 at a time with
+`/library` lists the games owned on linked accounts (`GET /api/currentuser/games`), 48 at a time with
 *Show more*: cover, title, tiered bar, unlocked of total, playtime and the diamond at 100%. A name filter (2+
 characters, after a 300 ms pause) and five sorts: recently played (default), name, most played, most completed and
-newest release. Without Steam it shows *Connect Steam*. The Games tab stays lit on My library but not on game pages.
+newest release. Without Steam it shows *Connect Steam*. The Games tab stays lit on /games and /library but not on game pages.
 
 **Collections** (`/api/currentuser/collections`, owned games only, up to 50): chips above the grid switch between
 *All games* and each collection with its game count; *New collection* opens a sheet for the name (up to 40

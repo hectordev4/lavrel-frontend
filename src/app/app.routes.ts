@@ -37,7 +37,23 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/pages/sign-in-gate/sign-in-gate.page').then((m) => m.SignInGatePage),
       },
       {
-        path: 'games/:game',
+        path: 'library',
+        canMatch: [memberGuard],
+        title: 'My library · Lavrel',
+        loadComponent: () => import('./features/games/pages/library/library.page').then((m) => m.LibraryPage),
+      },
+      {
+        path: 'library',
+        canMatch: [guestGuard],
+        title: 'My library · Lavrel',
+        data: {
+          heading: 'Your games live here',
+          text: 'Sign in to track games, connect Steam and keep your library and collections.',
+        },
+        loadComponent: () => import('./features/auth/pages/sign-in-gate/sign-in-gate.page').then((m) => m.SignInGatePage),
+      },
+      {
+        path: 'games/:slug',
         canMatch: [browseGuard],
         title: 'Game · Lavrel',
         loadComponent: () => import('./features/game/pages/game/game.page').then((m) => m.GamePage),
