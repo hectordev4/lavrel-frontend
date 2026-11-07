@@ -101,6 +101,20 @@ export class PlatformAccounts {
     }
   }
 
+  /** Unlinks an account, then reloads the accounts and the tracked games. Resolves true on success. */
+  async unlink(account: PlatformAccount): Promise<boolean> {
+    this._message.set(null);
+    try {
+      await firstValueFrom(this.api.unlink(account));
+      await Promise.all([this.reload(), this.tracked.reload()]);
+      this._syncVersion.update((v) => v + 1);
+      return true;
+    } catch (error) {
+      this._message.set(platformErrorMessage(error));
+      return false;
+    }
+  }
+
   /** For the page the platform login returns to. */
   linkFailed(reason: string | null): void {
     this._message.set(linkErrorMessage(reason));

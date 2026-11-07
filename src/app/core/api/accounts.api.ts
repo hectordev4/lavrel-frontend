@@ -10,7 +10,9 @@ import { SyncResult } from './models/sync-result.model';
 @Injectable({ providedIn: 'root' })
 export class AccountsApi {
   private readonly http = inject(HttpClient);
-  private readonly url = `${inject(APP_ENV).apiBaseUrl}/api/currentuser/accounts`;
+  private readonly base = inject(APP_ENV).apiBaseUrl;
+  private readonly url = `${this.base}/api/currentuser/accounts`;
+  private readonly autoSyncUrl = `${this.base}/api/currentuser/auto-sync`;
 
   list(): Observable<PlatformAccount[]> {
     return this.http.get<{ accounts: PlatformAccount[] }>(this.url).pipe(map((r) => r.accounts));
@@ -21,6 +23,20 @@ export class AccountsApi {
     return this.http
       .post<{ redirectUrl: string }>(`${this.url}/${platform.toLowerCase()}/link`, null)
       .pipe(map((r) => r.redirectUrl));
+  }
+
+  /** Removes the link; the games stay in the catalog, the member's copy of them goes. */
+  unlink(account: PlatformAccount): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${account.platform.toLowerCase()}/${encodeURIComponent(account.externalId)}`);
+  }
+
+  /** Automatic background sync of every linked account (on by default). */
+  autoSync(): Observable<boolean> {
+    return this.http.get<{ enabled: boolean }>(`${this.autoSyncUrl}`).pipe(map((r) => r.enabled));
+  }
+
+  setAutoSync(enabled: boolean): Observable<boolean> {
+    return this.http.put<{ enabled: boolean }>(`${this.autoSyncUrl}`, { enabled }).pipe(map((r) => r.enabled));
   }
 
   sync(account: PlatformAccount): Observable<SyncResult> {

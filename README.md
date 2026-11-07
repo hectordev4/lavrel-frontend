@@ -73,7 +73,7 @@ src/app
     │   └── pages/            steam-linked (where Steam's login returns)
     ├── profile/
     │   ├── pages/            profile (the Profile tab)
-    │   ├── ui/               privacy-section
+    │   ├── ui/               privacy-section, platforms-section
     │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, PrivacyApi, messages
     │   └── models/           Country, AccountState, ProfileSettings
     ├── games/                the Games tab for members
@@ -198,6 +198,12 @@ shown as private. *Sign out* lives here; *Delete account* asks you to type DELET
 avatar and, once the backend sends `showLibrarySize`, show how many games you own. All off by default; the detail
 switches are disabled while the profile is private. Each change saves at once and switches back if it fails.
 
+**Platforms**: Steam connected shows a round badge (a slot for Steam's official logo from its brand assets), the
+Steam display name, a green *Connected* (`--connected`, only on your own settings), when it last synced, *Sync
+automatically* (`GET` / `PUT /api/currentuser/auto-sync`), *Sync now* and *Unlink Steam* after a confirmation
+(`DELETE /api/currentuser/accounts/{platform}/{externalId}`). Not connected: *Connect Steam*. Xbox and PlayStation
+show as coming soon.
+
 ## My library
 
 `/games/library` lists the games owned on linked accounts (`GET /api/currentuser/games`), 48 at a time with
@@ -304,7 +310,7 @@ are example data.
 7. Profile, in several branches:
    - `feat/profile-account` ✓: header, display name, country, e-mail, sign out, delete account
    - `feat/profile-privacy` ✓: public profile switches
-   - `feat/profile-platforms`: Steam (connected state, Sync now, automatic sync, unlink), Xbox and PlayStation soon
+   - `feat/profile-platforms` ✓: Steam (connected state, Sync now, automatic sync, unlink), Xbox and PlayStation soon
    - `feat/profile-avatar`: avatar picker (generated, gallery, upload)
 8. `feat/public-profile`: public profile and shelves
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
