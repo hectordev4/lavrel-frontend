@@ -42,8 +42,7 @@ export const routes: Routes = [
         path: 'games/:game',
         canMatch: [browseGuard],
         title: 'Game · Lavrel',
-        data: { heading: 'Game page', branch: 'feat/game-page' },
-        loadComponent: () => import('./layout/placeholder-page/placeholder-page').then((m) => m.PlaceholderPage),
+        loadComponent: () => import('./features/game/pages/game/game.page').then((m) => m.GamePage),
       },
       {
         path: 'search',

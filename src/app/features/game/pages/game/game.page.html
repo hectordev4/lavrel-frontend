@@ -1,0 +1,120 @@
+<main class="page game">
+  <div class="bar">
+    <button type="button" class="icon-btn" aria-label="Back" (click)="back()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </button>
+  </div>
+
+  @if (invalidAddress() || store.state().kind === 'not-found') {
+    <div class="message">
+      <h1>Game not found</h1>
+      <p>This game isn’t in the Lavrel catalog, or its address is wrong.</p>
+      <a class="btn btn-primary" routerLink="/search">Search games</a>
+    </div>
+  } @else {
+    @switch (store.state().kind) {
+      @case ('loading') {
+        <div class="skeleton cover-skeleton" role="status" aria-label="Loading the game"></div>
+        <div class="skeleton line"></div>
+        <div class="skeleton line short"></div>
+      }
+      @case ('error') {
+        <div class="message">
+          <p class="alert" role="alert">{{ $any(store.state()).message }}</p>
+          <button type="button" class="btn btn-secondary" (click)="store.retry()">Try again</button>
+        </div>
+      }
+      @case ('ready') {
+        @if (game(); as g) {
+          <section class="hero">
+            <app-game-cover class="cover" [src]="g.coverImageUrl" [title]="g.title" />
+            <div class="titles">
+              <h1>{{ g.title }}</h1>
+              @if (g.releaseDate) {
+                <p class="sub">Released {{ g.releaseDate | date: 'd MMM y' }}</p>
+              }
+              @if (g.franchises.length) {
+                <p class="sub">Part of the {{ g.franchises[0] }} franchise</p>
+              }
+            </div>
+            @if (g.reviews.percentPositive !== null) {
+              <p class="rating">
+                <span class="number">{{ g.reviews.percentPositive }}%</span>
+                <span class="sub">
+                  positive
+                  @if (g.reviews.count) {
+                    · {{ g.reviews.count | number }} Steam reviews
+                  }
+                </span>
+              </p>
+            }
+            @if (systems().length) {
+              <ul class="systems" aria-label="Available on">
+                @for (system of systems(); track system) {
+                  <li>{{ system }}</li>
+                }
+              </ul>
+            }
+            @if (g.storeUrl) {
+              <a class="btn btn-secondary" [href]="g.storeUrl" target="_blank" rel="noopener noreferrer">View on Steam</a>
+            }
+          </section>
+
+          @if (g.description) {
+            <section class="about">
+              <h2>About</h2>
+              <p class="description" [class.open]="descriptionOpen()">{{ g.description }}</p>
+              @if (g.description.length > 220) {
+                <button type="button" class="link-btn" (click)="descriptionOpen.set(!descriptionOpen())">
+                  {{ descriptionOpen() ? 'Show less' : 'Read more' }}
+                </button>
+              }
+            </section>
+          }
+
+          @if (g.tags.length || g.genres.length) {
+            <section class="labels">
+              @if (g.tags.length) {
+                <h2>Tags</h2>
+                <ul class="pills">
+                  @for (tag of tags(); track tag.id) {
+                    <li>
+                      <a routerLink="/search/results" [queryParams]="{ tag: tag.id + ':' + tag.name }">{{ tag.name }}</a>
+                    </li>
+                  }
+                </ul>
+                @if (g.tags.length > shortTagCount) {
+                  <button type="button" class="link-btn" (click)="allTags.set(!allTags())">
+                    {{ allTags() ? 'Fewer tags' : 'All ' + g.tags.length + ' tags' }}
+                  </button>
+                }
+              }
+              @if (g.genres.length) {
+                <h3>Genres</h3>
+                <ul class="pills">
+                  @for (genre of g.genres; track genre.id) {
+                    <li><span>{{ genre.name }}</span></li>
+                  }
+                </ul>
+              }
+            </section>
+          }
+
+          @if (details().length) {
+            <section class="details">
+              <h2>Details</h2>
+              <dl>
+                @for (row of details(); track row.label) {
+                  <div>
+                    <dt>{{ row.label }}</dt>
+                    <dd>{{ row.value }}</dd>
+                  </div>
+                }
+              </dl>
+            </section>
+          }
+        }
+      }
+    }
+  }
+</main>
