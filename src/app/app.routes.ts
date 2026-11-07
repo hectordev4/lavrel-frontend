@@ -41,9 +41,7 @@ export const routes: Routes = [
       {
         path: 'search',
         canMatch: [browseGuard],
-        title: 'Search · Lavrel',
-        data: { heading: 'Search', branch: 'feat/search' },
-        loadComponent: () => import('./layout/placeholder-page/placeholder-page').then((m) => m.PlaceholderPage),
+        loadChildren: () => import('./features/search/search.routes').then((m) => m.SEARCH_ROUTES),
       },
       {
         path: 'profile',
