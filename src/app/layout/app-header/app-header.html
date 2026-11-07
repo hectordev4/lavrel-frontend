@@ -1,0 +1,10 @@
+<header>
+  <a class="home" routerLink="/home" aria-label="Lavrel home">
+    <app-wordmark mode="still" />
+  </a>
+  @if (signedIn()) {
+    <a class="avatar" routerLink="/profile" aria-label="Your profile">{{ initial() }}</a>
+  } @else {
+    <a class="btn btn-primary sign-in" routerLink="/welcome">Sign in</a>
+  }
+</header>

@@ -1,0 +1,12 @@
+<nav aria-label="Main">
+  @for (tab of tabs; track tab.path) {
+    <a
+      [routerLink]="tab.path"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="tab.icon" /></svg>
+      <span>{{ tab.label }}</span>
+    </a>
+  }
+</nav>

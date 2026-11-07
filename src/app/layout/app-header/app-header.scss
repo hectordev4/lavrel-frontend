@@ -1,0 +1,37 @@
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 1rem) 1.25rem 0.5rem;
+}
+
+.home {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+
+  app-wordmark {
+    --mark: 1.9rem;
+  }
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  background: var(--ink-raised);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.sign-in {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+}
