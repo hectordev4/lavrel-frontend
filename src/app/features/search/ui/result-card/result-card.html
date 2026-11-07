@@ -19,11 +19,14 @@
       }
     </div>
   </div>
-  @if (game().topTags.length) {
-    <ul class="tags" aria-label="Top tags">
-      @for (tag of game().topTags; track tag) {
-        <li>{{ tag }}</li>
-      }
-    </ul>
-  }
+  <div class="bottom">
+    @if (game().topTags.length) {
+      <ul class="tags" aria-label="Top tags">
+        @for (tag of game().topTags; track tag) {
+          <li>{{ tag }}</li>
+        }
+      </ul>
+    }
+    <div class="action"><ng-content /></div>
+  </div>
 </article>

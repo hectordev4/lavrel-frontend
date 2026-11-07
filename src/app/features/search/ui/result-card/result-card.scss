@@ -48,6 +48,17 @@
   letter-spacing: 0.04em;
 }
 
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.action:empty {
+  display: none;
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;

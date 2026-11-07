@@ -32,6 +32,10 @@
     </label>
   </div>
 
+  @if (trackMessage(); as m) {
+    <p class="alert" role="alert">{{ m }}</p>
+  }
+
   @switch (results.state().kind) {
     @case ('loading') {
       <div class="list" role="status" aria-label="Loading results">
@@ -52,7 +56,19 @@
       } @else {
         <div class="list">
           @for (game of $any(results.state()).games; track game.id) {
-            <app-result-card [game]="game" />
+            <app-result-card [game]="game">
+              @if (signedIn()) {
+                <app-track-control
+                  variant="compact"
+                  [gameTitle]="game.title"
+                  [status]="tracked.byGameId().get(game.id)?.status ?? null"
+                  [busy]="tracked.busy().has(game.id)"
+                  [signedIn]="true"
+                  (track)="track(game.id, $event)"
+                  (untrack)="untrack(game.id, game.title)"
+                />
+              }
+            </app-result-card>
           }
         </div>
         @if ($any(results.state()).moreError) {

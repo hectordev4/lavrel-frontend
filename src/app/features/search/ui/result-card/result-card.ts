@@ -6,7 +6,7 @@ import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
 import { gameLink } from '../../../../shared/ui/game-row/game-row';
 import { MODE_LABELS, SYSTEM_LABELS } from '../../data-access/search-labels';
 
-/** A search result: cover, title, year and modes, rating, systems and top tags. */
+/** A search result: cover, title, year and modes, rating, systems and top tags. Content inside the tag is its action. */
 @Component({
   selector: 'app-result-card',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -55,6 +55,19 @@
                 }
               </ul>
             }
+            <app-track-control
+              [gameTitle]="g.title"
+              [status]="trackedEntry()?.status ?? null"
+              [pinned]="trackedEntry()?.pinPosition != null"
+              [busy]="tracked.busy().has(g.id)"
+              [signedIn]="signedIn()"
+              (track)="track($event)"
+              (untrack)="untrack()"
+              (pinToggle)="togglePin()"
+            />
+            @if (trackMessage(); as m) {
+              <p class="alert" role="alert">{{ m }}</p>
+            }
             @if (g.storeUrl) {
               <a class="btn btn-secondary" [href]="g.storeUrl" target="_blank" rel="noopener noreferrer">View on Steam</a>
             }

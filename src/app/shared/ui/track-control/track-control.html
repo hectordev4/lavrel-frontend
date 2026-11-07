@@ -1,0 +1,36 @@
+<div class="control" [class.compact]="variant() === 'compact'">
+  @if (!signedIn()) {
+    <a class="btn btn-secondary track" routerLink="/welcome">Sign in to track</a>
+  } @else if (status() === null) {
+    <button type="button" class="btn btn-secondary track" [disabled]="busy()" (click)="track.emit('PLAYING')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
+      <span>Track</span>
+    </button>
+  } @else {
+    <label class="status">
+      <span class="caption" aria-hidden="true">Tracking</span>
+      <span class="visually-hidden">Tracking status of {{ gameTitle() }}</span>
+      <select #select [disabled]="busy()" (change)="onSelect(select.value, select)">
+        @for (o of options; track o.value) {
+          <option [value]="o.value" [selected]="o.value === status()">{{ o.label }}</option>
+        }
+        <option [value]="stop">Stop tracking</option>
+      </select>
+      <span class="value" aria-hidden="true">{{ statusLabel() }}</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+    </label>
+    @if (variant() === 'full') {
+      <button
+        type="button"
+        class="pin"
+        [class.pinned]="pinned()"
+        [attr.aria-pressed]="pinned()"
+        [attr.aria-label]="pinned() ? 'Unpin ' + gameTitle() + ' from Home' : 'Pin ' + gameTitle() + ' to Home'"
+        [disabled]="busy()"
+        (click)="pinToggle.emit()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5 M9 3h6l-1 6 3 3v2H7v-2l3-3z" /></svg>
+      </button>
+    }
+  }
+</div>

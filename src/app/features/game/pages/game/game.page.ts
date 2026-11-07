@@ -3,8 +3,12 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TrackingStatus } from '../../../../core/api/models/tracking-status.model';
+import { AuthStore } from '../../../../core/auth/auth.store';
+import { TrackedGames } from '../../../../core/tracking/tracked-games';
 import { map } from 'rxjs';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
+import { TrackControl } from '../../../../shared/ui/track-control/track-control';
 import { featureNames, gameIdFrom, systemLabel, systemsOf } from '../../data-access/game-facts';
 import { GameAchievementsStore } from '../../data-access/game-achievements';
 import { GamePage as GamePageStore } from '../../data-access/game-page';
@@ -19,7 +23,7 @@ const SHORT_TAGS = 8;
 @Component({
   selector: 'app-game-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, DecimalPipe, RouterLink, GameCover, AchievementItem, ProgressCard],
+  imports: [DatePipe, DecimalPipe, RouterLink, GameCover, TrackControl, AchievementItem, ProgressCard],
   providers: [GamePageStore, GameAchievementsStore],
   templateUrl: './game.page.html',
   styleUrl: './game.page.scss',
@@ -34,6 +38,9 @@ export class GamePage {
     { value: 'unlocked', label: 'Unlocked' },
     { value: 'locked', label: 'Locked' },
   ];
+  protected readonly tracked = inject(TrackedGames);
+  protected readonly signedIn = inject(AuthStore).isVerified;
+  protected readonly trackMessage = signal<string | null>(null);
   protected readonly invalidAddress = signal(false);
   protected readonly descriptionOpen = signal(false);
   protected readonly allTags = signal(false);
@@ -67,6 +74,11 @@ export class GamePage {
     return rows.filter((row) => row.value);
   });
   protected readonly shortTagCount = SHORT_TAGS;
+  /** This game in the member's tracking list, or undefined. */
+  protected readonly trackedEntry = computed(() => {
+    const g = this.game();
+    return g ? this.tracked.byGameId().get(g.id) : undefined;
+  });
 
   constructor() {
     inject(ActivatedRoute)
@@ -79,11 +91,31 @@ export class GamePage {
         }
       });
 
+    this.tracked.ensureLoaded();
+
     const title = inject(Title);
     effect(() => {
       const g = this.game();
       if (g) title.setTitle(`${g.title} · Lavrel`);
     });
+  }
+
+  protected async track(status: TrackingStatus): Promise<void> {
+    const g = this.game();
+    if (g) this.trackMessage.set(await this.tracked.track(g.id, status));
+  }
+
+  protected async untrack(): Promise<void> {
+    const g = this.game();
+    if (!g || !confirm(`Stop tracking ${g.title}?`)) return;
+    this.trackMessage.set(await this.tracked.untrack(g.id));
+  }
+
+  protected async togglePin(): Promise<void> {
+    const g = this.game();
+    const entry = this.trackedEntry();
+    if (!g || !entry) return;
+    this.trackMessage.set(entry.pinPosition === null ? await this.tracked.pin(g.id) : await this.tracked.unpin(g.id));
   }
 
   protected back(): void {

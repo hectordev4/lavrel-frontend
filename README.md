@@ -52,6 +52,7 @@ src/app
 │   ├── chip/                 toggle or removable pill button
 │   ├── progress-bar/         tiered progress bar (+ progressTier, progressPercent)
 │   ├── perfect-diamond/      hue-shifting diamond for 100% games
+│   ├── track-control/        Track / status select / Stop tracking / pin (presentational)
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
@@ -165,6 +166,10 @@ recently changed; games without a release date last) and one card per game: stat
 pinned), *Remove from tracking* after a confirmation, progress with the tiered bar, and the three easiest
 achievements left. Filtering and sorting happen in the browser on the loaded list.
 
+The **track control** appears on the game page (status select and pin) and, for members, on each search result
+(status only). *Track* adds the game as Playing; the select changes the status or stops tracking after a
+confirmation. Guests see *Sign in to track* on the game page.
+
 ## Logo modes (`<app-cube-logo mode="…">`)
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs
@@ -224,8 +229,9 @@ are example data.
 4. Tracking, in three branches:
    - `feat/tracking-core` ✓: tracking API and the shared TrackedGames store
    - `feat/tracking-list` ✓: the Games tab for members (statuses, sort, pins, easiest next achievements)
-   - `feat/tracking-actions`: Track and pin on the game page and on search results
-5. `feat/library`: My library and collections
-6. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
-7. `feat/public-profile`: public profile and shelves
-8. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
+   - `feat/tracking-actions` ✓: Track and pin on the game page and on search results
+5. `feat/member-home`: greeting, Sync now, totals, Playing now (pinned), Almost there, recent unlocks
+6. `feat/library`: My library and collections
+7. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
+8. `feat/public-profile`: public profile and shelves
+9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
