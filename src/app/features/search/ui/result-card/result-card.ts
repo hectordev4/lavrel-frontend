@@ -20,8 +20,9 @@ export class ResultCard {
   protected readonly link = computed(() => gameLink(this.game()));
   protected readonly year = computed(() => this.game().releaseDate?.slice(0, 4) ?? null);
   protected readonly modes = computed(() => {
-    const g = this.game();
-    const list = [g.singlePlayer && MODE_LABELS['single-player'], g.coOp && MODE_LABELS['co-op'], g.multiplayer && MODE_LABELS.multiplayer];
+    const m = this.game().modes;
+    if (!m) return '';
+    const list = [m.singlePlayer && MODE_LABELS['single-player'], m.coOp && MODE_LABELS['co-op'], m.multiplayer && MODE_LABELS.multiplayer];
     return list.filter(Boolean).join(', ');
   });
   protected readonly systems = computed(() => (this.game().availableOn ?? []).map((s) => SYSTEM_LABELS[s]).join(' · '));
