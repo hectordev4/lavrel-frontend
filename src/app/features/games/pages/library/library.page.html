@@ -17,6 +17,21 @@
       <button type="button" class="btn btn-primary" (click)="connectSteam()">Connect Steam</button>
     </app-cta-card>
   } @else {
+    <div class="collections" role="group" aria-label="Collections">
+      <app-chip label="All games" [pressed]="library.query().collection === null" (activate)="browse(null)" />
+      @for (c of collections.list(); track c.id) {
+        <app-chip [label]="c.name" [count]="c.gameCount" [pressed]="library.query().collection === c.id" (activate)="browse(c.id)" />
+      }
+      <button type="button" class="new" (click)="openCreate()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
+        <span>New collection</span>
+      </button>
+    </div>
+
+    @if (message(); as m) {
+      <p class="notice" role="status">{{ m }}</p>
+    }
+
     <div class="tools">
       <label class="box">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
@@ -51,7 +66,13 @@
       @case ('ready') {
         @if ($any(library.state()).games.length === 0) {
           <p class="empty">
-            {{ library.query().q ? 'No games in your library match “' + library.query().q + '”.' : 'No games yet. Sync Steam from Home to bring them in.' }}
+            @if (library.query().q) {
+              No games here match “{{ library.query().q }}”.
+            } @else if (current()) {
+              {{ current()!.name }} is empty. Open a game’s menu in All games to add it.
+            } @else {
+              No games yet. Sync Steam from Home to bring them in.
+            }
           </p>
         } @else {
           <div class="grid">
@@ -72,3 +93,16 @@
     }
   }
 </main>
+
+<app-modal heading="New collection" [open]="creating()" (closed)="creating.set(false)">
+  <form class="form" (submit)="$event.preventDefault(); create(name.value)">
+    <label class="field">
+      <span>Name</span>
+      <input #name type="text" maxlength="40" autocomplete="off" placeholder="Cozy games" (input)="formError.set(null)" />
+    </label>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary">Create collection</button>
+  </form>
+</app-modal>

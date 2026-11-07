@@ -149,3 +149,43 @@
   text-align: center;
   color: var(--muted);
 }
+
+.collections {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  margin: 0 -1.5rem;
+  padding: 0 1.5rem;
+  scrollbar-width: none;
+}
+
+.new {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.5rem;
+  padding: 0 0.875rem;
+  border-radius: 1.25rem;
+  border: 1px dashed rgb(242 240 234 / 0.35);
+  background: transparent;
+  color: var(--line);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+}
+
+.form {
+  display: grid;
+  gap: 0.75rem;
+}
