@@ -58,6 +58,7 @@ src/app
 │   ├── perfect-diamond/      hue-shifting diamond for 100% games
 │   ├── track-control/        Track / status select / Stop tracking / pin (presentational)
 │   ├── modal/                bottom sheet on the native <dialog>
+│   ├── switch/               on/off setting (role="switch")
 ├── shared/utils/             relativeTime ("2 hours ago")
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
@@ -72,8 +73,9 @@ src/app
     │   └── pages/            steam-linked (where Steam's login returns)
     ├── profile/
     │   ├── pages/            profile (the Profile tab)
-    │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, messages
-    │   └── models/           Country, AccountState
+    │   ├── ui/               privacy-section
+    │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, PrivacyApi, messages
+    │   └── models/           Country, AccountState, ProfileSettings
     ├── games/                the Games tab for members
     │   ├── pages/            games (tracking list), library (/games/library)
     │   ├── ui/               tracked-card, library-card
@@ -192,6 +194,10 @@ country (`GET /api/countries`, `PATCH /api/currentuser/country`, only used for c
 shown as private. *Sign out* lives here; *Delete account* asks you to type DELETE, then calls
 `DELETE /api/currentuser?confirm=true` and signs out.
 
+**Public profile** switches (`GET` / `PATCH /api/currentuser/profile`): public, show country, show platforms, show
+avatar and, once the backend sends `showLibrarySize`, show how many games you own. All off by default; the detail
+switches are disabled while the profile is private. Each change saves at once and switches back if it fails.
+
 ## My library
 
 `/games/library` lists the games owned on linked accounts (`GET /api/currentuser/games`), 48 at a time with
@@ -297,7 +303,7 @@ are example data.
    - `feat/collections` ✓: collections (create, rename, delete, browse, add and remove games)
 7. Profile, in several branches:
    - `feat/profile-account` ✓: header, display name, country, e-mail, sign out, delete account
-   - `feat/profile-privacy`: public profile switches
+   - `feat/profile-privacy` ✓: public profile switches
    - `feat/profile-platforms`: Steam (connected state, Sync now, automatic sync, unlink), Xbox and PlayStation soon
    - `feat/profile-avatar`: avatar picker (generated, gallery, upload)
 8. `feat/public-profile`: public profile and shelves
