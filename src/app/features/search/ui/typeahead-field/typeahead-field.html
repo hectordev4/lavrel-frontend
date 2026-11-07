@@ -1,17 +1,23 @@
-<div class="field-wrap">
+<div class="field-wrap" (focusout)="onFocusOut($event)" (keydown.escape)="close()">
   <label class="box" [class.disabled]="disabled()">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
+    <svg class="plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
     <span class="visually-hidden">{{ label() }}</span>
     <input
       #field
       type="text"
       autocomplete="off"
       spellcheck="false"
+      [attr.aria-expanded]="open()"
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       (focus)="onInput(field.value)"
       (input)="onInput(field.value)"
     />
+    @if (text()) {
+      <button type="button" class="clear" [attr.aria-label]="'Clear ' + label()" (pointerdown)="keepFocus($event)" (click)="clear()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18" /></svg>
+      </button>
+    }
   </label>
   @if (open() && !disabled()) {
     <div class="options" aria-live="polite">
@@ -25,7 +31,7 @@
         <ul>
           @for (option of options(); track option.id) {
             <li>
-              <button type="button" (click)="pick(option, field)">
+              <button type="button" class="option" (pointerdown)="keepFocus($event)" (click)="pick(option)">
                 <span>{{ option.name }}</span>
                 <span class="count">{{ option.gameCount }} games</span>
               </button>
