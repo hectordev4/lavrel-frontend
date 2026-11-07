@@ -6,8 +6,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
 import { featureNames, gameIdFrom, systemLabel, systemsOf } from '../../data-access/game-facts';
+import { GameAchievementsStore } from '../../data-access/game-achievements';
 import { GamePage as GamePageStore } from '../../data-access/game-page';
+import { AchievementFilter } from '../../models/achievement-filter.model';
 import { GameDetails } from '../../models/game-details.model';
+import { AchievementItem } from '../../ui/achievement-item/achievement-item';
+import { ProgressCard } from '../../ui/progress-card/progress-card';
 
 const SHORT_TAGS = 8;
 
@@ -15,8 +19,8 @@ const SHORT_TAGS = 8;
 @Component({
   selector: 'app-game-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, DecimalPipe, RouterLink, GameCover],
-  providers: [GamePageStore],
+  imports: [DatePipe, DecimalPipe, RouterLink, GameCover, AchievementItem, ProgressCard],
+  providers: [GamePageStore, GameAchievementsStore],
   templateUrl: './game.page.html',
   styleUrl: './game.page.scss',
 })
@@ -24,6 +28,12 @@ export class GamePage {
   private readonly location = inject(Location);
   private readonly router = inject(Router);
   protected readonly store = inject(GamePageStore);
+  protected readonly achievements = inject(GameAchievementsStore);
+  protected readonly filters: { value: AchievementFilter; label: string }[] = [
+    { value: 'all', label: 'All' },
+    { value: 'unlocked', label: 'Unlocked' },
+    { value: 'locked', label: 'Locked' },
+  ];
   protected readonly invalidAddress = signal(false);
   protected readonly descriptionOpen = signal(false);
   protected readonly allTags = signal(false);
@@ -63,7 +73,10 @@ export class GamePage {
       .paramMap.pipe(map((params) => gameIdFrom(params.get('game'))), takeUntilDestroyed())
       .subscribe((id) => {
         this.invalidAddress.set(id === null);
-        if (id !== null) this.store.load(id);
+        if (id !== null) {
+          this.store.load(id);
+          this.achievements.load(id);
+        }
       });
 
     const title = inject(Title);

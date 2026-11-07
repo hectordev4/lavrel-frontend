@@ -60,6 +60,10 @@
             }
           </section>
 
+          @if (achievements.state().kind === 'ready' && $any(achievements.state()).data.unlocked !== null && $any(achievements.state()).data.total > 0) {
+            <app-progress-card [unlocked]="$any(achievements.state()).data.unlocked" [total]="$any(achievements.state()).data.total" />
+          }
+
           @if (g.description) {
             <section class="about">
               <h2>About</h2>
@@ -71,6 +75,61 @@
               }
             </section>
           }
+
+          <section class="achievements" aria-labelledby="achievements-title">
+            <h2 id="achievements-title">Achievements</h2>
+            @switch (achievements.state().kind) {
+              @case ('loading') {
+                <p class="sub" role="status">Loading achievements…</p>
+              }
+              @case ('error') {
+                <p class="alert" role="alert">{{ $any(achievements.state()).message }}</p>
+                <button type="button" class="btn btn-secondary" (click)="achievements.retry()">Try again</button>
+              }
+              @case ('ready') {
+                @if ($any(achievements.state()).data.total === 0) {
+                  <p class="sub">This game has no achievements.</p>
+                } @else {
+                  <p class="sub">{{ $any(achievements.state()).data.total }} in total · share of players who unlocked each</p>
+                  @if (achievements.personal()) {
+                    <div class="segmented" role="group" aria-label="Show achievements">
+                      @for (f of filters; track f.value) {
+                        <button
+                          type="button"
+                          [attr.aria-pressed]="achievements.filter() === f.value"
+                          [class.on]="achievements.filter() === f.value"
+                          (click)="achievements.setFilter(f.value)"
+                        >
+                          {{ f.label }}
+                        </button>
+                      }
+                    </div>
+                  }
+                  @if (achievements.filtered().length === 0) {
+                    <p class="sub">{{ achievements.filter() === 'unlocked' ? 'Nothing unlocked yet.' : 'You’ve unlocked them all.' }}</p>
+                  }
+                  <ul class="achievement-list">
+                    @for (a of achievements.visible(); track a.id) {
+                      <app-achievement-item
+                        [achievement]="a"
+                        [personal]="achievements.personal()"
+                        [revealed]="achievements.revealed().has(a.id)"
+                        (reveal)="achievements.reveal(a.id)"
+                      />
+                    }
+                  </ul>
+                  @if (achievements.personal()) {
+                    <p class="note">Your country’s figure shows “—” until enough players from there own the game.</p>
+                  }
+                  @if (achievements.hiddenCount() > 0) {
+                    <button type="button" class="btn btn-secondary" (click)="achievements.showAll.set(true)">
+                      Show all {{ achievements.filtered().length }}
+                    </button>
+                  }
+                }
+              }
+            }
+          </section>
 
           @if (g.tags.length || g.genres.length) {
             <section class="labels">

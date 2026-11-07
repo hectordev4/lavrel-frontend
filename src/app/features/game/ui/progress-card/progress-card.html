@@ -1,0 +1,12 @@
+<section class="card" aria-labelledby="progress-title">
+  <div class="head">
+    <h2 id="progress-title">Your progress</h2>
+    @if (percent() === 100) {
+      <span class="perfect"><app-perfect-diamond label="" /><span class="number">100%</span></span>
+    } @else {
+      <span class="number">{{ percent() }}%</span>
+    }
+  </div>
+  <app-progress-bar [percent]="percent()" label="Achievements unlocked" />
+  <p>{{ unlocked() }} of {{ total() }} achievements</p>
+</section>
