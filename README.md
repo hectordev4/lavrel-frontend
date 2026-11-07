@@ -37,7 +37,7 @@ src/app
 │   │   │                     TrackingApi → /api/currentuser/tracked (list, status, pins)
 │   │   └── models/           CurrentUser, GameCard, GamePage, GameSearchParams, GameSort, GameSystem,
 │   │                         TrackedGame, TrackingStatus, NextAchievement
-│   ├── tracking/             TrackedGames (shared store of the member's tracked games), messages
+│   ├── tracking/             TrackedGames (shared store of the member's tracked games), status labels, messages
 │   ├── config/               AppEnv model, APP_ENV token
 │   └── boot.ts               splash → welcome hand-off
 ├── layout/                   the frame around in-app pages
@@ -61,6 +61,11 @@ src/app
     │   ├── ui/               google-button
     │   ├── data-access/      AuthFlow facade, error messages
     │   └── models/           AuthTask, EmailAuthMode
+    ├── games/                the Games tab for members
+    │   ├── pages/            games (tracking list)
+    │   ├── ui/               tracked-card
+    │   ├── data-access/      tracked-list (filter and sort)
+    │   └── models/           StatusFilter, TrackedSort
     ├── game/
     │   ├── pages/            game (/games/:id-slug)
     │   ├── ui/               progress-card, achievement-item
@@ -155,6 +160,11 @@ Dropped, and pin up to 20 of them to Home (quick access). `TrackedGames` in `cor
 first use and every screen reads from it, so a change on one screen shows everywhere. It clears itself on
 sign-out. Actions return an error message or null; a 21st pin is stopped before calling the backend.
 
+The **Games tab** (`/games`) shows the list with status chips and counts, a sort (newest release first, title,
+recently changed; games without a release date last) and one card per game: status select, pin (gold when
+pinned), *Remove from tracking* after a confirmation, progress with the tiered bar, and the three easiest
+achievements left. Filtering and sorting happen in the browser on the loaded list.
+
 ## Logo modes (`<app-cube-logo mode="…">`)
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs
@@ -213,7 +223,7 @@ are example data.
    - `feat/game-achievements` ✓: your progress and the achievement list with worldwide and country percentages
 4. Tracking, in three branches:
    - `feat/tracking-core` ✓: tracking API and the shared TrackedGames store
-   - `feat/tracking-list`: the Games tab for members (statuses, sort, pins, easiest next achievements)
+   - `feat/tracking-list` ✓: the Games tab for members (statuses, sort, pins, easiest next achievements)
    - `feat/tracking-actions`: Track and pin on the game page and on search results
 5. `feat/library`: My library and collections
 6. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
