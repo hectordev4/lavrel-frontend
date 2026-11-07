@@ -3,6 +3,7 @@ import { AuthSession } from '../../../../core/auth/auth-session';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { MyAccount } from '../../data-access/my-account';
+import { PlatformsSection } from '../../ui/platforms-section/platforms-section';
 import { PrivacySection } from '../../ui/privacy-section/privacy-section';
 
 type Sheet = 'name' | 'country' | 'delete' | null;
@@ -11,7 +12,7 @@ type Sheet = 'name' | 'country' | 'delete' | null;
 @Component({
   selector: 'app-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Modal, PrivacySection],
+  imports: [Modal, PlatformsSection, PrivacySection],
   providers: [MyAccount],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',

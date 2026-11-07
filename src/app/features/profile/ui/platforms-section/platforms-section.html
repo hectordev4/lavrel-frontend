@@ -1,0 +1,64 @@
+<section aria-labelledby="platforms-title">
+  <h2 id="platforms-title">Platforms</h2>
+
+  @if (accounts.message(); as m) {
+    <p class="alert" role="alert">{{ m }}</p>
+  }
+
+  @if (accounts.loadState() === 'ready' || accounts.steam()) {
+    @if (accounts.steam(); as steam) {
+      <div class="card">
+        <div class="top">
+          <span class="badge" role="img" aria-label="Steam">STEAM</span>
+          <span class="who">
+            <span class="name">Steam</span>
+            @if (steam.displayName) {
+              <span class="muted">Signed in as {{ steam.displayName }}</span>
+            }
+          </span>
+          <span class="connected"><span class="dot" aria-hidden="true"></span>Connected</span>
+        </div>
+        <span class="muted small">{{ lastSynced() }}</span>
+        @if (autoSync() !== null) {
+          <app-switch
+            label="Sync automatically"
+            note="Keeps your library up to date in the background."
+            [checked]="autoSync()!"
+            (toggled)="setAutoSync($event)"
+          />
+        }
+        @if (autoSyncError(); as e) {
+          <p class="alert" role="alert">{{ e }}</p>
+        }
+        <button type="button" class="btn btn-secondary" [disabled]="accounts.syncing() !== null" (click)="syncNow()">
+          @if (accounts.syncing(); as p) {
+            Syncing… {{ p.gamesSynced }} games
+          } @else {
+            Sync now
+          }
+        </button>
+        <button type="button" class="link-btn unlink" [disabled]="accounts.syncing() !== null" (click)="unlink()">Unlink Steam</button>
+      </div>
+    } @else {
+      <div class="card">
+        <div class="top">
+          <span class="badge empty" aria-hidden="true">+</span>
+          <span class="who">
+            <span class="name">Steam</span>
+            <span class="muted">Not connected</span>
+          </span>
+        </div>
+        <p class="muted small">
+          Sign in on Steam’s own page and we bring in your games, playtime and achievements. Your Steam game details
+          need to be public.
+        </p>
+        <button type="button" class="btn btn-primary" (click)="connect()">Connect Steam</button>
+      </div>
+    }
+  } @else if (accounts.loadState() === 'error') {
+    <button type="button" class="btn btn-secondary" (click)="accounts.reload()">Your platforms didn’t load. Try again</button>
+  }
+
+  <div class="soon"><span class="name">Xbox</span><span class="muted small">Coming soon</span></div>
+  <div class="soon"><span class="name">PlayStation</span><span class="muted small">Coming soon</span></div>
+</section>
