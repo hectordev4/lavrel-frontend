@@ -1,0 +1,73 @@
+<main class="page discover">
+  <div class="intro">
+    <h1>Discover games</h1>
+    <a class="search" routerLink="/search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
+      <span>Games, tags, franchises</span>
+    </a>
+  </div>
+
+  <app-cta-card
+    heading="Make it yours"
+    text="Sign in to track games, pin them here, see your achievements and share a profile."
+  >
+    <a class="btn btn-primary" routerLink="/welcome">Sign in or create an account</a>
+  </app-cta-card>
+
+  <section aria-labelledby="popular-title">
+    <div class="section-head">
+      <h2 id="popular-title">Popular on Lavrel</h2>
+      <span class="sub">Most reviewed games in the catalog</span>
+    </div>
+    @switch (discover.popular().kind) {
+      @case ('loading') {
+        <div class="rows" role="status" aria-label="Loading popular games">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="skeleton row-skeleton"></div>
+          }
+        </div>
+      }
+      @case ('error') {
+        <div class="failed">
+          <p class="alert" role="alert">{{ $any(discover.popular()).message }}</p>
+          <button type="button" class="btn btn-secondary" (click)="discover.loadPopular()">Try again</button>
+        </div>
+      }
+      @case ('ready') {
+        <div class="rows">
+          @for (game of $any(discover.popular()).games; track game.id) {
+            <app-game-row [game]="game" />
+          }
+        </div>
+      }
+    }
+  </section>
+
+  <section aria-labelledby="new-title">
+    <div class="section-head">
+      <h2 id="new-title">New releases</h2>
+    </div>
+    @switch (discover.newest().kind) {
+      @case ('loading') {
+        <div class="carousel" role="status" aria-label="Loading new releases">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="skeleton tile-skeleton"></div>
+          }
+        </div>
+      }
+      @case ('error') {
+        <div class="failed">
+          <p class="alert" role="alert">{{ $any(discover.newest()).message }}</p>
+          <button type="button" class="btn btn-secondary" (click)="discover.loadNewest()">Try again</button>
+        </div>
+      }
+      @case ('ready') {
+        <div class="carousel">
+          @for (game of $any(discover.newest()).games; track game.id) {
+            <app-game-tile [game]="game" />
+          }
+        </div>
+      }
+    }
+  </section>
+</main>
