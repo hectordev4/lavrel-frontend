@@ -1,0 +1,29 @@
+<article class="card">
+  <div class="top">
+    <app-game-cover class="cover" [src]="game().coverImageUrl" [title]="game().title" />
+    <div class="info">
+      <a class="title" [routerLink]="link()">{{ game().title }}</a>
+      @if (year() || modes()) {
+        <span class="meta">{{ year() }}@if (year() && modes()) { · }{{ modes() }}</span>
+      }
+      @if (game().reviewPercentPositive !== null) {
+        <span class="meta">
+          <span class="number">{{ game().reviewPercentPositive }}%</span> positive
+          @if (game().reviewCount) {
+            · {{ game().reviewCount | number }} reviews
+          }
+        </span>
+      }
+      @if (systems()) {
+        <span class="systems">{{ systems() }}</span>
+      }
+    </div>
+  </div>
+  @if (game().topTags.length) {
+    <ul class="tags" aria-label="Top tags">
+      @for (tag of game().topTags; track tag) {
+        <li>{{ tag }}</li>
+      }
+    </ul>
+  }
+</article>

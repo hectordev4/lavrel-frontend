@@ -9,7 +9,12 @@ export const SEARCH_ROUTES: Routes = [
   {
     path: 'results',
     title: 'Results · Lavrel',
-    data: { heading: 'Results', branch: 'feat/search-results' },
+    loadComponent: () => import('./pages/results/results.page').then((m) => m.ResultsPage),
+  },
+  {
+    path: 'filters',
+    title: 'Filters · Lavrel',
+    data: { heading: 'Filters', branch: 'feat/search-filters' },
     loadComponent: () => import('../../layout/placeholder-page/placeholder-page').then((m) => m.PlaceholderPage),
   },
 ];

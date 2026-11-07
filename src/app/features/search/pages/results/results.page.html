@@ -1,0 +1,74 @@
+<main class="page results">
+  <div class="heading">
+    <a class="icon-btn" routerLink="/search" aria-label="Back to search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </a>
+    <h1>{{ filters().q ? 'Results for “' + filters().q + '”' : 'Results' }}</h1>
+  </div>
+
+  <div class="chips">
+    <a class="filters-link" routerLink="/search/filters" [queryParams]="queryParams()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16 M7 12h10 M10 18h4" /></svg>
+      <span>Filters</span>
+      @if (filterCount()) {
+        <span class="count">{{ filterCount() }}</span>
+      }
+    </a>
+    @for (chip of chips(); track chip.key) {
+      <app-chip [label]="chip.label" [removable]="true" (activate)="apply(chip.without)" />
+    }
+  </div>
+
+  <div class="bar">
+    <span class="hint">{{ filterCount() ? 'Games with every selected filter' : 'All games in the catalog' }}</span>
+    <label class="sort">
+      <span class="visually-hidden">Sort by</span>
+      <select [value]="sort()" (change)="changeSort($any($event.target).value)">
+        @for (option of sortOptions(); track option.value) {
+          <option [value]="option.value" [selected]="option.value === sort()">{{ option.label }}</option>
+        }
+      </select>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+    </label>
+  </div>
+
+  @switch (results.state().kind) {
+    @case ('loading') {
+      <div class="list" role="status" aria-label="Loading results">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="skeleton"></div>
+        }
+      </div>
+    }
+    @case ('error') {
+      <div class="failed">
+        <p class="alert" role="alert">{{ $any(results.state()).message }}</p>
+        <button type="button" class="btn btn-secondary" (click)="results.retry()">Try again</button>
+      </div>
+    }
+    @case ('ready') {
+      @if ($any(results.state()).games.length === 0) {
+        <p class="empty">No games match. Remove a filter, or try another name.</p>
+      } @else {
+        <div class="list">
+          @for (game of $any(results.state()).games; track game.id) {
+            <app-result-card [game]="game" />
+          }
+        </div>
+        @if ($any(results.state()).moreError) {
+          <p class="alert" role="alert">{{ $any(results.state()).moreError }}</p>
+        }
+        @if ($any(results.state()).hasMore) {
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="$any(results.state()).loadingMore"
+            (click)="results.loadMore()"
+          >
+            {{ $any(results.state()).loadingMore ? 'Loading…' : 'Show more' }}
+          </button>
+        }
+      }
+    }
+  }
+</main>
