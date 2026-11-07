@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+// Leaves room for the fixed tab bar.
+.content {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5rem);
+}
