@@ -1,0 +1,74 @@
+<main class="page games">
+  <div class="intro">
+    <h1>Games</h1>
+    @if (tracked.loadState() === 'ready') {
+      <span class="sub">{{ tracked.games().length }} tracked · {{ tracked.pinnedCount() }} of {{ maxPinned }} pinned to Home</span>
+    }
+  </div>
+
+  <nav class="segmented" aria-label="Games views">
+    <a routerLink="/games" aria-current="page" class="on">Tracked</a>
+    <a routerLink="/games/library">My library</a>
+  </nav>
+
+  @if (message(); as m) {
+    <p class="alert" role="alert">{{ m }}</p>
+  }
+
+  @switch (tracked.loadState()) {
+    @case ('error') {
+      <div class="failed">
+        <p class="alert" role="alert">Your games didn’t load. Try again in a moment.</p>
+        <button type="button" class="btn btn-secondary" (click)="tracked.reload()">Try again</button>
+      </div>
+    }
+    @case ('ready') {
+      @if (tracked.games().length === 0) {
+        <div class="empty">
+          <h2>Nothing tracked yet</h2>
+          <p>Find a game you’re playing, or want to play, and track it. Any game in the catalog works, owned or not.</p>
+          <a class="btn btn-primary" routerLink="/search">Find a game</a>
+        </div>
+      } @else {
+        <div class="chips" role="group" aria-label="Filter by status">
+          @for (chip of statusChips(); track chip.value) {
+            <app-chip [label]="chip.label" [count]="chip.count" [pressed]="status() === chip.value" (activate)="status.set(chip.value)" />
+          }
+        </div>
+        <div class="bar">
+          <span class="sub">{{ visible().length }} {{ visible().length === 1 ? 'game' : 'games' }}</span>
+          <label class="sort">
+            <span class="visually-hidden">Sort by</span>
+            <select (change)="sort.set($any($event.target).value)">
+              @for (option of sortOptions; track option.value) {
+                <option [value]="option.value" [selected]="option.value === sort()">{{ option.label }}</option>
+              }
+            </select>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </label>
+        </div>
+        @if (visible().length === 0) {
+          <p class="sub">No games with this status.</p>
+        }
+        <div class="list">
+          @for (game of visible(); track game.gameId) {
+            <app-tracked-card
+              [game]="game"
+              [busy]="tracked.busy().has(game.gameId)"
+              (statusChange)="changeStatus(game, $event)"
+              (pinToggle)="togglePin(game)"
+              (remove)="remove(game)"
+            />
+          }
+        </div>
+      }
+    }
+    @default {
+      <div class="list" role="status" aria-label="Loading your games">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="skeleton"></div>
+        }
+      </div>
+    }
+  }
+</main>

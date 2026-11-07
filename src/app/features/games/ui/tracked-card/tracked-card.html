@@ -1,0 +1,75 @@
+<article class="card" [attr.aria-busy]="busy()">
+  <div class="top">
+    <app-game-cover class="cover" [src]="game().coverImageUrl" [title]="game().title" />
+    <div class="info">
+      <a class="title" [routerLink]="link()">{{ game().title }}</a>
+      <label class="status">
+        <span class="visually-hidden">Status of {{ game().title }}</span>
+        <select [disabled]="busy()" (change)="onStatus($any($event.target).value)">
+          @for (s of statuses; track s.value) {
+            <option [value]="s.value" [selected]="s.value === game().status">{{ s.label }}</option>
+          }
+        </select>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+      </label>
+    </div>
+    <div class="actions">
+      <button
+        type="button"
+        class="icon-action"
+        [class.pinned]="pinned()"
+        [attr.aria-pressed]="pinned()"
+        [attr.aria-label]="(pinned() ? 'Unpin ' : 'Pin ') + game().title + (pinned() ? ' from Home' : ' to Home')"
+        [disabled]="busy()"
+        (click)="pinToggle.emit()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5 M9 3h6l-1 6 3 3v2H7v-2l3-3z" /></svg>
+      </button>
+      <details class="menu">
+        <summary class="icon-action" [attr.aria-label]="'More for ' + game().title">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01 M12 12h.01 M19 12h.01" /></svg>
+        </summary>
+        <div class="menu-panel">
+          <button type="button" [disabled]="busy()" (click)="remove.emit()">Remove from tracking</button>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  @if (game().total > 0) {
+    <div class="progress">
+      <div class="progress-line">
+        <span>{{ game().unlocked }} of {{ game().total }} unlocked</span>
+        @if (percent() === 100) {
+          <span class="perfect"><app-perfect-diamond label="" /><span class="number">100%</span></span>
+        } @else {
+          <span class="number">{{ percent() }}%</span>
+        }
+      </div>
+      <app-progress-bar [percent]="percent()" [label]="game().title + ' achievements unlocked'" />
+    </div>
+  }
+
+  @if (game().nextAchievements.length) {
+    <div class="next">
+      <h3>Easiest next</h3>
+      <ul>
+        @for (a of game().nextAchievements; track a.achievementId) {
+          <li>
+            @if (a.hidden && !revealed().has(a.achievementId)) {
+              <button type="button" class="reveal" (click)="reveal(a.achievementId)">
+                <span class="blur" aria-hidden="true">{{ a.name }}</span>
+                <span class="visually-hidden">Hidden achievement. Reveal it.</span>
+              </button>
+            } @else {
+              <span class="name">{{ a.name }}</span>
+            }
+            @if (a.globalPercent !== null) {
+              <span class="number">{{ a.globalPercent }}%</span>
+            }
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</article>
