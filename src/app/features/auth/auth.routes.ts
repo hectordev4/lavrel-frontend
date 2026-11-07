@@ -1,23 +1,23 @@
 import { Routes } from '@angular/router';
-import { guestGuard, unverifiedGuard } from '../../core/auth/auth.guards';
+import { signedOutGuard, unverifiedGuard } from '../../core/auth/auth.guards';
 
 export const AUTH_ROUTES: Routes = [
   {
     path: 'welcome',
-    canMatch: [guestGuard],
+    canMatch: [signedOutGuard],
     title: 'Lavrel',
     loadComponent: () => import('./pages/welcome/welcome.page').then((m) => m.WelcomePage),
   },
   {
     path: 'sign-in',
-    canMatch: [guestGuard],
+    canMatch: [signedOutGuard],
     title: 'Sign in · Lavrel',
     data: { mode: 'sign-in' },
     loadComponent: () => import('./pages/email-auth/email-auth.page').then((m) => m.EmailAuthPage),
   },
   {
     path: 'register',
-    canMatch: [guestGuard],
+    canMatch: [signedOutGuard],
     title: 'Create account · Lavrel',
     data: { mode: 'register' },
     loadComponent: () => import('./pages/email-auth/email-auth.page').then((m) => m.EmailAuthPage),
