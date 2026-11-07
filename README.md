@@ -15,6 +15,12 @@ Mobile-first Angular 22 frontend for Lavrel. Standalone components, signals, zon
 3. Firebase console → Authentication → Sign-in method: enable **Email/Password** and **Google**.
 4. `npm install` then `npm start` → http://localhost:4200
 5. Start the Spring Boot API on :8080. `/api/**` is proxied there by `proxy.conf.json`, so no CORS change is needed in dev.
+   To use the deployed backend instead, set `apiBaseUrl: 'https://lavrel.onrender.com'` in your environment file.
+
+The backend's README (API reference section, `hectordev4/lavrel-backend`) is the source of truth for every endpoint.
+
+When the frontend is deployed, add its origin to `CORS_ALLOWED_ORIGINS` and `FRONTEND_BASE_URL` in Render, and its
+domain to Firebase → Authentication → Settings → **Authorized domains**.
 
 On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: set
 `export NG_BUILD_SASS_EMBEDDED=false` in your shell profile to use the JavaScript compiler.
@@ -69,3 +75,55 @@ backend sees `email_verified=true`. Verified users land on **/home**.
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs
 through the cubes every 7 s), `loading` (light chase), `boot` (intro + chase). Reduced motion is respected.
+
+## Designs
+
+The screens live on the **Lavrel — Main view** design canvas:
+https://claude.ai/artifact/8qm291jDAfC7MbEtQwetLq (private to the owner until shared). All game names and numbers on it
+are example data.
+
+| Row | Screens |
+|---|---|
+| Getting in | Welcome (sign in or *Skip for now*), Home without an account, Profile without an account |
+| Signed in | Home (returning player), Home (first visit), Games: tracked, Games: my library, Progress bar tiers |
+| Search and game pages | Search suggestions, Search results, Filters, Game page, AI guide, AI guide spoiler check |
+| Profile | Settings, Settings without Steam, Avatar picker, Public profile (full), Public profile (simple) |
+
+### Design rules
+
+- **Palette** (from the app icon): ink `#1c1c1c` background, raised `#262624`, cream `#f2f0ea` text and primary
+  buttons, muted `#a19e95`, gold `#e8b84a` for unlocks and focus, green `#6fcf8f` only for a platform's
+  *Connected* state as the owner sees it. Fonts: Manrope (UI), IBM Plex Mono (wordmark, numbers).
+- **Cube L.** The small L in the header is static. Every big L (splash, welcome, call-to-action cards, loading
+  screens) is animated: cubes drop in one by one with a gold flash, then a shake wave runs through them every 7 s.
+- **Progress bars** by completion:
+
+  | Progress | Bar |
+  |---|---|
+  | 0–19% | gray |
+  | 20–49% | bronze |
+  | 50–79% | silver |
+  | 80–89% | gold |
+  | 90–99% | gold with a steady aura |
+  | 100% | hue-shifting with an aura, plus the diamond |
+
+- **Perfect games** (100%) show a faceted diamond whose colours cycle through the hues. Reduced motion stops
+  every animation.
+- **Platform badges** are round with the platform's official logo inside (from the platform's brand assets).
+- **Without an account** people can browse and search the catalog and open game pages. Games (tracking, library)
+  and Profile show a sign-in screen instead.
+- **Privacy.** Public profiles are opt-in; country, platforms, avatar and (pending in the backend) library size
+  each have their own switch, off by default.
+- **Game page** keeps the release date under the title only; the developer is in Details; no minimum age or
+  age ratings.
+
+## Roadmap (one `feat/*` branch each, merged into `dev`)
+
+1. `feat/app-shell`: header, tab bar, browsing without an account, call-to-action cards
+2. `feat/search`: suggestions, results, filters (tags, franchise, developer, publisher, modes, system)
+3. `feat/game-page`: details, achievements with worldwide and country percentages
+4. `feat/tracking`: tracked list, statuses, pins, signed-in Home
+5. `feat/library`: My library and collections
+6. `feat/profile`: settings, avatar picker, platforms (link, sync, auto-sync, unlink), delete account
+7. `feat/public-profile`: public profile and shelves
+8. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
