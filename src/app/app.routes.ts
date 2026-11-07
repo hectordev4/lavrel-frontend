@@ -10,6 +10,13 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', canMatch: [entryGuard], children: [] },
   { path: '', loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES) },
   {
+    // Full-screen, without header and tab bar.
+    path: 'search/filters',
+    canMatch: [browseGuard],
+    title: 'Filters · Lavrel',
+    loadComponent: () => import('./features/search/pages/filters/filters.page').then((m) => m.FiltersPage),
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/app-shell/app-shell').then((m) => m.AppShell),
     children: [
