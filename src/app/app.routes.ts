@@ -67,6 +67,12 @@ export const routes: Routes = [
           import('./features/platforms/pages/steam-linked/steam-linked.page').then((m) => m.SteamLinkedPage),
       },
       {
+        path: 'players/:publicId',
+        canMatch: [browseGuard],
+        title: 'Player · Lavrel',
+        loadComponent: () => import('./features/players/pages/player/player.page').then((m) => m.PlayerPage),
+      },
+      {
         path: 'search',
         canMatch: [browseGuard],
         loadChildren: () => import('./features/search/search.routes').then((m) => m.SEARCH_ROUTES),

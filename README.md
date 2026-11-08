@@ -91,6 +91,11 @@ src/app
     │   └── models/           AuthTask, EmailAuthMode
     ├── platforms/
     │   └── pages/            steam-linked (where Steam's login returns)
+    ├── players/              public profiles
+    │   ├── pages/            player (/players/:publicId)
+    │   ├── ui/               shelf
+    │   ├── data-access/      PlayersApi → GET /api/users/{publicId}, shelf labels
+    │   └── models/           PublicProfile, Shelf and its items, PlayerPageState
     ├── profile/
     │   ├── pages/            profile (the Profile tab)
     │   ├── ui/               privacy-section, platforms-section, avatar-picker
@@ -152,7 +157,7 @@ tabs show a sign-in screen.
 | `/` | welcome, or home after *Skip for now* | verify-email | home |
 | `/welcome`, `/sign-in`, `/register` | ✓ | verify-email | home |
 | `/home` | discover home | verify-email | member home |
-| `/search`, `/search/results`, `/search/filters`, `/games/:slug` | ✓ | verify-email | ✓ |
+| `/search`, `/search/results`, `/search/filters`, `/games/:slug`, `/players/:publicId` | ✓ | verify-email | ✓ |
 | `/games`, `/library`, `/profile` | sign-in screen | verify-email | ✓ |
 
 ## Search
@@ -247,6 +252,15 @@ them to a 256×256 square and strips hidden photo data), GIF up to 1 MB and 512�
 checks type and size before uploading; the backend's `invalid_avatar` message covers the rest.
 
 The header and the Profile tab share `MyAvatar`, so a new avatar shows everywhere at once.
+
+## Public profiles
+
+`/players/{publicId}` (`GET /api/users/{publicId}`, no account needed) shows the avatar, name, player id and month
+joined, plus country, round platform badges and the picture only when the owner turned them on. Then each shelf in
+the owner's order: games (`COLLECTION`, `RECENTLY_PLAYED`, `PLAYING`, `COMPLETED`) as a row linking by slug,
+`ACHIEVEMENTS` as a list with rare ones (under 5%) in gold, and `STATS` (games owned only if `showLibrarySize` is
+on). Untitled shelves use their type's name. A private profile reads *Profile not found*, exactly like an unknown
+one. The Profile tab links to your own.
 
 ## My library
 
@@ -361,7 +375,10 @@ are example data.
    - `feat/profile-privacy` ✓: public profile switches
    - `feat/profile-platforms` ✓: Steam (connected state, Sync now, automatic sync, unlink), Xbox and PlayStation soon
    - `feat/profile-avatar` ✓: animated avatars and the avatar picker (generated, gallery, upload)
-8. `feat/public-profile`: public profile and shelves
+8. Public profiles, in branches:
+   - `feat/public-profile` ✓: the public profile page with its shelves
+   - `feat/profile-shelves`: adding, titling, ordering and removing your shelves; picking achievements
+   - `feat/player-search`: finding players by name or id
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
 
 Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions) and the `test/*` pass ✓ (`test/core`,
