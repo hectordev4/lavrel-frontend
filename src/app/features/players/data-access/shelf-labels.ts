@@ -1,14 +1,5 @@
-import { Shelf, ShelfType } from '../models/public-profile.model';
-
-/** The name a shelf shows when its owner didn't give it a title. */
-export const SHELF_TYPE_NAMES: Record<ShelfType, string> = {
-  COLLECTION: 'Collection',
-  RECENTLY_PLAYED: 'Recently played',
-  PLAYING: 'Playing now',
-  COMPLETED: 'Completed',
-  ACHIEVEMENTS: 'Achievements',
-  STATS: 'At a glance',
-};
+import { SHELF_TYPE_NAMES } from '../../../core/profile/shelf-types';
+import { Shelf } from '../models/public-profile.model';
 
 export function shelfTitle(shelf: Shelf): string {
   return shelf.title || (shelf.type === 'COLLECTION' && shelf.collectionName) || SHELF_TYPE_NAMES[shelf.type];
