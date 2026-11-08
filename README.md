@@ -29,6 +29,11 @@ On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: 
 
 - `npm test` runs the unit tests (Vitest) and watches for changes; `npm run test:ci` runs them once.
 - Every component, service and helper gets a `*.spec.ts` next to it, written with the feature that adds it.
+- Shared test setup lives in `src/testing/` (left out of the app build): `testProviders()` (HTTP testing, empty
+  router, test environment), `memberUser()` / `unverifiedUser()`, `FakeAuthGateway` (no Firebase, spy methods) and
+  `signInAs(user)`.
+- Coverage so far: **core** (auth mapper, store, guest mode, guards, interceptor, session, API clients, tracked games,
+  platform accounts, messages).
 - **GitHub Actions** (`.github/workflows/ci.yml`) runs on pushes to `main`, `dev`, `feat/**`, `fix/**` and `ci/**`
   and on pull requests into `main` and `dev`: `npm ci`, environment files copied from `environment.example.ts`, a
   production build and `npm run test:ci`. A newer push cancels the run still going on the same branch.
@@ -336,5 +341,3 @@ are example data.
 
 Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions), then a `test/*` pass adding specs for
 every component built so far.
-
-  ![CI](https://github.com/USER/REPO/actions/workflows/ci.yml/badge.svg)
