@@ -73,7 +73,7 @@ export class ProfilePage {
     try {
       await navigator.clipboard.writeText(String(this.account.user()?.publicId ?? ''));
       this.copied.set(true);
-      setTimeout(() => this.copied.set(false), 2000);
+      setTimeout(() => this.copied.set(false), 1000);
     } catch {
       // Clipboard blocked: the id is still visible to copy by hand.
     }
