@@ -60,6 +60,7 @@ src/app
 │   │                         LibraryGame, LibraryPage, LibraryParams, LibrarySort
 │   ├── tracking/             TrackedGames (shared store of the member's tracked games), status labels, messages
 │   ├── platforms/            PlatformAccounts (linked accounts, link, sync with pending rounds), messages
+│   ├── profile/              MyAvatar (the member's avatar, seed and initial, for the header and Profile)
 │   ├── config/               AppEnv model, APP_ENV token
 │   └── boot.ts               splash → welcome hand-off
 ├── layout/                   the frame around in-app pages
@@ -77,7 +78,8 @@ src/app
 │   ├── track-control/        Track / status select / Stop tracking / pin (presentational)
 │   ├── modal/                bottom sheet on the native <dialog>
 │   ├── switch/               on/off setting (role="switch")
-├── shared/utils/             relativeTime ("2 hours ago"), gameLink (/games/{slug})
+│   ├── avatar/               animated round avatar (upload, gallery or generated Pixelbot)
+├── shared/utils/             relativeTime ("2 hours ago"), gameLink (/games/{slug}), avatar-art (Pixelbot drawing)
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
@@ -91,7 +93,7 @@ src/app
     │   └── pages/            steam-linked (where Steam's login returns)
     ├── profile/
     │   ├── pages/            profile (the Profile tab)
-    │   ├── ui/               privacy-section, platforms-section
+    │   ├── ui/               privacy-section, platforms-section, avatar-picker
     │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, PrivacyApi, messages
     │   └── models/           Country, AccountState, ProfileSettings
     ├── games/                the Games tab for members
@@ -226,6 +228,26 @@ automatically* (`GET` / `PUT /api/currentuser/auto-sync`), *Sync now* and *Unlin
 (`DELETE /api/currentuser/accounts/{platform}/{externalId}`). Not connected: *Connect Steam*. Xbox and PlayStation
 show as coming soon.
 
+## Avatars
+
+Every robot is **[Pixelbot](https://www.dicebear.com/styles/pixelbot/) by DiceBear**, released under
+**CC0 1.0** (public domain, no attribution required; the avatar sheet credits it anyway), drawn in the browser with
+`@dicebear/core` (MIT) and `@dicebear/styles`, both pinned. Every avatar uses Pixelbot's built-in CSS animation at
+the slow speed; the SVG stops moving by itself for people who ask for reduced motion. DiceBear is loaded on first
+use, so it isn't part of the first download.
+
+| Kind | What shows | Backend |
+|---|---|---|
+| Generated (default) | the Pixelbot seeded with the member's public id | `DELETE /api/currentuser/profile/avatar` goes back to it |
+| Gallery | the Pixelbot seeded with the gallery id (`gallery-01`…) | ids from `GET /api/avatars/gallery`; `PUT …/avatar/gallery` |
+| Upload | the member's picture at `imageUrl` (public `avatars` bucket) | `PUT /api/currentuser/profile/avatar` with the file as the body |
+
+Every avatar endpoint answers `{"kind", "galleryId", "imageUrl"}`. Uploads: JPG or PNG up to 2 MB (the backend crops
+them to a 256×256 square and strips hidden photo data), GIF up to 1 MB and 512×512 with animation kept. The sheet
+checks type and size before uploading; the backend's `invalid_avatar` message covers the rest.
+
+The header and the Profile tab share `MyAvatar`, so a new avatar shows everywhere at once.
+
 ## My library
 
 `/library` lists the games owned on linked accounts (`GET /api/currentuser/games`), 48 at a time with
@@ -338,7 +360,7 @@ are example data.
    - `feat/profile-account` ✓: header, display name, country, e-mail, sign out, delete account
    - `feat/profile-privacy` ✓: public profile switches
    - `feat/profile-platforms` ✓: Steam (connected state, Sync now, automatic sync, unlink), Xbox and PlayStation soon
-   - `feat/profile-avatar`: avatar picker (generated, gallery, upload)
+   - `feat/profile-avatar` ✓: animated avatars and the avatar picker (generated, gallery, upload)
 8. `feat/public-profile`: public profile and shelves
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
 

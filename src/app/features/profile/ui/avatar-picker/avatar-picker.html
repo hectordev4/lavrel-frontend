@@ -1,0 +1,52 @@
+<div class="picker">
+  <app-avatar class="preview" [avatar]="preview()" [seed]="me.seed()" [initial]="me.initial()" label="Preview of your avatar" />
+
+  <div class="segmented" role="group" aria-label="Avatar source">
+    @for (s of sources; track s.value) {
+      <button type="button" [class.on]="source() === s.value" [attr.aria-pressed]="source() === s.value" (click)="source.set(s.value)">
+        {{ s.label }}
+      </button>
+    }
+  </div>
+
+  @switch (source()) {
+    @case ('GENERATED') {
+      <p class="note">A robot made from your player id, only yours. It moves gently, unless your device asks for less motion.</p>
+    }
+    @case ('GALLERY') {
+      <ul class="gallery" aria-label="Gallery">
+        @for (id of galleryIds(); track id) {
+          <li>
+            <button
+              type="button"
+              [class.chosen]="galleryChoice() === id"
+              [attr.aria-pressed]="galleryChoice() === id"
+              [attr.aria-label]="'Gallery picture ' + id.replace('gallery-', '')"
+              (click)="galleryChoice.set(id)"
+            >
+              <app-avatar class="thumb" [avatar]="{ kind: 'GALLERY', galleryId: id, imageUrl: null }" />
+            </button>
+          </li>
+        }
+      </ul>
+    }
+    @case ('UPLOADED') {
+      <label class="upload">
+        <span class="btn btn-secondary">Choose a picture</span>
+        <input type="file" accept="image/jpeg,image/png,image/gif" (change)="onFile($any($event.target))" />
+      </label>
+      <p class="note">
+        JPG or PNG up to 2 MB, cropped to a square. GIF up to 1 MB and 512×512; animated GIFs keep moving.
+      </p>
+    }
+  }
+
+  @if (error(); as e) {
+    <p class="alert" role="alert">{{ e }}</p>
+  }
+
+  <button type="button" class="btn btn-primary" [disabled]="!canSave()" (click)="save()">
+    {{ saving() ? 'Saving…' : 'Save avatar' }}
+  </button>
+  <p class="credit">Robots: Pixelbot by DiceBear, CC0 1.0.</p>
+</div>
