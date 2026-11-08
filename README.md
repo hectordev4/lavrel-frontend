@@ -217,7 +217,7 @@ confirmation. Guests see *Sign in to track* on the game page.
 
 ## Profile
 
-The Profile tab shows the initial avatar, display name, player id (copy button, grouped in fours) and country. Rows
+The Profile tab shows the initial avatar, display name, player id (grouped in fours, with a copy button; a green tick beside it confirms the copy for a second) and country. Rows
 open sheets to change the display name (`PATCH /api/currentuser/username`; names don't need to be unique) and the
 country (`GET /api/countries`, `PATCH /api/currentuser/country`, only used for country statistics). The e-mail is
 shown as private. *Sign out* lives here; *Delete account* asks you to type DELETE, then calls
