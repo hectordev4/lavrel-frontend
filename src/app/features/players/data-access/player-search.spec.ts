@@ -25,7 +25,7 @@ describe('PlayerSearch', () => {
     vi.advanceTimersByTime(300);
     http
       .expectOne((r) => r.url === '/api/users' && r.params.get('q') === 'swi')
-      .flush({ users: [{ publicId: '1', username: 'SwiftOtter', memberSince: null, country: null, platforms: null }] });
+      .flush({ players: [{ publicId: '1', username: 'SwiftOtter', memberSince: null, country: null, platforms: null }], page: 0 });
     const s = search.state();
     expect(s.kind === 'ready' && s.players.map((p) => p.username)).toEqual(['SwiftOtter']);
   });

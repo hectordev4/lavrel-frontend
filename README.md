@@ -270,7 +270,8 @@ confirmation sheet. *Add a shelf* only offers types you don't have yet; collecti
 collection. *Pick achievements* chooses up to 12 from your latest 20 unlocks (the recent unlocks endpoint's limit).
 `CollectionsApi` and `MemberOverviewApi` live in `core/api` because Games, Home and Profile all use them.
 
-**Finding players** (`/players`, from *Looking for a player?* in the Search tab): `GET /api/users?q=` with a name
+**Finding players** (`/players`, from *Looking for a player?* in the Search tab): `GET /api/users?q=` (answers
+`{"players": [...], "page": 0}`, each with the profile header's fields) with a name
 (2+ characters, after a 300 ms pause) or a player id typed with or without its spaces. Only public profiles appear.
 Each result shows the avatar, name, player id and country. The Search tab stays lit on `/players` and on public
 profiles.
