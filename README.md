@@ -25,6 +25,16 @@ domain to Firebase → Authentication → Settings → **Authorized domains**.
 On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: set
 `export NG_BUILD_SASS_EMBEDDED=false` in your shell profile to use the JavaScript compiler.
 
+## Tests and CI
+
+- `npm test` runs the unit tests (Vitest) and watches for changes; `npm run test:ci` runs them once.
+- Every component, service and helper gets a `*.spec.ts` next to it, written with the feature that adds it.
+- **GitHub Actions** (`.github/workflows/ci.yml`) runs on pushes to `main`, `dev`, `feat/**`, `fix/**` and `ci/**`
+  and on pull requests into `main` and `dev`: `npm ci`, environment files copied from `environment.example.ts`, a
+  production build and `npm run test:ci`. A newer push cancels the run still going on the same branch.
+- Protect `main` and `dev` on GitHub (Settings → Branches) so a pull request can only merge with **Build and test**
+  passing.
+
 ## Structure
 
 ```
@@ -323,3 +333,6 @@ are example data.
    - `feat/profile-avatar`: avatar picker (generated, gallery, upload)
 8. `feat/public-profile`: public profile and shelves
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
+
+Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions), then a `test/*` pass adding specs for
+every component built so far.
