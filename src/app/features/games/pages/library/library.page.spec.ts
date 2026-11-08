@@ -4,14 +4,13 @@ import { fakeAuthProvider, signInAs } from '../../../../../testing/auth-testing'
 import { libraryGame } from '../../../../../testing/fixtures';
 import { memberUser, testProviders } from '../../../../../testing/test-env';
 import { LibraryPage } from './library.page';
+import { installDialogStandIn } from '../../../../../testing/dialog';
 
 const settle = () => new Promise((resolve) => setTimeout(resolve));
 
 describe('LibraryPage', () => {
   it('lists owned games with the collection chips', async () => {
-    HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
-      this.open = true;
-    };
+    installDialogStandIn();
     TestBed.configureTestingModule({ providers: testProviders(fakeAuthProvider) });
     signInAs(memberUser());
     const fixture = TestBed.createComponent(LibraryPage);
