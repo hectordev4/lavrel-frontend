@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { gameLink } from '../../../../shared/utils/game-link';
 import { relativeTime } from '../../../../shared/utils/relative-time';
-import { RecentUnlock as RecentUnlockModel } from '../../models/recent-unlock.model';
+import { RecentUnlock as RecentUnlockModel } from '../../../../core/api/models/recent-unlock.model';
 
 /** Under 5% of players: shown in gold as rare. */
 const RARE_BELOW = 5;

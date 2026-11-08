@@ -11,7 +11,7 @@ import { Modal } from '../../../../shared/ui/modal/modal';
 import { LIBRARY_SORT_LABELS } from '../../data-access/library-labels';
 import { MyCollections } from '../../data-access/my-collections';
 import { MyLibrary } from '../../data-access/my-library';
-import { Collection } from '../../models/collection.model';
+import { Collection } from '../../../../core/api/models/collection.model';
 import { LibraryCard } from '../../ui/library-card/library-card';
 
 /** /library: the games the member owns on linked accounts, with a name filter, five sorts and paging. */

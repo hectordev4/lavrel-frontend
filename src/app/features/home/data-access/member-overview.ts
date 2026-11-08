@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { MemberStats } from '../models/member-stats.model';
-import { RecentUnlock } from '../models/recent-unlock.model';
-import { MemberOverviewApi } from './member-overview.api';
+import { MemberStats } from '../../../core/api/models/member-stats.model';
+import { RecentUnlock } from '../../../core/api/models/recent-unlock.model';
+import { MemberOverviewApi } from '../../../core/api/member-overview.api';
 
 /** Home's totals and latest unlocks. Each loads on its own, so one failing doesn't hide the other. */
 @Injectable()

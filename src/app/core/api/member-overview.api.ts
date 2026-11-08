@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { APP_ENV } from '../../../core/config/app-env.token';
-import { MemberStats } from '../models/member-stats.model';
-import { RecentUnlock } from '../models/recent-unlock.model';
+import { APP_ENV } from '../config/app-env.token';
+import { MemberStats } from './models/member-stats.model';
+import { RecentUnlock } from './models/recent-unlock.model';
 
 /** The member's own totals and latest unlocks, for Home. */
 @Injectable({ providedIn: 'root' })
