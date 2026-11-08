@@ -20,7 +20,7 @@ describe('TabBar', () => {
     ['/games', 'Games'],
     ['/library', 'Games'],
     ['/search/results?q=doom', 'Search'],
-    ['/profile', 'Profile'],
+    ['/assistant', 'AI'],
     ['/players', 'Search'],
     ['/players/1895582819150483', 'Search'],
   ])('lights %s as %s', async (url, tab) => {
@@ -29,6 +29,18 @@ describe('TabBar', () => {
 
   it('lights no tab on a game page', async () => {
     expect(await activeAt('/games/rogue-harbor')).toEqual([]);
+  });
+
+  it('lights nothing on Profile', async () => {
+    expect(await activeAt('/profile')).toEqual([]);
+  });
+
+  it('shows Home, Search, AI and Games, in that order', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([{ path: '**', component: Blank }])] });
+    const fixture = TestBed.createComponent(TabBar);
+    fixture.detectChanges();
+    const labels = [...fixture.nativeElement.querySelectorAll('a')].map((a: Element) => a.textContent!.trim());
+    expect(labels).toEqual(['Home', 'Search', 'AI', 'Games']);
   });
 
   it('marks the active tab as the current page', async () => {
