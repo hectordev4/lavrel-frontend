@@ -66,7 +66,7 @@ src/app
 ├── layout/                   the frame around in-app pages
 │   ├── app-shell/            header + page + tab bar
 │   ├── app-header/           static wordmark, avatar (members) or Sign in (guests)
-│   ├── tab-bar/              Home, Games, Search, Profile
+│   ├── tab-bar/              Home, Search, AI, Games (Profile: the avatar at the top right)
 │   └── placeholder-page/     stands in for tabs whose branch hasn't landed
 ├── shared/ui/                dumb, reusable components
 │   ├── cube-logo/            animated cube L (+ geometry, models/)
@@ -89,6 +89,8 @@ src/app
     │   ├── ui/               google-button
     │   ├── data-access/      AuthFlow facade, error messages
     │   └── models/           AuthTask, EmailAuthMode
+    ├── assistant/            the AI tab and achievement guides
+    │   └── pages/            assistant (/assistant)
     ├── platforms/
     │   └── pages/            steam-linked (where Steam's login returns)
     ├── players/              public profiles
@@ -158,7 +160,7 @@ tabs show a sign-in screen.
 | `/welcome`, `/sign-in`, `/register` | ✓ | verify-email | home |
 | `/home` | discover home | verify-email | member home |
 | `/search`, `/search/results`, `/search/filters`, `/games/:slug`, `/players`, `/players/:publicId` | ✓ | verify-email | ✓ |
-| `/games`, `/library`, `/profile` | sign-in screen | verify-email | ✓ |
+| `/games`, `/library`, `/assistant`, `/profile` | sign-in screen | verify-email | ✓ |
 
 ## Search
 
@@ -393,7 +395,10 @@ are example data.
    - `feat/public-profile` ✓: the public profile page with its shelves
    - `feat/profile-shelves` ✓: adding, titling, ordering and removing your shelves; picking achievements
    - `feat/player-search` ✓: finding players by name or id
-9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
+9. AI, in branches:
+   - `feat/ai-nav` ✓: tab bar Home, Search, AI, Games; the AI tab
+   - `feat/ai-guide`: a Guide button on each achievement, spoiler choice, chat screen, sources, daily allowance
+   - `feat/ai-chat` (later): open chat in the AI tab, once the backend has an endpoint for it
 
 Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions) and the `test/*` pass ✓ (`test/core`,
 `test/shared`, `test/layout`, `test/features`) adding specs for every component built so far. From here on, every
