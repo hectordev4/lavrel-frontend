@@ -16,7 +16,8 @@ describe('ProfilePage', () => {
     const fixture = TestBed.createComponent(ProfilePage);
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
-    http.expectOne('/api/currentuser').flush({ username: 'SwiftOtter', publicId: '4829103755210846', countryId: 2 });
+    // The page and the shared avatar both read the current user.
+    http.match('/api/currentuser').forEach((r) => r.flush({ username: 'SwiftOtter', publicId: '4829103755210846', countryId: 2 }));
     http.expectOne('/api/countries').flush({ countries: [{ id: 2, code: 'ES', name: 'Spain' }] });
     await settle();
     fixture.detectChanges();

@@ -21,16 +21,41 @@
   }
 }
 
+.avatar-button {
+  position: relative;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
 .avatar {
-  display: grid;
-  place-items: center;
   width: 6rem;
   height: 6rem;
+}
+
+.edit {
+  position: absolute;
+  right: -0.125rem;
+  bottom: -0.125rem;
+  display: grid;
+  place-items: center;
+  width: 2.125rem;
+  height: 2.125rem;
   border-radius: 50%;
-  border: 1px solid var(--hairline);
-  background: var(--ink-raised);
-  font-weight: 700;
-  font-size: 2rem;
+  border: 3px solid var(--ink);
+  background: var(--line);
+  color: var(--ink);
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
 }
 
 .id {

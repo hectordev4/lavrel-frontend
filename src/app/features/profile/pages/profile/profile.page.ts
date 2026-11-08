@@ -1,24 +1,28 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { AuthSession } from '../../../../core/auth/auth-session';
 import { AuthStore } from '../../../../core/auth/auth.store';
+import { MyAvatar } from '../../../../core/profile/my-avatar';
+import { Avatar } from '../../../../shared/ui/avatar/avatar';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { MyAccount } from '../../data-access/my-account';
+import { AvatarPicker } from '../../ui/avatar-picker/avatar-picker';
 import { PlatformsSection } from '../../ui/platforms-section/platforms-section';
 import { PrivacySection } from '../../ui/privacy-section/privacy-section';
 
-type Sheet = 'name' | 'country' | 'delete' | null;
+type Sheet = 'name' | 'country' | 'delete' | 'avatar' | null;
 
 /** The Profile tab: who you are (name, player id, country, e-mail), sign out and delete the account. */
 @Component({
   selector: 'app-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Modal, PlatformsSection, PrivacySection],
+  imports: [Avatar, AvatarPicker, Modal, PlatformsSection, PrivacySection],
   providers: [MyAccount],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',
 })
 export class ProfilePage {
   protected readonly account = inject(MyAccount);
+  protected readonly me = inject(MyAvatar);
   private readonly auth = inject(AuthStore);
   private readonly session = inject(AuthSession);
 
@@ -35,6 +39,7 @@ export class ProfilePage {
 
   constructor() {
     void this.account.load();
+    void this.me.ensureLoaded();
   }
 
   protected open(sheet: Sheet): void {
@@ -48,6 +53,7 @@ export class ProfilePage {
       return;
     }
     await this.save(() => this.account.rename(name));
+    if (!this.formError()) this.me.setInitialFrom(name.trim());
   }
 
   protected async saveCountry(value: string): Promise<void> {
