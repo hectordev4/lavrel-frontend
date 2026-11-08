@@ -9,6 +9,7 @@ import { MyAccount } from '../../data-access/my-account';
 import { AvatarPicker } from '../../ui/avatar-picker/avatar-picker';
 import { PlatformsSection } from '../../ui/platforms-section/platforms-section';
 import { PrivacySection } from '../../ui/privacy-section/privacy-section';
+import { ShelvesSection } from '../../ui/shelves-section/shelves-section';
 
 type Sheet = 'name' | 'country' | 'delete' | 'avatar' | null;
 
@@ -16,7 +17,7 @@ type Sheet = 'name' | 'country' | 'delete' | 'avatar' | null;
 @Component({
   selector: 'app-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Avatar, AvatarPicker, Modal, PlatformsSection, PrivacySection],
+  imports: [RouterLink, Avatar, AvatarPicker, Modal, PlatformsSection, PrivacySection, ShelvesSection],
   providers: [MyAccount],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',
