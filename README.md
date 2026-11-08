@@ -33,8 +33,10 @@ On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: 
   router, test environment), `memberUser()` / `unverifiedUser()`, `FakeAuthGateway` (no Firebase, spy methods) and
   `signInAs(user)`.
 - Coverage so far: **core** (auth mapper, store, guest mode, guards, interceptor, session, API clients, tracked games,
-  platform accounts, messages), **shared** (every shared component, relativeTime, gameLink) and **layout** (tab
-  bar, header, placeholder).
+  platform accounts, messages), **shared** (every shared component, relativeTime, gameLink), **layout** (tab
+  bar, header, placeholder) and every **feature** (auth, search, game, games and library, both Homes, profile,
+  Steam return page) plus the root `App`. `src/testing/fixtures.ts` builds sample games, achievements, tracked
+  and library games. About 200 tests, all run by CI.
 - **GitHub Actions** (`.github/workflows/ci.yml`) runs on pushes to `main`, `dev`, `feat/**`, `fix/**` and `ci/**`
   and on pull requests into `main` and `dev`: `npm ci`, environment files copied from `environment.example.ts`, a
   production build and `npm run test:ci`. A newer push cancels the run still going on the same branch.
@@ -340,5 +342,6 @@ are example data.
 8. `feat/public-profile`: public profile and shelves
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
 
-Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions), then a `test/*` pass adding specs for
-every component built so far.
+Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions) and the `test/*` pass ✓ (`test/core`,
+`test/shared`, `test/layout`, `test/features`) adding specs for every component built so far. From here on, every
+feature branch brings its own specs.
