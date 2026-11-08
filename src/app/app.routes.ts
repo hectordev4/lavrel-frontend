@@ -79,6 +79,22 @@ export const routes: Routes = [
         loadComponent: () => import('./features/players/pages/player/player.page').then((m) => m.PlayerPage),
       },
       {
+        path: 'assistant',
+        canMatch: [memberGuard],
+        title: 'AI guide · Lavrel',
+        loadComponent: () => import('./features/assistant/pages/assistant/assistant.page').then((m) => m.AssistantPage),
+      },
+      {
+        path: 'assistant',
+        canMatch: [guestGuard],
+        title: 'AI guide · Lavrel',
+        data: {
+          heading: 'Guides for every achievement',
+          text: 'Sign in to ask the AI how to get an achievement, with or without spoilers.',
+        },
+        loadComponent: () => import('./features/auth/pages/sign-in-gate/sign-in-gate.page').then((m) => m.SignInGatePage),
+      },
+      {
         path: 'search',
         canMatch: [browseGuard],
         loadChildren: () => import('./features/search/search.routes').then((m) => m.SEARCH_ROUTES),
