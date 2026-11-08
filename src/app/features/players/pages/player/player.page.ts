@@ -1,0 +1,62 @@
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { map } from 'rxjs';
+import { Avatar } from '../../../../shared/ui/avatar/avatar';
+import { PlayersApi } from '../../data-access/players.api';
+import { memberSinceLabel } from '../../data-access/shelf-labels';
+import { PlayerPageState } from '../../models/player-page-state.model';
+import { Shelf } from '../../ui/shelf/shelf';
+
+const PLATFORM_NAMES: Record<string, string> = { STEAM: 'Steam', XBOX: 'Xbox', PLAYSTATION: 'PlayStation' };
+
+/** /players/:publicId: someone's public profile. Open to everyone; private profiles look like unknown ones. */
+@Component({
+  selector: 'app-player-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink, Avatar, Shelf],
+  templateUrl: './player.page.html',
+  styleUrl: './player.page.scss',
+})
+export class PlayerPage {
+  private readonly api = inject(PlayersApi);
+  protected readonly state = signal<PlayerPageState>({ kind: 'loading' });
+  private publicId = '';
+
+  protected readonly header = computed(() => {
+    const s = this.state();
+    return s.kind === 'ready' ? s.profile.profile : null;
+  });
+  protected readonly shelves = computed(() => {
+    const s = this.state();
+    return s.kind === 'ready' ? s.profile.shelves : [];
+  });
+  protected readonly playerId = computed(() => String(this.header()?.publicId ?? '').replace(/(\d{4})(?=\d)/g, '$1 '));
+  protected readonly joined = computed(() => memberSinceLabel(this.header()?.memberSince ?? null));
+  protected readonly platformName = (p: string) => PLATFORM_NAMES[p] ?? p;
+
+  constructor() {
+    inject(ActivatedRoute)
+      .paramMap.pipe(map((p) => p.get('publicId') ?? ''), takeUntilDestroyed())
+      .subscribe((id) => {
+        this.publicId = id;
+        this.load();
+      });
+    const title = inject(Title);
+    effect(() => {
+      const h = this.header();
+      if (h) title.setTitle(`${h.username} · Lavrel`);
+    });
+  }
+
+  protected load(): void {
+    this.state.set({ kind: 'loading' });
+    this.api.profile(this.publicId).subscribe({
+      next: (profile) => this.state.set({ kind: 'ready', profile }),
+      error: (e: unknown) =>
+        this.state.set(e instanceof HttpErrorResponse && e.status === 404 ? { kind: 'not-found' } : { kind: 'error' }),
+    });
+  }
+}

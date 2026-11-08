@@ -32,6 +32,9 @@
         @if (account.country(); as c) {
           <span class="country"><span class="code">{{ c.code }}</span>{{ c.name }}</span>
         }
+        @if (account.user()?.publicId) {
+          <a class="btn btn-secondary public-link" [routerLink]="'/players/' + account.user()!.publicId">See your public profile</a>
+        }
       </section>
 
       <section aria-labelledby="account-title">

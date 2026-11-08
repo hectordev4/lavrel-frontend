@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { AuthSession } from '../../../../core/auth/auth-session';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { MyAvatar } from '../../../../core/profile/my-avatar';
@@ -15,7 +16,7 @@ type Sheet = 'name' | 'country' | 'delete' | 'avatar' | null;
 @Component({
   selector: 'app-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Avatar, AvatarPicker, Modal, PlatformsSection, PrivacySection],
+  imports: [RouterLink, Avatar, AvatarPicker, Modal, PlatformsSection, PrivacySection],
   providers: [MyAccount],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',
