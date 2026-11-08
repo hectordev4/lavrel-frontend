@@ -336,3 +336,5 @@ are example data.
 
 Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions), then a `test/*` pass adding specs for
 every component built so far.
+
+  ![CI](https://github.com/USER/REPO/actions/workflows/ci.yml/badge.svg)
