@@ -78,9 +78,25 @@
   }
 }
 
-.copied {
-  font-size: 0.75rem;
-  color: var(--unlock);
+/* The copy button and its tick: the tick floats on its own layer, so nothing around it moves. */
+.copy {
+  position: relative;
+  display: inline-flex;
+}
+
+.tick {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 1.125rem;
+  height: 1.125rem;
+  transform: translateY(-50%);
+  fill: none;
+  stroke: var(--connected);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
 }
 
 .country {
