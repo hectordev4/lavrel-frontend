@@ -10,7 +10,7 @@
     role="switch"
     [checked]="checked()"
     [disabled]="disabled()"
-    (change)="toggled.emit($any($event.target).checked)"
+    (change)="onChange($event)"
   />
   <span class="track" aria-hidden="true"><span class="knob"></span></span>
 </label>
