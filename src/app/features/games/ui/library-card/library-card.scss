@@ -12,9 +12,10 @@
   display: block;
 }
 
+/* Steam's header images are wide (460×215): shown whole, not cropped to a square. */
 .cover {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 460 / 215;
 }
 
 .head {
