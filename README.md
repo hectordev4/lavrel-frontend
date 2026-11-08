@@ -92,9 +92,9 @@ src/app
     ├── platforms/
     │   └── pages/            steam-linked (where Steam's login returns)
     ├── players/              public profiles
-    │   ├── pages/            player (/players/:publicId)
-    │   ├── ui/               shelf
-    │   ├── data-access/      PlayersApi → GET /api/users/{publicId}, shelf labels
+    │   ├── pages/            player (/players/:publicId), players (/players, search)
+    │   ├── ui/               shelf, player-row
+    │   ├── data-access/      PlayersApi → GET /api/users/{publicId}, GET /api/users?q=, PlayerSearch, shelf labels
     │   └── models/           PublicProfile, Shelf and its items, PlayerPageState
     ├── profile/
     │   ├── pages/            profile (the Profile tab)
@@ -157,7 +157,7 @@ tabs show a sign-in screen.
 | `/` | welcome, or home after *Skip for now* | verify-email | home |
 | `/welcome`, `/sign-in`, `/register` | ✓ | verify-email | home |
 | `/home` | discover home | verify-email | member home |
-| `/search`, `/search/results`, `/search/filters`, `/games/:slug`, `/players/:publicId` | ✓ | verify-email | ✓ |
+| `/search`, `/search/results`, `/search/filters`, `/games/:slug`, `/players`, `/players/:publicId` | ✓ | verify-email | ✓ |
 | `/games`, `/library`, `/profile` | sign-in screen | verify-email | ✓ |
 
 ## Search
@@ -269,6 +269,11 @@ back if the save fails. Tap a shelf's name to change its title (empty: the type'
 confirmation sheet. *Add a shelf* only offers types you don't have yet; collections can repeat and need a
 collection. *Pick achievements* chooses up to 12 from your latest 20 unlocks (the recent unlocks endpoint's limit).
 `CollectionsApi` and `MemberOverviewApi` live in `core/api` because Games, Home and Profile all use them.
+
+**Finding players** (`/players`, from *Looking for a player?* in the Search tab): `GET /api/users?q=` with a name
+(2+ characters, after a 300 ms pause) or a player id typed with or without its spaces. Only public profiles appear.
+Each result shows the avatar, name, player id and country. The Search tab stays lit on `/players` and on public
+profiles.
 
 ## My library
 
@@ -386,7 +391,7 @@ are example data.
 8. Public profiles, in branches:
    - `feat/public-profile` ✓: the public profile page with its shelves
    - `feat/profile-shelves` ✓: adding, titling, ordering and removing your shelves; picking achievements
-   - `feat/player-search`: finding players by name or id
+   - `feat/player-search` ✓: finding players by name or id
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
 
 Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions) and the `test/*` pass ✓ (`test/core`,
