@@ -1,0 +1,7 @@
+<span class="frame" [attr.role]="label() ? 'img' : null" [attr.aria-label]="label() || null" [attr.aria-hidden]="label() ? null : 'true'">
+  @if (src(); as url) {
+    <img [src]="url" alt="" decoding="async" />
+  } @else {
+    <span class="initial">{{ initial() }}</span>
+  }
+</span>
