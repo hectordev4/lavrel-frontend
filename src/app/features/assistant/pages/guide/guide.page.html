@@ -1,0 +1,74 @@
+<main class="page guide">
+  <div class="heading">
+    <a class="icon-btn" [routerLink]="backLink" aria-label="Back">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </a>
+    <div class="titles">
+      <span class="kicker">AI guide</span>
+      <h1>{{ hidden && convo.spoilers() !== true ? 'Hidden achievement' : name }}</h1>
+      @if (gameTitle) {
+        <span class="game">{{ gameTitle }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="thread" aria-live="polite">
+    @for (m of convo.messages(); track $index) {
+      @if (m.role === 'user') {
+        <p class="question">{{ m.text }}</p>
+      } @else {
+        <app-guide-answer [html]="m.html" [grounded]="m.grounded" [sources]="m.sources" />
+      }
+    }
+
+    @switch (convo.status()) {
+      @case ('answering') {
+        <p class="typing" role="status">Writing your guide…</p>
+      }
+      @case ('consent') {
+        <div class="consent">
+          <p>This is a hidden achievement: even its name is a secret, so its guide needs spoilers.</p>
+          <button type="button" class="btn btn-primary" (click)="convo.start(true)">Show it with spoilers</button>
+          <a class="btn btn-secondary" [routerLink]="backLink">Not now</a>
+        </div>
+      }
+      @case ('failed') {
+        <p class="alert" role="alert">{{ convo.error() }}</p>
+      }
+    }
+
+    @if (lastIsAnswer() && convo.status() === 'ready') {
+      <p class="follow-up">Is there anything else I can help with?</p>
+    }
+  </div>
+
+  @if (convo.spoilers() !== null && convo.status() !== 'consent') {
+    <form class="reply" (submit)="$event.preventDefault(); send(box)">
+      <label class="box">
+        <span class="visually-hidden">Ask a follow-up question</span>
+        <textarea #box rows="1" maxlength="500" placeholder="Ask a follow-up" (keydown)="onKey($event, box)"></textarea>
+        <button type="submit" class="send" aria-label="Send question" [disabled]="convo.status() === 'answering' || convo.left() === 0">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2-6z" /></svg>
+        </button>
+      </label>
+      @if (convo.left() !== null) {
+        <span class="left">{{ convo.left() }} of {{ convo.usage()!.dailyLimit }} new answers left today</span>
+      }
+    </form>
+  }
+</main>
+
+<app-modal heading="Spoilers or no spoilers?" [open]="convo.status() === 'choosing'" (closed)="convo.status() === 'choosing' && convo.start(false)">
+  <div class="choice">
+    <p>Tell the AI how much you want to know about <strong>{{ hidden ? 'this hidden achievement' : name }}</strong>.</p>
+    <button type="button" class="option" (click)="convo.start(false)">
+      <span class="option-title">No spoilers</span>
+      <span class="option-text">Hints that point you the right way, without story details or secrets.</span>
+    </button>
+    <button type="button" class="option" (click)="convo.start(true)">
+      <span class="option-title">Spoilers are fine</span>
+      <span class="option-text">Full steps, including what happens in the story.</span>
+    </button>
+    <p class="note">You choose once for this conversation.</p>
+  </div>
+</app-modal>

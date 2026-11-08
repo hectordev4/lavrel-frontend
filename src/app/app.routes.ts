@@ -79,6 +79,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/players/pages/player/player.page').then((m) => m.PlayerPage),
       },
       {
+        path: 'assistant/guide/:gameId/:achievementId',
+        canMatch: [memberGuard],
+        title: 'AI guide · Lavrel',
+        loadComponent: () => import('./features/assistant/pages/guide/guide.page').then((m) => m.GuidePage),
+      },
+      {
         path: 'assistant',
         canMatch: [memberGuard],
         title: 'AI guide · Lavrel',
