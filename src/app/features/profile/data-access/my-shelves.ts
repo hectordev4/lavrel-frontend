@@ -43,7 +43,17 @@ export class MyShelves {
     });
   }
 
-  /** Moves a shelf one place up (-1) or down (+1). */
+  /** A new order from drag and drop: shown at once, put back if the save fails. */
+  async reorder(ids: string[]): Promise<string | null> {
+    const before = this.list();
+    const byId = new Map(before.map((s) => [s.id, s]));
+    this.list.set(ids.map((id, i) => ({ ...byId.get(id)!, position: i + 1 })));
+    const error = await this.run(async () => this.list.set(sorted(await firstValueFrom(this.api.reorder(ids)))));
+    if (error) this.list.set(before);
+    return error;
+  }
+
+  /** Moves a shelf one place up (-1) or down (+1), for the keyboard. */
   move(id: string, step: -1 | 1): Promise<string | null> {
     const ids = this.list().map((s) => s.id);
     const from = ids.indexOf(id);

@@ -1,3 +1,4 @@
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { CollectionsApi } from '../../../../core/api/collections.api';
@@ -16,13 +17,21 @@ import { Modal } from '../../../../shared/ui/modal/modal';
 import { MyShelves } from '../../data-access/my-shelves';
 import { MyShelf } from '../../models/my-shelf.model';
 
-type Sheet = { kind: 'add' } | { kind: 'title'; shelf: MyShelf } | { kind: 'achievements'; shelf: MyShelf } | null;
+type Sheet =
+  | { kind: 'add' }
+  | { kind: 'title'; shelf: MyShelf }
+  | { kind: 'achievements'; shelf: MyShelf }
+  | { kind: 'remove'; shelf: MyShelf }
+  | null;
 
-/** Profile tab: the shelves my public profile shows, to add, title, order, remove, and fill with achievements. */
+/**
+ * Profile tab: the shelves my public profile shows. Drag the six-dot handle to reorder (or use the arrow keys on it),
+ * tap a name to retitle, the bin to remove (after a confirmation), and pick achievements for an ACHIEVEMENTS shelf.
+ */
 @Component({
   selector: 'app-shelves-section',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Modal],
+  imports: [CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDropList, Modal],
   providers: [MyShelves],
   templateUrl: './shelves-section.html',
   styleUrl: './shelves-section.scss',
@@ -87,13 +96,28 @@ export class ShelvesSection {
     await this.save(() => this.shelves.retitle(shelf.id, title));
   }
 
-  protected async remove(shelf: MyShelf): Promise<void> {
-    if (!confirm(`Remove the shelf ${this.label(shelf)} from your profile?`)) return;
-    this.message.set(await this.shelves.remove(shelf.id));
+  protected askRemove(shelf: MyShelf): void {
+    this.formError.set(null);
+    this.sheet.set({ kind: 'remove', shelf });
   }
 
-  protected async move(shelf: MyShelf, step: -1 | 1): Promise<void> {
+  protected async remove(shelf: MyShelf): Promise<void> {
+    await this.save(() => this.shelves.remove(shelf.id));
+  }
+
+  protected async dropped(event: CdkDragDrop<MyShelf[]>): Promise<void> {
+    if (event.previousIndex === event.currentIndex) return;
+    const ids = this.shelves.list().map((s) => s.id);
+    moveItemInArray(ids, event.previousIndex, event.currentIndex);
+    this.message.set(await this.shelves.reorder(ids));
+  }
+
+  /** Arrow keys on the handle move the shelf, for people not dragging. */
+  protected async move(shelf: MyShelf, step: -1 | 1, event: Event): Promise<void> {
+    event.preventDefault();
+    const handle = event.target as HTMLElement;
     this.message.set(await this.shelves.move(shelf.id, step));
+    handle.focus();
   }
 
   protected async openAchievements(shelf: MyShelf): Promise<void> {
