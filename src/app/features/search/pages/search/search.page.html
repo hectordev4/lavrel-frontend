@@ -23,6 +23,11 @@
     </label>
   </form>
 
+  <a class="players-link" routerLink="/players">
+    <span>Looking for a player? <strong>Find players</strong></span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+  </a>
+
   <div class="results" aria-live="polite">
     @switch (suggestions.state().kind) {
       @case ('idle') {

@@ -21,6 +21,8 @@ describe('TabBar', () => {
     ['/library', 'Games'],
     ['/search/results?q=doom', 'Search'],
     ['/profile', 'Profile'],
+    ['/players', 'Search'],
+    ['/players/1895582819150483', 'Search'],
   ])('lights %s as %s', async (url, tab) => {
     expect(await activeAt(url)).toEqual([tab]);
   });
