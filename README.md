@@ -33,7 +33,8 @@ On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: 
   router, test environment), `memberUser()` / `unverifiedUser()`, `FakeAuthGateway` (no Firebase, spy methods) and
   `signInAs(user)`.
 - Coverage so far: **core** (auth mapper, store, guest mode, guards, interceptor, session, API clients, tracked games,
-  platform accounts, messages) and **shared** (every shared component, relativeTime, gameLink).
+  platform accounts, messages), **shared** (every shared component, relativeTime, gameLink) and **layout** (tab
+  bar, header, placeholder).
 - **GitHub Actions** (`.github/workflows/ci.yml`) runs on pushes to `main`, `dev`, `feat/**`, `fix/**` and `ci/**`
   and on pull requests into `main` and `dev`: `npm ci`, environment files copied from `environment.example.ts`, a
   production build and `npm run test:ci`. A newer push cancels the run still going on the same branch.
