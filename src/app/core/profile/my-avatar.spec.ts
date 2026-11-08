@@ -17,7 +17,7 @@ describe('MyAvatar', () => {
     http = TestBed.inject(HttpTestingController);
     const loading = me.ensureLoaded();
     http.expectOne('/api/currentuser').flush({ username: 'swiftOtter', publicId: '4829103755210846' });
-    http.expectOne('/api/currentuser/profile/avatar').flush({ kind: 'GENERATED', galleryId: null, url: null });
+    http.expectOne('/api/currentuser/profile/avatar').flush({ kind: 'GENERATED', galleryId: null, imageUrl: null });
     await loading;
   });
 

@@ -12,7 +12,7 @@ function render(inputs: Record<string, unknown>) {
 
 describe('Avatar', () => {
   it('shows an upload as it is', () => {
-    const fixture = render({ avatar: { kind: 'UPLOADED', galleryId: null, url: 'https://cdn/me.gif' }, seed: '1' });
+    const fixture = render({ avatar: { kind: 'UPLOADED', galleryId: null, imageUrl: 'https://cdn/me.gif' }, seed: '1' });
     expect(fixture.nativeElement.querySelector('img').getAttribute('src')).toBe('https://cdn/me.gif');
   });
 

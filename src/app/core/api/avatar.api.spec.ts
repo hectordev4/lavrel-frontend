@@ -22,7 +22,7 @@ describe('AvatarApi', () => {
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toBe(file);
     expect(req.request.headers.get('Content-Type')).toBe('image/gif');
-    req.flush({ kind: 'UPLOADED', galleryId: null, url: 'https://cdn/me.gif' });
+    req.flush({ kind: 'UPLOADED', galleryId: null, imageUrl: 'https://cdn/me.gif' });
   });
 
   it('picks a gallery picture and lists the gallery', () => {

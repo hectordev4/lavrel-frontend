@@ -24,7 +24,7 @@
               [attr.aria-label]="'Gallery picture ' + id.replace('gallery-', '')"
               (click)="galleryChoice.set(id)"
             >
-              <app-avatar class="thumb" [avatar]="{ kind: 'GALLERY', galleryId: id, url: null }" />
+              <app-avatar class="thumb" [avatar]="{ kind: 'GALLERY', galleryId: id, imageUrl: null }" />
             </button>
           </li>
         }
@@ -35,7 +35,9 @@
         <span class="btn btn-secondary">Choose a picture</span>
         <input type="file" accept="image/jpeg,image/png,image/gif" (change)="onFile($any($event.target))" />
       </label>
-      <p class="note">JPG, PNG or GIF. Animated GIFs keep moving.</p>
+      <p class="note">
+        JPG or PNG up to 2 MB, cropped to a square. GIF up to 1 MB and 512×512; animated GIFs keep moving.
+      </p>
     }
   }
 

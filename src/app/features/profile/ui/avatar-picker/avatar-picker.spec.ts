@@ -2,6 +2,7 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { fakeAuthProvider, signInAs } from '../../../../../testing/auth-testing';
 import { memberUser, testProviders } from '../../../../../testing/test-env';
+import { MyAvatar } from '../../../../core/profile/my-avatar';
 import { AvatarPicker } from './avatar-picker';
 
 const settle = () => new Promise((resolve) => setTimeout(resolve));
@@ -51,5 +52,39 @@ describe('AvatarPicker', () => {
   it('credits Pixelbot', async () => {
     const fixture = await render();
     expect(fixture.nativeElement.textContent).toContain('Pixelbot by DiceBear, CC0 1.0');
+  });
+});
+
+describe('AvatarPicker uploads', () => {
+  it('stops files over the backend’s size limit before uploading', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    button(el, 'Upload').click();
+    fixture.detectChanges();
+    const input = el.querySelector('input[type="file"]') as HTMLInputElement;
+    const bigGif = new File([new Uint8Array(1024 * 1024 + 1)], 'big.gif', { type: 'image/gif' });
+    Object.defineProperty(input, 'files', { value: [bigGif] });
+    input.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(el.textContent).toContain('GIFs can be up to 1 MB.');
+  });
+
+  it('sends a valid picture as the body and shows the stored imageUrl', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    button(el, 'Upload').click();
+    fixture.detectChanges();
+    const input = el.querySelector('input[type="file"]') as HTMLInputElement;
+    const png = new File(['png'], 'me.png', { type: 'image/png' });
+    Object.defineProperty(input, 'files', { value: [png] });
+    input.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    button(el, 'Save avatar').click();
+    await settle();
+    const req = TestBed.inject(HttpTestingController).expectOne('/api/currentuser/profile/avatar');
+    expect(req.request.body).toBe(png);
+    req.flush({ kind: 'UPLOADED', galleryId: null, imageUrl: 'https://x.supabase.co/storage/v1/object/public/avatars/a.png' });
+    await settle();
+    expect(TestBed.inject(MyAvatar).avatar()?.imageUrl).toContain('/avatars/a.png');
   });
 });

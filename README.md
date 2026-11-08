@@ -240,7 +240,11 @@ use, so it isn't part of the first download.
 |---|---|---|
 | Generated (default) | the Pixelbot seeded with the member's public id | `DELETE /api/currentuser/profile/avatar` goes back to it |
 | Gallery | the Pixelbot seeded with the gallery id (`gallery-01`…) | ids from `GET /api/avatars/gallery`; `PUT …/avatar/gallery` |
-| Upload | the member's JPG, PNG or GIF (animated GIFs keep moving) | `PUT /api/currentuser/profile/avatar` with the file as the body |
+| Upload | the member's picture at `imageUrl` (public `avatars` bucket) | `PUT /api/currentuser/profile/avatar` with the file as the body |
+
+Every avatar endpoint answers `{"kind", "galleryId", "imageUrl"}`. Uploads: JPG or PNG up to 2 MB (the backend crops
+them to a 256×256 square and strips hidden photo data), GIF up to 1 MB and 512×512 with animation kept. The sheet
+checks type and size before uploading; the backend's `invalid_avatar` message covers the rest.
 
 The header and the Profile tab share `MyAvatar`, so a new avatar shows everywhere at once.
 

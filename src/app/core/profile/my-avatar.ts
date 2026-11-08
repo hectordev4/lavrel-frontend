@@ -66,7 +66,7 @@ export class MyAvatar {
   useGenerated(): Promise<string | null> {
     return this.run(async () => {
       await firstValueFrom(this.api.reset());
-      this._avatar.set({ kind: 'GENERATED', galleryId: null, url: null });
+      this._avatar.set({ kind: 'GENERATED', galleryId: null, imageUrl: null });
     });
   }
 

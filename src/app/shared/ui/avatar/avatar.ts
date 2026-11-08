@@ -25,13 +25,13 @@ export class Avatar {
   /** The robot's seed, or null for an upload. */
   private readonly robotSeed = computed(() => {
     const a = this.avatar();
-    if (a?.kind === 'UPLOADED' && a.url) return null;
+    if (a?.kind === 'UPLOADED' && a.imageUrl) return null;
     if (a?.kind === 'GALLERY' && a.galleryId) return a.galleryId;
     return this.seed() || null;
   });
   protected readonly src = computed(() => {
     const a = this.avatar();
-    return a?.kind === 'UPLOADED' && a.url ? a.url : this.drawn();
+    return a?.kind === 'UPLOADED' && a.imageUrl ? a.imageUrl : this.drawn();
   });
 
   constructor() {

@@ -8,6 +8,9 @@ import { Avatar } from '../../../../shared/ui/avatar/avatar';
 type Source = 'GENERATED' | 'GALLERY' | 'UPLOADED';
 
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/gif'];
+/** The backend's limits: 2 MB, and 1 MB for GIFs (it also wants GIFs at most 512×512). */
+const MAX_BYTES = 2 * 1024 * 1024;
+const MAX_GIF_BYTES = 1024 * 1024;
 
 /** The avatar sheet's content: generated, gallery or upload, with a live preview and Save. */
 @Component({
@@ -40,11 +43,11 @@ export class AvatarPicker {
   protected readonly preview = computed<ProfileAvatar>(() => {
     switch (this.source()) {
       case 'GALLERY':
-        return { kind: 'GALLERY', galleryId: this.galleryChoice(), url: null };
+        return { kind: 'GALLERY', galleryId: this.galleryChoice(), imageUrl: null };
       case 'UPLOADED':
-        return { kind: 'UPLOADED', galleryId: null, url: this.filePreview() ?? this.me.avatar()?.url ?? null };
+        return { kind: 'UPLOADED', galleryId: null, imageUrl: this.filePreview() ?? this.me.avatar()?.imageUrl ?? null };
       default:
-        return { kind: 'GENERATED', galleryId: null, url: null };
+        return { kind: 'GENERATED', galleryId: null, imageUrl: null };
     }
   });
   protected readonly canSave = computed(() => {
@@ -66,6 +69,11 @@ export class AvatarPicker {
     this.error.set(null);
     if (file && !ACCEPTED.includes(file.type)) {
       this.error.set('Choose a JPG, PNG or GIF.');
+      input.value = '';
+      return;
+    }
+    if (file && file.size > (file.type === 'image/gif' ? MAX_GIF_BYTES : MAX_BYTES)) {
+      this.error.set(file.type === 'image/gif' ? 'GIFs can be up to 1 MB.' : 'Pictures can be up to 2 MB.');
       input.value = '';
       return;
     }
