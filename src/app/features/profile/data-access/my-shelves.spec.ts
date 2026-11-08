@@ -58,3 +58,21 @@ describe('MyShelves', () => {
     expect(await done).toContain('10 shelves');
   });
 });
+
+describe('MyShelves reorder', () => {
+  it('shows the new order at once and puts it back if the save fails', async () => {
+    TestBed.configureTestingModule({ providers: testProviders(MyShelves) });
+    const shelves = TestBed.inject(MyShelves);
+    const http = TestBed.inject(HttpTestingController);
+    const loading = shelves.reload();
+    http.expectOne('/api/currentuser/profile/shelves').flush({ shelves: [shelf('a', 1), shelf('b', 2), shelf('c', 3)] });
+    await loading;
+
+    const done = shelves.reorder(['c', 'a', 'b']);
+    expect(shelves.list().map((s) => s.id)).toEqual(['c', 'a', 'b']);
+    await settle();
+    http.expectOne((r) => r.method === 'PUT').flush(null, { status: 500, statusText: 'x' });
+    expect(await done).toContain('didn’t save');
+    expect(shelves.list().map((s) => s.id)).toEqual(['a', 'b', 'c']);
+  });
+});

@@ -262,9 +262,11 @@ the owner's order: games (`COLLECTION`, `RECENTLY_PLAYED`, `PLAYING`, `COMPLETED
 on). Untitled shelves use their type's name. A private profile reads *Profile not found*, exactly like an unknown
 one. The Profile tab links to your own. Covers on shelves and in My library keep Steam's wide 460×215 shape.
 
-**Managing shelves** (Profile tab, `/api/currentuser/profile/shelves`): up to 10, listed in order with up and down
-buttons (each move sends the whole new order), a menu to change the title (empty: the type's name), pick
-achievements or remove. *Add a shelf* only offers types you don't have yet; collections can repeat and need a
+**Managing shelves** (Profile tab, `/api/currentuser/profile/shelves`): up to 10. Drag a shelf by its six-dot
+handle to reorder (Angular CDK drag and drop; the tile floats on its own layer, a gold dashed slot shows where it
+lands, and the arrow keys on the handle do the same). The new order shows at once, sends the whole order, and is put
+back if the save fails. Tap a shelf's name to change its title (empty: the type's name); the bin removes it after a
+confirmation sheet. *Add a shelf* only offers types you don't have yet; collections can repeat and need a
 collection. *Pick achievements* chooses up to 12 from your latest 20 unlocks (the recent unlocks endpoint's limit).
 `CollectionsApi` and `MemberOverviewApi` live in `core/api` because Games, Home and Profile all use them.
 

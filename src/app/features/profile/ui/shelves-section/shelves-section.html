@@ -12,33 +12,39 @@
     <button type="button" class="btn btn-secondary" (click)="shelves.reload()">Your shelves didn’t load. Try again</button>
   }
 
-  <ol class="list">
-    @for (shelf of shelves.list(); track shelf.id; let first = $first; let last = $last) {
-      <li>
+  <ol class="list" cdkDropList cdkDropListLockAxis="y" [cdkDropListData]="shelves.list()" (cdkDropListDropped)="dropped($event)">
+    @for (shelf of shelves.list(); track shelf.id) {
+      <li class="row" cdkDrag>
+        <button
+          type="button"
+          class="handle"
+          cdkDragHandle
+          [attr.aria-label]="'Reorder ' + label(shelf) + '. Drag, or use the up and down arrow keys'"
+          (keydown.arrowup)="move(shelf, -1, $event)"
+          (keydown.arrowdown)="move(shelf, 1, $event)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="9" cy="6" r="1.5" /><circle cx="15" cy="6" r="1.5" />
+            <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
+            <circle cx="9" cy="18" r="1.5" /><circle cx="15" cy="18" r="1.5" />
+          </svg>
+        </button>
         <span class="text">
-          <span class="name">{{ label(shelf) }}</span>
-          <span class="muted">{{ names[shelf.type] }}{{ shelf.type === 'ACHIEVEMENTS' ? ' · ' + shelf.achievementIds.length + ' picked' : '' }}</span>
-        </span>
-        <span class="actions">
-          <button type="button" class="icon" [disabled]="first" [attr.aria-label]="'Move ' + label(shelf) + ' up'" (click)="move(shelf, -1)">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg>
+          <button type="button" class="name" [attr.aria-label]="'Change the title of ' + label(shelf)" (click)="formError.set(null); sheet.set({ kind: 'title', shelf })">
+            {{ label(shelf) }}
           </button>
-          <button type="button" class="icon" [disabled]="last" [attr.aria-label]="'Move ' + label(shelf) + ' down'" (click)="move(shelf, 1)">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
-          </button>
-          <details class="menu">
-            <summary class="icon" [attr.aria-label]="'More for ' + label(shelf)">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01 M12 12h.01 M19 12h.01" /></svg>
-            </summary>
-            <div class="menu-panel">
-              <button type="button" (click)="formError.set(null); sheet.set({ kind: 'title', shelf })">Change title</button>
-              @if (shelf.type === 'ACHIEVEMENTS') {
-                <button type="button" (click)="openAchievements(shelf)">Pick achievements</button>
-              }
-              <button type="button" class="danger" (click)="remove(shelf)">Remove shelf</button>
-            </div>
-          </details>
+          <span class="muted">
+            {{ names[shelf.type] }}
+            @if (shelf.type === 'ACHIEVEMENTS') {
+              · {{ shelf.achievementIds.length }} picked ·
+              <button type="button" class="link" (click)="openAchievements(shelf)">Pick</button>
+            }
+          </span>
         </span>
+        <button type="button" class="bin" [attr.aria-label]="'Remove ' + label(shelf)" (click)="askRemove(shelf)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16 M10 11v6 M14 11v6 M6 7l1 13h10l1-13 M9 7V4h6v3" /></svg>
+        </button>
+        <div class="placeholder" *cdkDragPlaceholder></div>
       </li>
     }
   </ol>
@@ -83,6 +89,23 @@
 </app-modal>
 
 @if (sheet(); as s) {
+  @if (s.kind === 'remove') {
+    <app-modal heading="Remove this shelf?" [open]="true" (closed)="sheet.set(null)">
+      <div class="form">
+        <p class="muted">
+          “{{ label(s.shelf) }}” will no longer show on your public profile.
+          @if (s.shelf.type === 'COLLECTION') {
+            The collection itself and its games stay in your library.
+          }
+        </p>
+        @if (formError(); as e) {
+          <p class="alert" role="alert">{{ e }}</p>
+        }
+        <button type="button" class="btn btn-danger" [disabled]="busy()" (click)="remove(s.shelf)">Remove shelf</button>
+        <button type="button" class="btn btn-secondary" (click)="sheet.set(null)">Keep it</button>
+      </div>
+    </app-modal>
+  }
   @if (s.kind === 'title') {
     <app-modal heading="Shelf title" [open]="true" (closed)="sheet.set(null)">
       <form class="form" (submit)="$event.preventDefault(); retitle(s.shelf, newTitle.value)">
