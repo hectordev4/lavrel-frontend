@@ -13,12 +13,12 @@ describe('AppHeader', () => {
     expect(fixture.nativeElement.querySelector('.sign-in').getAttribute('href')).toBe('/welcome');
   });
 
-  it('shows the avatar letter, linking to Profile, for members', () => {
-    signInAs(memberUser({ email: 'otter@example.com' }));
+  it('shows the avatar, linking to Profile, for members', () => {
+    signInAs(memberUser());
     const fixture = TestBed.createComponent(AppHeader);
     fixture.detectChanges();
-    const avatar = fixture.nativeElement.querySelector('.avatar');
-    expect(avatar.textContent.trim()).toBe('O');
-    expect(avatar.getAttribute('href')).toBe('/profile');
+    const link = fixture.nativeElement.querySelector('.avatar-link');
+    expect(link.getAttribute('href')).toBe('/profile');
+    expect(link.querySelector('app-avatar')).not.toBeNull();
   });
 });
