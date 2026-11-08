@@ -90,7 +90,11 @@ src/app
     │   ├── data-access/      AuthFlow facade, error messages
     │   └── models/           AuthTask, EmailAuthMode
     ├── assistant/            the AI tab and achievement guides
-    │   └── pages/            assistant (/assistant)
+    │   ├── pages/            assistant (/assistant), guide (/assistant/guide/:gameId/:achievementId)
+    │   ├── ui/               guide-answer
+    │   ├── data-access/      AssistantApi (guide, questions, usage), GuideConversation, markdown, system-language,
+    │   │                     messages
+    │   └── models/           GuideAnswer, GuideSource, GuideMessage, GuideStatus, AssistantUsage
     ├── platforms/
     │   └── pages/            steam-linked (where Steam's login returns)
     ├── players/              public profiles
@@ -278,6 +282,25 @@ collection. *Pick achievements* chooses up to 12 from your latest 20 unlocks (th
 Each result shows the avatar, name, player id and country. The Search tab stays lit on `/players` and on public
 profiles.
 
+## AI guides
+
+Members get a **Guide** button on each achievement of a game page. It opens `/assistant/guide/{gameId}/{achievementId}`:
+
+1. A sheet asks **Spoilers or no spoilers?**, explaining both. The choice holds for the whole conversation.
+2. The guide (`GET …/guide?spoilers=&lang=`), then the fixed line *Is there anything else I can help with?* and a reply
+   box for follow-ups (`POST …/guide/questions`, with the same spoiler choice).
+3. Each answer: a note when `grounded` is false (couldn't be checked against a source, may be inaccurate), the text,
+   and its **sources at the very bottom as rounded pills** (site name; title and license for screen readers; the
+   licenses in a line under them).
+4. Under the reply box: the new answers left today (`GET /api/currentuser/assistant/usage`). Saved guides don't count.
+
+A hidden achievement keeps its name out of the title until spoilers are chosen; asked without spoilers, the backend's
+`SPOILER_CONSENT_REQUIRED` shows a consent step. `lang=` is the device's language (two letters, English if unknown).
+Conversations live only while the screen is open and are never stored. Answers are Markdown rendered with `marked`
+(MIT, pinned): raw HTML is shown as text, only `http(s)` links are kept and open in a new tab, images are dropped, and
+Angular's sanitizer cleans the result. The cheerful tone is set by the backend's prompt. Open chat in the AI tab waits
+for a backend endpoint (`feat/ai-chat`).
+
 ## My library
 
 `/library` lists the games owned on linked accounts (`GET /api/currentuser/games`), 48 at a time with
@@ -397,7 +420,7 @@ are example data.
    - `feat/player-search` ✓: finding players by name or id
 9. AI, in branches:
    - `feat/ai-nav` ✓: tab bar Home, Search, AI, Games; the AI tab
-   - `feat/ai-guide`: a Guide button on each achievement, spoiler choice, chat screen, sources, daily allowance
+   - `feat/ai-guide` ✓: a Guide button on each achievement, spoiler choice, chat screen, sources, daily allowance
    - `feat/ai-chat` (later): open chat in the AI tab, once the backend has an endpoint for it
 
 Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions) and the `test/*` pass ✓ (`test/core`,
