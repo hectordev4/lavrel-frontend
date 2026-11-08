@@ -60,7 +60,7 @@ src/app
 │   │                         LibraryGame, LibraryPage, LibraryParams, LibrarySort
 │   ├── tracking/             TrackedGames (shared store of the member's tracked games), status labels, messages
 │   ├── platforms/            PlatformAccounts (linked accounts, link, sync with pending rounds), messages
-│   ├── profile/              MyAvatar (the member's avatar, seed and initial, for the header and Profile)
+│   ├── profile/              MyAvatar (avatar, seed and initial for the header and Profile), shelf types and names
 │   ├── config/               AppEnv model, APP_ENV token
 │   └── boot.ts               splash → welcome hand-off
 ├── layout/                   the frame around in-app pages
@@ -98,7 +98,7 @@ src/app
     │   └── models/           PublicProfile, Shelf and its items, PlayerPageState
     ├── profile/
     │   ├── pages/            profile (the Profile tab)
-    │   ├── ui/               privacy-section, platforms-section, avatar-picker
+    │   ├── ui/               privacy-section, platforms-section, avatar-picker, shelves-section
     │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, PrivacyApi, messages
     │   └── models/           Country, AccountState, ProfileSettings
     ├── games/                the Games tab for members
@@ -260,7 +260,13 @@ joined, plus country, round platform badges and the picture only when the owner 
 the owner's order: games (`COLLECTION`, `RECENTLY_PLAYED`, `PLAYING`, `COMPLETED`) as a row linking by slug,
 `ACHIEVEMENTS` as a list with rare ones (under 5%) in gold, and `STATS` (games owned only if `showLibrarySize` is
 on). Untitled shelves use their type's name. A private profile reads *Profile not found*, exactly like an unknown
-one. The Profile tab links to your own.
+one. The Profile tab links to your own. Covers on shelves and in My library keep Steam's wide 460×215 shape.
+
+**Managing shelves** (Profile tab, `/api/currentuser/profile/shelves`): up to 10, listed in order with up and down
+buttons (each move sends the whole new order), a menu to change the title (empty: the type's name), pick
+achievements or remove. *Add a shelf* only offers types you don't have yet; collections can repeat and need a
+collection. *Pick achievements* chooses up to 12 from your latest 20 unlocks (the recent unlocks endpoint's limit).
+`CollectionsApi` and `MemberOverviewApi` live in `core/api` because Games, Home and Profile all use them.
 
 ## My library
 
@@ -377,7 +383,7 @@ are example data.
    - `feat/profile-avatar` ✓: animated avatars and the avatar picker (generated, gallery, upload)
 8. Public profiles, in branches:
    - `feat/public-profile` ✓: the public profile page with its shelves
-   - `feat/profile-shelves`: adding, titling, ordering and removing your shelves; picking achievements
+   - `feat/profile-shelves` ✓: adding, titling, ordering and removing your shelves; picking achievements
    - `feat/player-search`: finding players by name or id
 9. `feat/ai-guide`: achievement guides, follow-up questions, daily allowance
 

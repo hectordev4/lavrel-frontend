@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { APP_ENV } from '../../../core/config/app-env.token';
-import { Collection } from '../models/collection.model';
+import { APP_ENV } from '../config/app-env.token';
+import { Collection } from './models/collection.model';
 
 /**
  * The member's collections of owned games, under /api/currentuser/collections. Browse one with

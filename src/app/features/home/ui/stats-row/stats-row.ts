@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { PerfectDiamond } from '../../../../shared/ui/perfect-diamond/perfect-diamond';
-import { MemberStats } from '../../models/member-stats.model';
+import { MemberStats } from '../../../../core/api/models/member-stats.model';
 
 /** Three totals: achievements unlocked, average completion ("—" before any unlock), perfect games. */
 @Component({

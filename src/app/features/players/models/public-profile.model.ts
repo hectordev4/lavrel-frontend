@@ -1,5 +1,6 @@
 import { Platform } from '../../../core/api/models/platform.model';
 import { ProfileAvatar } from '../../../core/api/models/profile-avatar.model';
+import { ShelfType } from '../../../core/profile/shelf-types';
 
 /** GET /api/users/{publicId}: a public profile's header and its shelves, in the owner's order. */
 export interface PublicProfile {
@@ -17,8 +18,6 @@ export interface PublicProfileHeader {
   platforms: Platform[] | null;
   avatar?: ProfileAvatar | null;
 }
-
-export type ShelfType = 'COLLECTION' | 'RECENTLY_PLAYED' | 'PLAYING' | 'COMPLETED' | 'ACHIEVEMENTS' | 'STATS';
 
 /** One filled shelf: games, achievements or stats depending on its type. title null: use the type's name. */
 export interface Shelf {

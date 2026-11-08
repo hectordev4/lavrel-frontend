@@ -1,0 +1,129 @@
+<section aria-labelledby="shelves-title">
+  <div class="head">
+    <h2 id="shelves-title">Shelves</h2>
+    <span class="muted">{{ shelves.list().length }} of {{ max }}</span>
+  </div>
+  <p class="intro">What your public profile shows, in this order. Nothing else is shown.</p>
+
+  @if (message(); as m) {
+    <p class="alert" role="alert">{{ m }}</p>
+  }
+  @if (shelves.failed()) {
+    <button type="button" class="btn btn-secondary" (click)="shelves.reload()">Your shelves didn’t load. Try again</button>
+  }
+
+  <ol class="list">
+    @for (shelf of shelves.list(); track shelf.id; let first = $first; let last = $last) {
+      <li>
+        <span class="text">
+          <span class="name">{{ label(shelf) }}</span>
+          <span class="muted">{{ names[shelf.type] }}{{ shelf.type === 'ACHIEVEMENTS' ? ' · ' + shelf.achievementIds.length + ' picked' : '' }}</span>
+        </span>
+        <span class="actions">
+          <button type="button" class="icon" [disabled]="first" [attr.aria-label]="'Move ' + label(shelf) + ' up'" (click)="move(shelf, -1)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg>
+          </button>
+          <button type="button" class="icon" [disabled]="last" [attr.aria-label]="'Move ' + label(shelf) + ' down'" (click)="move(shelf, 1)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <details class="menu">
+            <summary class="icon" [attr.aria-label]="'More for ' + label(shelf)">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01 M12 12h.01 M19 12h.01" /></svg>
+            </summary>
+            <div class="menu-panel">
+              <button type="button" (click)="formError.set(null); sheet.set({ kind: 'title', shelf })">Change title</button>
+              @if (shelf.type === 'ACHIEVEMENTS') {
+                <button type="button" (click)="openAchievements(shelf)">Pick achievements</button>
+              }
+              <button type="button" class="danger" (click)="remove(shelf)">Remove shelf</button>
+            </div>
+          </details>
+        </span>
+      </li>
+    }
+  </ol>
+
+  <button type="button" class="add" [disabled]="full() || addable().length === 0" (click)="openAdd()">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
+    <span>{{ full() ? 'Shelves are full' : 'Add a shelf' }}</span>
+  </button>
+</section>
+
+<app-modal heading="Add a shelf" [open]="sheet()?.kind === 'add'" (closed)="sheet.set(null)">
+  <form class="form" (submit)="$event.preventDefault(); add(title.value)">
+    <fieldset class="types">
+      <legend class="visually-hidden">Shelf type</legend>
+      @for (t of addable(); track t) {
+        <label class="type">
+          <input type="radio" name="type" [checked]="newType() === t" (change)="newType.set(t)" />
+          <span><span class="name">{{ names[t] }}</span><span class="muted">{{ hints[t] }}</span></span>
+        </label>
+      }
+    </fieldset>
+    @if (newType() === 'COLLECTION') {
+      <label class="field">
+        <span>Collection</span>
+        <select class="select" (change)="chosenCollection.set($any($event.target).value)">
+          <option value="">Choose one</option>
+          @for (c of collections(); track c.id) {
+            <option [value]="c.id">{{ c.name }} ({{ c.gameCount }})</option>
+          }
+        </select>
+      </label>
+    }
+    <label class="field">
+      <span>Title (optional)</span>
+      <input #title type="text" maxlength="40" autocomplete="off" [placeholder]="names[newType()]" />
+    </label>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="busy()">Add shelf</button>
+  </form>
+</app-modal>
+
+@if (sheet(); as s) {
+  @if (s.kind === 'title') {
+    <app-modal heading="Shelf title" [open]="true" (closed)="sheet.set(null)">
+      <form class="form" (submit)="$event.preventDefault(); retitle(s.shelf, newTitle.value)">
+        <label class="field">
+          <span>Title</span>
+          <input #newTitle type="text" maxlength="40" autocomplete="off" [value]="s.shelf.title ?? ''" [placeholder]="names[s.shelf.type]" />
+        </label>
+        <p class="muted">Leave it empty to use “{{ names[s.shelf.type] }}”.</p>
+        @if (formError(); as e) {
+          <p class="alert" role="alert">{{ e }}</p>
+        }
+        <button type="submit" class="btn btn-primary" [disabled]="busy()">Save title</button>
+      </form>
+    </app-modal>
+  }
+  @if (s.kind === 'achievements') {
+    <app-modal heading="Pick achievements" [open]="true" (closed)="sheet.set(null)">
+      <div class="form">
+        <p class="muted">Up to {{ maxAchievements }}, from your latest unlocks. {{ picked().length }} picked.</p>
+        <ul class="unlocks">
+          @for (u of unlocks(); track u.achievementId) {
+            <li>
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="picked().includes(u.achievementId)"
+                  [disabled]="!picked().includes(u.achievementId) && picked().length >= maxAchievements"
+                  (change)="toggle(u.achievementId)"
+                />
+                <span><span class="name">{{ u.name }}</span><span class="muted">{{ u.gameTitle }}</span></span>
+              </label>
+            </li>
+          } @empty {
+            <li class="muted">No unlocks yet. Sync Steam to bring them in.</li>
+          }
+        </ul>
+        @if (formError(); as e) {
+          <p class="alert" role="alert">{{ e }}</p>
+        }
+        <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="saveAchievements(s.shelf)">Save achievements</button>
+      </div>
+    </app-modal>
+  }
+}

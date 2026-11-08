@@ -48,7 +48,7 @@ h2 {
 
   li {
     flex: none;
-    width: 7.5rem;
+    width: 10.5rem;
   }
 
   a {
@@ -58,9 +58,10 @@ h2 {
   }
 }
 
+/* Steam's header images are wide (460×215): shown whole, not cropped to a square. */
 .cover {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 460 / 215;
 }
 
 .game-title {

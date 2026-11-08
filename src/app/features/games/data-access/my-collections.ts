@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { Collection } from '../models/collection.model';
-import { CollectionsApi } from './collections.api';
+import { Collection } from '../../../core/api/models/collection.model';
+import { CollectionsApi } from '../../../core/api/collections.api';
 import { collectionErrorMessage } from './collection-messages';
 
 /** The member's collections for My library. Actions resolve to an error message, or null. Provided by the page. */
