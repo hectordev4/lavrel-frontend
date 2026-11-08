@@ -2,13 +2,12 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { testProviders } from '../../../../../testing/test-env';
 import { ShelvesSection } from './shelves-section';
+import { installDialogStandIn } from '../../../../../testing/dialog';
 
 const settle = () => new Promise((resolve) => setTimeout(resolve));
 
 async function render(shelves: object[]) {
-  HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
-    this.open = true;
-  };
+  installDialogStandIn();
   TestBed.configureTestingModule({ providers: testProviders() });
   const fixture = TestBed.createComponent(ShelvesSection);
   fixture.detectChanges();

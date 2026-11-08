@@ -3,14 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { fakeAuthProvider, signInAs } from '../../../../../testing/auth-testing';
 import { memberUser, testProviders } from '../../../../../testing/test-env';
 import { ProfilePage } from './profile.page';
+import { installDialogStandIn } from '../../../../../testing/dialog';
 
 const settle = () => new Promise((resolve) => setTimeout(resolve));
 
 describe('ProfilePage', () => {
   it('shows the name, the player id in groups of four and the country', async () => {
-    HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
-      this.open = true;
-    };
+    installDialogStandIn();
     TestBed.configureTestingModule({ providers: testProviders(fakeAuthProvider) });
     signInAs(memberUser());
     const fixture = TestBed.createComponent(ProfilePage);
@@ -35,9 +34,7 @@ describe('ProfilePage', () => {
 
 describe('ProfilePage copy button', () => {
   it('shows a green tick for a second, without moving anything, and tells screen readers', async () => {
-    HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
-      this.open = true;
-    };
+    installDialogStandIn();
     Object.assign(navigator, { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } });
     TestBed.configureTestingModule({ providers: testProviders(fakeAuthProvider) });
     signInAs(memberUser());

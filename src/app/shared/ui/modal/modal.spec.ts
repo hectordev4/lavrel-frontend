@@ -1,16 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { Modal } from './modal';
+import { installDialogStandIn } from '../../../../testing/dialog';
 
 describe('Modal', () => {
   beforeAll(() => {
     // jsdom has no <dialog> behaviour.
-    HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
-      this.open = true;
-    };
-    HTMLDialogElement.prototype.close ??= function (this: HTMLDialogElement) {
-      this.open = false;
-      this.dispatchEvent(new Event('close'));
-    };
+    installDialogStandIn();
   });
 
   it('opens with its heading and emits closed when dismissed', () => {
