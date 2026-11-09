@@ -79,6 +79,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/players/pages/player/player.page').then((m) => m.PlayerPage),
       },
       {
+        path: 'assistant/chat/:gameId',
+        canMatch: [memberGuard],
+        title: 'AI chat · Lavrel',
+        loadComponent: () => import('./features/assistant/pages/chat/chat.page').then((m) => m.ChatPage),
+      },
+      {
         path: 'assistant/guide/:gameId/:achievementId',
         canMatch: [memberGuard],
         title: 'AI guide · Lavrel',
