@@ -4,6 +4,7 @@ import { TrackedGame } from '../../../../core/api/models/tracked-game.model';
 import { TrackingStatus } from '../../../../core/api/models/tracking-status.model';
 import { TRACKING_STATUSES, TRACKING_STATUS_LABELS } from '../../../../core/tracking/tracking-labels';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
+import { DismissableMenu } from '../../../../shared/ui/menu/dismissable-menu';
 import { PerfectDiamond } from '../../../../shared/ui/perfect-diamond/perfect-diamond';
 import { ProgressBar } from '../../../../shared/ui/progress-bar/progress-bar';
 import { progressPercent } from '../../../../shared/ui/progress-bar/progress-tier';
@@ -13,7 +14,7 @@ import { gameLink } from '../../../../shared/utils/game-link';
 @Component({
   selector: 'app-tracked-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, GameCover, PerfectDiamond, ProgressBar],
+  imports: [RouterLink, DismissableMenu, GameCover, PerfectDiamond, ProgressBar],
   templateUrl: './tracked-card.html',
   styleUrl: './tracked-card.scss',
 })
