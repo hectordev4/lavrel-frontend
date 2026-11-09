@@ -142,14 +142,20 @@ a {
   }
 }
 
+// A bare icon (back arrows…): no background, border or round shape, just a 44px tap area.
 .icon-btn {
   display: inline-grid;
   place-items: center;
   width: 2.75rem;
   height: 2.75rem;
   margin-left: -0.625rem;
-  border-radius: 50%;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
   color: var(--line);
+  font: inherit;
+  cursor: pointer;
 
   svg {
     width: 1.5rem;
