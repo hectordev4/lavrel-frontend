@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { gameLink } from '../../../../shared/utils/game-link';
 import { GameChat } from '../../data-access/game-chat';
 import { GuideAnswer } from '../../ui/guide-answer/guide-answer';
 
@@ -24,8 +23,8 @@ export class ChatPage {
   private readonly route = inject(ActivatedRoute).snapshot;
 
   protected readonly gameTitle = this.route.queryParamMap.get('game') ?? 'this game';
-  private readonly slug = this.route.queryParamMap.get('slug');
-  protected readonly backLink = this.slug ? gameLink(this.slug) : '/assistant';
+  /** Back always returns to the AI tab, where you pick the next game to talk about. */
+  protected readonly backLink = '/assistant';
   protected readonly starters = STARTERS;
   protected readonly lastIsAnswer = computed(() => this.chat.messages().at(-1)?.role === 'assistant');
 

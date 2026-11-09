@@ -22,6 +22,7 @@ describe('ChatPage', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Ask me anything about Rogue Harbor');
+    expect(el.querySelector('a[aria-label="Back"]')!.getAttribute('href')).toBe('/assistant');
 
     (el.querySelector('.starter') as HTMLButtonElement).click();
     http
