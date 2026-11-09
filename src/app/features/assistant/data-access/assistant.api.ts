@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { APP_ENV } from '../../../core/config/app-env.token';
 import { AssistantUsage } from '../models/assistant-usage.model';
+import { ChatTurn } from '../models/chat-turn.model';
 import { GuideAnswer } from '../models/guide-answer.model';
 
 /** The assistant's achievement guides. Members only; answers are Markdown. */
@@ -20,6 +21,14 @@ export class AssistantApi {
   /** A follow-up question: always a new answer (counted), never saved. */
   ask(gameId: number, achievementId: number, question: string, spoilers: boolean, lang: string): Observable<GuideAnswer> {
     return this.http.post<GuideAnswer>(`${this.url(gameId, achievementId)}/questions`, { question, spoilers, lang });
+  }
+
+  /**
+   * Open chat about a game: the whole conversation so far, oldest first, ending with the new question (the backend
+   * reads the last 12). Counts like a follow-up; nothing is stored.
+   */
+  chat(gameId: number, messages: ChatTurn[], lang: string): Observable<GuideAnswer> {
+    return this.http.post<GuideAnswer>(`${this.base}/api/games/${gameId}/chat`, { messages, lang });
   }
 
   usage(): Observable<AssistantUsage> {
