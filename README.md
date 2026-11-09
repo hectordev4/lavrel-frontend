@@ -90,11 +90,13 @@ src/app
     │   ├── data-access/      AuthFlow facade, error messages
     │   └── models/           AuthTask, EmailAuthMode
     ├── assistant/            the AI tab and achievement guides
-    │   ├── pages/            assistant (/assistant), guide (/assistant/guide/:gameId/:achievementId)
+    │   ├── pages/            assistant (/assistant), guide (/assistant/guide/:gameId/:achievementId),
+    │   │                     chat (/assistant/chat/:gameId)
     │   ├── ui/               guide-answer
-    │   ├── data-access/      AssistantApi (guide, questions, usage), GuideConversation, markdown, system-language,
+    │   ├── data-access/      AssistantApi (guide, questions, chat, usage), GuideConversation, GameChat,
+    │   │                     ChatGamePicker, markdown, system-language,
     │   │                     messages
-    │   └── models/           GuideAnswer, GuideSource, GuideMessage, GuideStatus, AssistantUsage
+    │   └── models/           GuideAnswer, GuideSource, GuideMessage, GuideStatus, AssistantUsage, ChatTurn
     ├── platforms/
     │   └── pages/            steam-linked (where Steam's login returns)
     ├── players/              public profiles
@@ -298,8 +300,16 @@ A hidden achievement keeps its name out of the title until spoilers are chosen; 
 `SPOILER_CONSENT_REQUIRED` shows a consent step. `lang=` is the device's language (two letters, English if unknown).
 Conversations live only while the screen is open and are never stored. Answers are Markdown rendered with `marked`
 (MIT, pinned): raw HTML is shown as text, only `http(s)` links are kept and open in a new tab, images are dropped, and
-Angular's sanitizer cleans the result. The cheerful tone is set by the backend's prompt. Open chat in the AI tab waits
-for a backend endpoint (`feat/ai-chat`).
+Angular's sanitizer cleans the result. The cheerful tone is set by the backend's prompt, which never ends with its own
+question, so the app's follow-up line never appears twice.
+
+**Open chat** (`/assistant/chat/{gameId}`, `POST /api/games/{gameId}/chat`): from the AI tab (a *Which game?* search,
+plus your pinned and Playing games) or *Ask the AI about this game* on a game page. It starts with a greeting and three
+starter questions. The app keeps the conversation and sends it with each question (`{"messages": [{"role", "content"}],
+"lang"}`, up to 40; the backend reads the last 12); nothing is stored. The backend keeps story spoilers out of the
+open chat, so it has no spoiler sheet. Answers look like guides: sources as pills when `grounded`, a **Reviewed** badge
+when `curated` (written or rewritten by an admin). Admins are unlimited (`unlimited: true`): the screens then say
+*No daily limit for you*.
 
 ## My library
 
@@ -421,7 +431,7 @@ are example data.
 9. AI, in branches:
    - `feat/ai-nav` ✓: tab bar Home, Search, AI, Games; the AI tab
    - `feat/ai-guide` ✓: a Guide button on each achievement, spoiler choice, chat screen, sources, daily allowance
-   - `feat/ai-chat` (later): open chat in the AI tab, once the backend has an endpoint for it
+   - `feat/ai-chat` ✓: open chat about a game from the AI tab and game pages; Reviewed badge; unlimited admins
 
 Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions) and the `test/*` pass ✓ (`test/core`,
 `test/shared`, `test/layout`, `test/features`) adding specs for every component built so far. From here on, every
