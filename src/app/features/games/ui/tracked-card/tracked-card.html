@@ -25,12 +25,12 @@
       >
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5 M9 3h6l-1 6 3 3v2H7v-2l3-3z" /></svg>
       </button>
-      <details class="menu">
+      <details class="menu" appMenu #menu>
         <summary class="icon-action" [attr.aria-label]="'More for ' + game().title">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01 M12 12h.01 M19 12h.01" /></svg>
         </summary>
         <div class="menu-panel">
-          <button type="button" [disabled]="busy()" (click)="remove.emit()">Remove from tracking</button>
+          <button type="button" [disabled]="busy()" (click)="menu.open = false; remove.emit()">Remove from tracking</button>
         </div>
       </details>
     </div>
