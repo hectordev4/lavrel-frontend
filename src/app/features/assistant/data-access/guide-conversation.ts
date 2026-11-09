@@ -25,10 +25,12 @@ export class GuideConversation {
   readonly messages = signal<GuideMessage[]>([]);
   readonly error = signal<string | null>(null);
   readonly usage = signal<AssistantUsage | null>(null);
+  /** New answers left today; null when unknown or unlimited (see unlimited). */
   readonly left = computed(() => {
     const u = this.usage();
-    return u ? Math.max(0, u.dailyLimit - u.usedToday) : null;
+    return u && !u.unlimited && u.dailyLimit !== null ? Math.max(0, u.dailyLimit - u.usedToday) : null;
   });
+  readonly unlimited = computed(() => this.usage()?.unlimited === true);
 
   open(gameId: number, achievementId: number): void {
     this.gameId = gameId;
@@ -76,6 +78,14 @@ export class GuideConversation {
   }
 }
 
-function toMessage(answer: GuideAnswer): GuideMessage {
-  return { role: 'assistant', html: renderMarkdown(answer.text ?? ''), grounded: answer.grounded, sources: answer.sources ?? [] };
+export function toMessage(answer: GuideAnswer): GuideMessage {
+  const text = answer.text ?? '';
+  return {
+    role: 'assistant',
+    text,
+    html: renderMarkdown(text),
+    grounded: answer.grounded,
+    curated: answer.curated === true,
+    sources: answer.sources ?? [],
+  };
 }

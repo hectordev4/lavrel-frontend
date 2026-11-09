@@ -1,4 +1,10 @@
 <article class="answer">
+  @if (curated()) {
+    <span class="reviewed">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>
+      Reviewed
+    </span>
+  }
   @if (!grounded()) {
     <p class="unchecked">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z M12 10v4 M12 17v.5" /></svg>

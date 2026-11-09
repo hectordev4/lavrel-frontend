@@ -17,7 +17,7 @@
       @if (m.role === 'user') {
         <p class="question">{{ m.text }}</p>
       } @else {
-        <app-guide-answer [html]="m.html" [grounded]="m.grounded" [sources]="m.sources" />
+        <app-guide-answer [html]="m.html" [grounded]="m.grounded" [curated]="m.curated" [sources]="m.sources" />
       }
     }
 
@@ -51,7 +51,9 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2-6z" /></svg>
         </button>
       </label>
-      @if (convo.left() !== null) {
+      @if (convo.unlimited()) {
+        <span class="left">No daily limit for you</span>
+      } @else if (convo.left() !== null) {
         <span class="left">{{ convo.left() }} of {{ convo.usage()!.dailyLimit }} new answers left today</span>
       }
     </form>

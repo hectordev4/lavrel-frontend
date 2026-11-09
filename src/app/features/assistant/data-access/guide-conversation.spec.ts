@@ -26,7 +26,14 @@ describe('GuideConversation', () => {
     http.expectOne((r) => r.url.endsWith('/guide') && r.params.get('spoilers') === 'false').flush(ready('**Hint**'));
     await done;
     expect(convo.status()).toBe('ready');
-    expect(convo.messages()[0]).toEqual({ role: 'assistant', html: expect.stringContaining('<strong>Hint</strong>'), grounded: false, sources: [] });
+    expect(convo.messages()[0]).toEqual({
+      role: 'assistant',
+      text: '**Hint**',
+      html: expect.stringContaining('<strong>Hint</strong>'),
+      grounded: false,
+      curated: false,
+      sources: [],
+    });
     await settle();
     http.expectOne('/api/currentuser/assistant/usage').flush({ usedToday: 6, dailyLimit: 20 });
     await settle();

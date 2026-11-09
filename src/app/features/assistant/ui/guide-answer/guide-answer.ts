@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { GuideSource } from '../../models/guide-answer.model';
 
 /**
- * An answer bubble: the "may be inaccurate" note when it isn't grounded, the text (already safe HTML, sanitized
+ * An answer bubble: a Reviewed badge for curated guides, the "may be inaccurate" note when it isn't grounded,
+ * the text (already safe HTML, sanitized
  * again by Angular), and its sources at the very bottom as rounded pills.
  */
 @Component({
@@ -14,6 +15,8 @@ import { GuideSource } from '../../models/guide-answer.model';
 export class GuideAnswer {
   readonly html = input.required<string>();
   readonly grounded = input(false);
+  /** Written or rewritten by an admin. */
+  readonly curated = input(false);
   readonly sources = input<GuideSource[]>([]);
 
   protected readonly licenses = computed(() => [...new Set(this.sources().map((s) => s.license))].join(', '));
