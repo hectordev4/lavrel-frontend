@@ -1,4 +1,4 @@
-<dialog #dialog [attr.aria-labelledby]="headingId" (close)="onClose()">
+<dialog #dialog [attr.aria-labelledby]="headingId" (close)="onClose()" (click)="onBackdrop($event, dialog)">
   <div class="sheet">
     <header>
       <h2 [id]="headingId">{{ heading() }}</h2>
