@@ -1,11 +1,45 @@
 <main class="page assistant">
-  <h1>AI guide</h1>
+  <h1>AI</h1>
+  <p class="lead">Ask anything about a game: where to go, how to beat a part, how to get an achievement.</p>
+
+  <label class="box">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
+    <span class="visually-hidden">Find a game to chat about</span>
+    <input #box type="search" autocomplete="off" placeholder="Which game?" (input)="picker.type(box.value)" />
+  </label>
+
+  @if (picker.results().length) {
+    <ul class="games" aria-label="Games found">
+      @for (g of picker.results(); track g.id) {
+        <li>
+          <a [routerLink]="'/assistant/chat/' + g.id" [queryParams]="{ game: g.title, slug: g.slug }">
+            <app-game-cover class="cover" [src]="g.coverImageUrl" [title]="g.title" />
+            <span>{{ g.title }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  } @else if (yourGames().length) {
+    <section aria-labelledby="your-games">
+      <h2 id="your-games">Your games</h2>
+      <ul class="games">
+        @for (g of yourGames(); track g.id) {
+          <li>
+            <a [routerLink]="'/assistant/chat/' + g.id" [queryParams]="{ game: g.title, slug: g.slug }">
+              <app-game-cover class="cover" [src]="g.cover" [title]="g.title" />
+              <span>{{ g.title }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
   <app-cta-card
-    heading="Stuck on an achievement?"
+    heading="Stuck on one achievement?"
     text="Open a game, find the achievement and tap Guide. You choose whether you want spoilers, and you can keep asking."
   >
-    <a class="btn btn-primary" routerLink="/games">Go to my games</a>
-    <a class="btn btn-secondary" routerLink="/search">Search a game</a>
+    <a class="btn btn-secondary" routerLink="/games">Go to my games</a>
   </app-cta-card>
-  <p class="note">Guides are written by AI. They can be wrong, so check the sources under each answer.</p>
+  <p class="note">Answers are written by AI and can be wrong. Check the sources under each answer.</p>
 </main>
