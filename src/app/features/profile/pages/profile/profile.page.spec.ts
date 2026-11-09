@@ -56,6 +56,7 @@ describe('ProfilePage copy button', () => {
     fixture.detectChanges();
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('4829103755210846');
     expect(el.querySelector('.copy .tick')).not.toBeNull();
+    expect(el.querySelector('.copy .copy-btn')).not.toBeNull();
     expect(el.querySelector('[role="status"].visually-hidden')!.textContent).toContain('Player id copied');
 
     await vi.advanceTimersByTimeAsync(1000);

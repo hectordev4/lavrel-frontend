@@ -22,8 +22,8 @@
           <div class="id">
             <span>ID {{ playerId() }}</span>
             <span class="copy">
-              <button type="button" class="icon-btn small" aria-label="Copy your player id" (click)="copyId()">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h11v11H9z M5 15V5a2 2 0 0 1 2-2h8" /></svg>
+              <button type="button" class="copy-btn" aria-label="Copy your player id" (click)="copyId()">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V6a2 2 0 0 1 2-2h9" /></svg>
               </button>
               @if (copied()) {
                 <svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>
