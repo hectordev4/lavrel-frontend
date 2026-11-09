@@ -88,7 +88,7 @@
           <div class="grid">
             @for (game of $any(library.state()).games; track game.gameId) {
               <app-library-card [game]="game">
-                <details class="menu">
+                <details class="menu" appMenu>
                   <summary [attr.aria-label]="'More for ' + game.title">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01 M12 12h.01 M19 12h.01" /></svg>
                   </summary>

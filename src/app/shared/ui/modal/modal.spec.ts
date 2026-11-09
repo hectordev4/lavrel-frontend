@@ -24,4 +24,19 @@ describe('Modal', () => {
     (fixture.nativeElement.querySelector('.close') as HTMLButtonElement).click();
     expect(spy).toHaveBeenCalledOnce();
   });
+
+  it('closes on a tap on the dimmed page around it, not on a tap inside', () => {
+    const fixture = TestBed.createComponent(Modal);
+    fixture.componentRef.setInput('heading', 'Remove this shelf?');
+    fixture.componentRef.setInput('open', true);
+    fixture.detectChanges();
+    TestBed.tick();
+    const spy = vi.fn();
+    fixture.componentInstance.closed.subscribe(spy);
+    const dialog = fixture.nativeElement.querySelector('dialog') as HTMLDialogElement;
+    (dialog.querySelector('h2') as HTMLElement).click();
+    expect(spy).not.toHaveBeenCalled();
+    dialog.click();
+    expect(spy).toHaveBeenCalledOnce();
+  });
 });

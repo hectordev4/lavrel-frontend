@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, Component, ElementRef, effect, input, output, 
 let nextId = 0;
 
 /**
- * A modal sheet built on the native <dialog>: focus stays inside, Escape and the × close it, and the page
- * behind can't be used. Show it with [open]; it emits closed when the person dismisses it.
+ * A modal sheet built on the native <dialog>: focus stays inside; Escape, the × and a tap on the dimmed
+ * page around it close it; and the page behind can't be used. Show it with [open]; it emits closed when the person dismisses it.
  */
 @Component({
   selector: 'app-modal',
@@ -27,6 +27,11 @@ export class Modal {
       if (this.open() && !dialog.open) dialog.showModal();
       if (!this.open() && dialog.open) dialog.close();
     });
+  }
+
+  /** A tap on the backdrop lands on the <dialog> itself; taps inside land on the sheet. */
+  protected onBackdrop(event: MouseEvent, dialog: HTMLDialogElement): void {
+    if (event.target === dialog) dialog.close();
   }
 
   protected onClose(): void {

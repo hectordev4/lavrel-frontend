@@ -7,6 +7,7 @@ import { LibrarySort } from '../../../../core/api/models/library-sort.model';
 import { PlatformAccounts } from '../../../../core/platforms/platform-accounts';
 import { Chip } from '../../../../shared/ui/chip/chip';
 import { CtaCard } from '../../../../shared/ui/cta-card/cta-card';
+import { DismissableMenu } from '../../../../shared/ui/menu/dismissable-menu';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { LIBRARY_SORT_LABELS } from '../../data-access/library-labels';
 import { MyCollections } from '../../data-access/my-collections';
@@ -18,7 +19,7 @@ import { LibraryCard } from '../../ui/library-card/library-card';
 @Component({
   selector: 'app-library-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Chip, CtaCard, LibraryCard, Modal],
+  imports: [RouterLink, Chip, CtaCard, DismissableMenu, LibraryCard, Modal],
   providers: [MyLibrary, MyCollections],
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
