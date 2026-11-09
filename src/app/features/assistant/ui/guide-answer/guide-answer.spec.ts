@@ -20,6 +20,14 @@ describe('GuideAnswer', () => {
     expect(el.querySelector('.answer')!.lastElementChild!.classList).toContain('license');
   });
 
+  it('marks a curated guide as Reviewed', () => {
+    const fixture = TestBed.createComponent(GuideAnswer);
+    fixture.componentRef.setInput('html', '<p>x</p>');
+    fixture.componentRef.setInput('curated', true);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.reviewed').textContent).toContain('Reviewed');
+  });
+
   it('flags an answer that isn’t grounded', () => {
     expect(render(false).querySelector('.unchecked')!.textContent).toContain('may be inaccurate');
   });

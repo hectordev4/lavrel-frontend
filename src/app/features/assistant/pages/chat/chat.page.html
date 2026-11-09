@@ -1,0 +1,57 @@
+<main class="page guide">
+  <div class="heading">
+    <a class="icon-btn" [routerLink]="backLink" aria-label="Back">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </a>
+    <div class="titles">
+      <span class="kicker">AI chat</span>
+      <h1>{{ gameTitle }}</h1>
+    </div>
+  </div>
+
+  <div class="thread" aria-live="polite">
+    @if (chat.messages().length === 0) {
+      <div class="welcome">
+        <p>Hi! Ask me anything about <strong>{{ gameTitle }}</strong>: where to go, how to beat a part, or how to get an achievement. I’ll keep the story spoilers out.</p>
+        <ul class="starters">
+          @for (s of starters; track s) {
+            <li><button type="button" class="starter" (click)="chat.send(s)">{{ s }}</button></li>
+          }
+        </ul>
+      </div>
+    }
+
+    @for (m of chat.messages(); track $index) {
+      @if (m.role === 'user') {
+        <p class="question">{{ m.text }}</p>
+      } @else {
+        <app-guide-answer [html]="m.html" [grounded]="m.grounded" [curated]="m.curated" [sources]="m.sources" />
+      }
+    }
+
+    @if (chat.answering()) {
+      <p class="typing" role="status">Thinking…</p>
+    }
+    @if (chat.error(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    @if (lastIsAnswer() && !chat.answering()) {
+      <p class="follow-up">Is there anything else I can help with?</p>
+    }
+  </div>
+
+  <form class="reply" (submit)="$event.preventDefault(); send(box)">
+    <label class="box">
+      <span class="visually-hidden">Ask about {{ gameTitle }}</span>
+      <textarea #box rows="1" maxlength="1000" [placeholder]="'Ask about ' + gameTitle" (keydown)="onKey($event, box)"></textarea>
+      <button type="submit" class="send" aria-label="Send" [disabled]="chat.answering() || chat.left() === 0">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2-6z" /></svg>
+      </button>
+    </label>
+    @if (chat.unlimited()) {
+      <span class="left">No daily limit for you</span>
+    } @else if (chat.left() !== null) {
+      <span class="left">{{ chat.left() }} of {{ chat.usage()!.dailyLimit }} new answers left today</span>
+    }
+  </form>
+</main>

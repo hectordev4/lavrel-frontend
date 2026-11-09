@@ -242,3 +242,16 @@ h3 {
   line-height: 1.5;
   color: var(--muted);
 }
+
+.ask-ai {
+  gap: 0.5rem;
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: none;
+    stroke: var(--unlock);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+}
