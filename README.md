@@ -105,7 +105,7 @@ src/app
     │   ├── data-access/      PlayersApi → GET /api/users/{publicId}, GET /api/users?q=, PlayerSearch, shelf labels
     │   └── models/           PublicProfile, Shelf and its items, PlayerPageState
     ├── profile/
-    │   ├── pages/            profile (the Profile tab)
+    │   ├── pages/            profile (the Profile tab), picker, picker-games, picker-achievements
     │   ├── ui/               privacy-section, platforms-section, avatar-picker, shelves-section
     │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, PrivacyApi, messages
     │   └── models/           Country, AccountState, ProfileSettings
@@ -274,8 +274,13 @@ one. The Profile tab links to your own. Covers on shelves and in My library keep
 handle to reorder (Angular CDK drag and drop; the tile floats on its own layer, a gold dashed slot shows where it
 lands, and the arrow keys on the handle do the same). The new order shows at once, sends the whole order, and is put
 back if the save fails. Tap a shelf's name to change its title (empty: the type's name); the bin removes it after a
-confirmation sheet. *Add a shelf* only offers types you don't have yet; collections can repeat and need a
-collection. *Pick achievements* chooses up to 12 from your latest 20 unlocks (the recent unlocks endpoint's limit).
+confirmation sheet. **Pick** on an `ACHIEVEMENTS` shelf opens the achievements picker page. *Add a shelf* only offers types you don't have yet; collections can repeat and need a
+collection. **The achievements picker** (`/profile/shelves/{shelfId}/achievements`) picks up to 12 from any of your games, in two
+steps on one page: your games with unlocks (`GET /api/currentuser/achievements/games`: search, Recent or Name, 24 per
+page), then one game's unlocks (`GET /api/currentuser/games/{gameId}/achievements/unlocked`, rarest or newest first,
+rare ones in gold). A bar at the bottom shows *N of 12 picked*, opens the picks in order to remove one, and saves them
+(`PUT …/shelves/{id}/achievements`), then returns to Profile. It starts from the shelf's `achievements` (sent in full
+by `GET /api/currentuser/profile/shelves`); the rest turn off at 12; leaving with unsaved picks asks first.
 `CollectionsApi` and `MemberOverviewApi` live in `core/api` because Games, Home and Profile all use them.
 
 **Finding players** (`/players`, from *Looking for a player?* in the Search tab): `GET /api/users?q=` (answers
