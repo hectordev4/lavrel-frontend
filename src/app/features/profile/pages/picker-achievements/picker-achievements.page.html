@@ -1,0 +1,51 @@
+<div class="game-head">
+  <a class="link" routerLink="..">All games</a>
+  <h2>{{ game.title }}</h2>
+</div>
+
+<div class="segmented" role="group" aria-label="Order">
+  <button type="button" [class.on]="sort() === 'rarity'" [attr.aria-pressed]="sort() === 'rarity'" (click)="setSort('rarity')">Rarest first</button>
+  <button type="button" [class.on]="sort() === 'date'" [attr.aria-pressed]="sort() === 'date'" (click)="setSort('date')">Newest first</button>
+</div>
+
+@if (picker.full()) {
+  <p class="note">You’ve picked {{ picker.max }}, the most a shelf shows. Remove one to pick another.</p>
+}
+
+@if (failed()) {
+  <p class="alert" role="alert">These achievements didn’t load.</p>
+  <button type="button" class="btn btn-secondary" (click)="load()">Try again</button>
+} @else if (loading()) {
+  <p class="muted" role="status">Loading…</p>
+} @else {
+  <ul class="list">
+    @for (a of achievements(); track a.achievementId) {
+      <li [class.rare]="rare(a.globalPercent)">
+        <label>
+          <input
+            type="checkbox"
+            [checked]="picker.isPicked(a.achievementId)"
+            [disabled]="!picker.isPicked(a.achievementId) && picker.full()"
+            (change)="picker.toggle(a, game)"
+          />
+          <span class="icon" aria-hidden="true">
+            @if (a.iconUrl) {
+              <img [src]="a.iconUrl" alt="" loading="lazy" />
+            }
+          </span>
+          <span class="text">
+            <span class="name">{{ a.name }}</span>
+            <span class="muted">
+              @if (a.globalPercent !== null) {
+                <span class="share">{{ rare(a.globalPercent) ? 'Rare · ' : '' }}{{ a.globalPercent }}% of players</span>
+              }
+              @if (a.unlockedAt) {
+                · {{ a.unlockedAt | date: 'd MMM y' }}
+              }
+            </span>
+          </span>
+        </label>
+      </li>
+    }
+  </ul>
+}

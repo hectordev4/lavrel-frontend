@@ -1,0 +1,40 @@
+<label class="box">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
+  <span class="visually-hidden">Find one of your games</span>
+  <input #box type="search" autocomplete="off" placeholder="Find one of your games" (input)="search(box.value)" />
+</label>
+
+<div class="segmented" role="group" aria-label="Order">
+  <button type="button" [class.on]="sort() === 'recent'" [attr.aria-pressed]="sort() === 'recent'" (click)="setSort('recent')">Recent</button>
+  <button type="button" [class.on]="sort() === 'name'" [attr.aria-pressed]="sort() === 'name'" (click)="setSort('name')">Name</button>
+</div>
+
+@if (failed()) {
+  <p class="alert" role="alert">Your games didn’t load.</p>
+  <button type="button" class="btn btn-secondary" (click)="load(0)">Try again</button>
+}
+
+<ul class="games">
+  @for (g of games(); track g.gameId) {
+    <li>
+      <a [routerLink]="['./', g.gameId]">
+        <app-game-cover class="cover" [src]="g.coverImageUrl" [title]="g.title" />
+        <span class="text">
+          <span class="name">{{ g.title }}</span>
+          <span class="muted">{{ g.unlocked }} of {{ g.total }} unlocked</span>
+        </span>
+        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+      </a>
+    </li>
+  } @empty {
+    @if (!loading() && !failed()) {
+      <li class="muted">No games with unlocks match.</li>
+    }
+  }
+</ul>
+
+@if (loading()) {
+  <p class="muted" role="status">Loading…</p>
+} @else if (hasMore()) {
+  <button type="button" class="btn btn-secondary" (click)="more()">Show more</button>
+}
