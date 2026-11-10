@@ -112,6 +112,27 @@ export const routes: Routes = [
         loadChildren: () => import('./features/search/search.routes').then((m) => m.SEARCH_ROUTES),
       },
       {
+        path: 'profile/shelves/:shelfId/achievements',
+        canMatch: [memberGuard],
+        title: 'Pick achievements · Lavrel',
+        loadComponent: () => import('./features/profile/pages/picker/picker.page').then((m) => m.PickerPage),
+        canDeactivate: [(page: { canLeave(): boolean }) => page.canLeave()],
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/profile/pages/picker-games/picker-games.page').then((m) => m.PickerGamesPage),
+          },
+          {
+            path: ':gameId',
+            loadComponent: () =>
+              import('./features/profile/pages/picker-achievements/picker-achievements.page').then(
+                (m) => m.PickerAchievementsPage,
+              ),
+          },
+        ],
+      },
+      {
         path: 'profile',
         canMatch: [memberGuard],
         title: 'Profile · Lavrel',
