@@ -88,3 +88,12 @@ describe('ShelvesSection', () => {
     expect(add.textContent).toContain('Shelves are full');
   });
 });
+
+describe('ShelvesSection Pick link', () => {
+  it('opens the picker page for an achievements shelf', async () => {
+    const fixture = await render([{ id: 'a', type: 'ACHIEVEMENTS', title: null, position: 1, collectionId: null, achievementIds: [1, 2] }]);
+    const link = [...fixture.nativeElement.querySelectorAll('a')].find((a: Element) => a.textContent!.trim() === 'Pick') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('/profile/shelves/a/achievements');
+    expect(fixture.nativeElement.textContent).toContain('2 picked');
+  });
+});

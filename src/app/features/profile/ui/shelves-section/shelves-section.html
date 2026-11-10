@@ -37,7 +37,7 @@
             {{ names[shelf.type] }}
             @if (shelf.type === 'ACHIEVEMENTS') {
               · {{ shelf.achievementIds.length }} picked ·
-              <button type="button" class="link" (click)="openAchievements(shelf)">Pick</button>
+              <a class="link" [routerLink]="'/profile/shelves/' + shelf.id + '/achievements'">Pick</a>
             }
           </span>
         </span>
@@ -119,34 +119,6 @@
         }
         <button type="submit" class="btn btn-primary" [disabled]="busy()">Save title</button>
       </form>
-    </app-modal>
-  }
-  @if (s.kind === 'achievements') {
-    <app-modal heading="Pick achievements" [open]="true" (closed)="sheet.set(null)">
-      <div class="form">
-        <p class="muted">Up to {{ maxAchievements }}, from your latest unlocks. {{ picked().length }} picked.</p>
-        <ul class="unlocks">
-          @for (u of unlocks(); track u.achievementId) {
-            <li>
-              <label>
-                <input
-                  type="checkbox"
-                  [checked]="picked().includes(u.achievementId)"
-                  [disabled]="!picked().includes(u.achievementId) && picked().length >= maxAchievements"
-                  (change)="toggle(u.achievementId)"
-                />
-                <span><span class="name">{{ u.name }}</span><span class="muted">{{ u.gameTitle }}</span></span>
-              </label>
-            </li>
-          } @empty {
-            <li class="muted">No unlocks yet. Sync Steam to bring them in.</li>
-          }
-        </ul>
-        @if (formError(); as e) {
-          <p class="alert" role="alert">{{ e }}</p>
-        }
-        <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="saveAchievements(s.shelf)">Save achievements</button>
-      </div>
     </app-modal>
   }
 }

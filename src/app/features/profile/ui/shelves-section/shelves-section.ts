@@ -1,12 +1,10 @@
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CollectionsApi } from '../../../../core/api/collections.api';
-import { MemberOverviewApi } from '../../../../core/api/member-overview.api';
 import { Collection } from '../../../../core/api/models/collection.model';
-import { RecentUnlock } from '../../../../core/api/models/recent-unlock.model';
 import {
-  MAX_SHELF_ACHIEVEMENTS,
   MAX_SHELVES,
   SHELF_TYPES,
   SHELF_TYPE_HINTS,
@@ -20,18 +18,17 @@ import { MyShelf } from '../../models/my-shelf.model';
 type Sheet =
   | { kind: 'add' }
   | { kind: 'title'; shelf: MyShelf }
-  | { kind: 'achievements'; shelf: MyShelf }
   | { kind: 'remove'; shelf: MyShelf }
   | null;
 
 /**
  * Profile tab: the shelves my public profile shows. Drag the six-dot handle to reorder (or use the arrow keys on it),
- * tap a name to retitle, the bin to remove (after a confirmation), and pick achievements for an ACHIEVEMENTS shelf.
+ * tap a name to retitle, the bin to remove (after a confirmation); Pick opens the achievements picker page.
  */
 @Component({
   selector: 'app-shelves-section',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDropList, Modal],
+  imports: [RouterLink, CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDropList, Modal],
   providers: [MyShelves],
   templateUrl: './shelves-section.html',
   styleUrl: './shelves-section.scss',
@@ -39,20 +36,16 @@ type Sheet =
 export class ShelvesSection {
   protected readonly shelves = inject(MyShelves);
   private readonly collectionsApi = inject(CollectionsApi);
-  private readonly overviewApi = inject(MemberOverviewApi);
 
   protected readonly sheet = signal<Sheet>(null);
   protected readonly message = signal<string | null>(null);
   protected readonly formError = signal<string | null>(null);
   protected readonly busy = signal(false);
   protected readonly collections = signal<Collection[]>([]);
-  protected readonly unlocks = signal<RecentUnlock[]>([]);
-  protected readonly picked = signal<number[]>([]);
   protected readonly newType = signal<ShelfType>('RECENTLY_PLAYED');
   protected readonly chosenCollection = signal('');
 
   protected readonly max = MAX_SHELVES;
-  protected readonly maxAchievements = MAX_SHELF_ACHIEVEMENTS;
   protected readonly names = SHELF_TYPE_NAMES;
   protected readonly hints = SHELF_TYPE_HINTS;
   protected readonly full = computed(() => this.shelves.list().length >= MAX_SHELVES);
@@ -120,22 +113,8 @@ export class ShelvesSection {
     handle.focus();
   }
 
-  protected async openAchievements(shelf: MyShelf): Promise<void> {
-    this.formError.set(null);
-    this.picked.set([...shelf.achievementIds]);
-    this.unlocks.set(await firstValueFrom(this.overviewApi.recentUnlocks(20)).catch(() => []));
-    this.sheet.set({ kind: 'achievements', shelf });
-  }
 
-  protected toggle(id: number): void {
-    this.picked.update((ids) =>
-      ids.includes(id) ? ids.filter((x) => x !== id) : ids.length >= MAX_SHELF_ACHIEVEMENTS ? ids : [...ids, id],
-    );
-  }
 
-  protected async saveAchievements(shelf: MyShelf): Promise<void> {
-    await this.save(() => this.shelves.showAchievements(shelf.id, this.picked()));
-  }
 
   private async save(work: () => Promise<string | null>): Promise<void> {
     this.busy.set(true);
