@@ -1,0 +1,81 @@
+.setting {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--hairline);
+  cursor: pointer;
+
+  &.disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.note {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.track {
+  position: relative;
+  width: 3rem;
+  height: 1.75rem;
+  flex: none;
+  border-radius: 0.875rem;
+  background: rgb(242 240 234 / 0.18);
+  transition: background-color 160ms ease;
+}
+
+.knob {
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.1875rem;
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 50%;
+  background: var(--line);
+  transition: transform 160ms ease;
+}
+
+input:checked + .track {
+  background: var(--line);
+
+  .knob {
+    background: var(--ink);
+    transform: translateX(1.25rem);
+  }
+}
+
+input:focus-visible + .track {
+  outline: 2px solid var(--unlock);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .knob {
+    transition: none;
+  }
+}

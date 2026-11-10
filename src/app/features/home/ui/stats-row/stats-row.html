@@ -1,0 +1,14 @@
+<dl class="stats">
+  <div class="stat">
+    <dd class="value">{{ stats().achievementsUnlocked | number }}</dd>
+    <dt>Achievements</dt>
+  </div>
+  <div class="stat">
+    <dd class="value">{{ stats().averageCompletion !== null ? (stats().averageCompletion | number: '1.0-0') + '%' : '—' }}</dd>
+    <dt>Avg. completion</dt>
+  </div>
+  <div class="stat">
+    <dd class="value"><app-perfect-diamond label="" />{{ stats().perfectGames | number }}</dd>
+    <dt>Perfect games</dt>
+  </div>
+</dl>

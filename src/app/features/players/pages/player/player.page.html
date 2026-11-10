@@ -1,0 +1,48 @@
+<main class="page player">
+  @switch (state().kind) {
+    @case ('loading') {
+      <div class="skeleton" role="status" aria-label="Loading the profile"></div>
+    }
+    @case ('not-found') {
+      <div class="message">
+        <h1>Profile not found</h1>
+        <p>This player’s profile is private, or the address is wrong.</p>
+        <a class="btn btn-secondary" routerLink="/home">Go to Home</a>
+      </div>
+    }
+    @case ('error') {
+      <div class="message">
+        <p class="alert" role="alert">This profile didn’t load. Try again in a moment.</p>
+        <button type="button" class="btn btn-secondary" (click)="load()">Try again</button>
+      </div>
+    }
+    @case ('ready') {
+      @if (header(); as h) {
+        <section class="head">
+          <app-avatar class="avatar" [avatar]="h.avatar ?? null" [seed]="'' + h.publicId" [initial]="h.username.charAt(0).toUpperCase()" />
+          <h1>{{ h.username }}</h1>
+          <span class="id">ID {{ playerId() }}</span>
+          @if (joined()) {
+            <span class="muted">Member since {{ joined() }}</span>
+          }
+          @if (h.country) {
+            <span class="country"><span class="code">{{ h.country.code }}</span>{{ h.country.name }}</span>
+          }
+          @if (h.platforms?.length) {
+            <ul class="badges" aria-label="Plays on">
+              @for (p of h.platforms!; track p) {
+                <li><span class="badge" role="img" [attr.aria-label]="platformName(p)">{{ p }}</span></li>
+              }
+            </ul>
+          }
+        </section>
+
+        @for (shelf of shelves(); track shelf.id) {
+          <app-shelf [shelf]="shelf" />
+        } @empty {
+          <p class="muted center">{{ h.username }} hasn’t put anything on their profile yet.</p>
+        }
+      }
+    }
+  }
+</main>

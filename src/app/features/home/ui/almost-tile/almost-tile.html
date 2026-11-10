@@ -1,0 +1,6 @@
+<a class="tile" [routerLink]="link()">
+  <app-game-cover class="cover" [src]="game().coverImageUrl" [title]="game().title" />
+  <span class="title">{{ game().title }}</span>
+  <app-progress-bar [percent]="percent()" [label]="game().title + ' achievements unlocked'" />
+  <span class="meta">{{ percent() }}% · {{ left() }} left</span>
+</a>

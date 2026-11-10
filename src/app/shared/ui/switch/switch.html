@@ -1,0 +1,16 @@
+<label class="setting" [class.disabled]="disabled()">
+  <span class="text">
+    <span class="label">{{ label() }}</span>
+    @if (note()) {
+      <span class="note">{{ note() }}</span>
+    }
+  </span>
+  <input
+    type="checkbox"
+    role="switch"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="onChange($event)"
+  />
+  <span class="track" aria-hidden="true"><span class="knob"></span></span>
+</label>

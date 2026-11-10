@@ -1,0 +1,8 @@
+<a class="row" [routerLink]="'/players/' + id()">
+  <app-avatar class="avatar" [avatar]="player().avatar ?? null" [seed]="id()" [initial]="player().username.charAt(0).toUpperCase()" />
+  <span class="text">
+    <span class="name">{{ player().username }}</span>
+    <span class="meta">ID {{ spacedId() }}@if (player().country) { · {{ player().country!.name }} }</span>
+  </span>
+  <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+</a>

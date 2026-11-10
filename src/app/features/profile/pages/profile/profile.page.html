@@ -1,0 +1,136 @@
+<main class="page profile">
+  @switch (account.state().kind) {
+    @case ('loading') {
+      <div class="skeleton head-skeleton" role="status" aria-label="Loading your profile"></div>
+    }
+    @case ('error') {
+      <div class="failed">
+        <p class="alert" role="alert">Your profile didn’t load. Try again in a moment.</p>
+        <button type="button" class="btn btn-secondary" (click)="account.load()">Try again</button>
+      </div>
+    }
+    @case ('ready') {
+      <section class="head">
+        <button type="button" class="avatar-button" aria-label="Change avatar" (click)="open('avatar')">
+          <app-avatar class="avatar" [avatar]="me.avatar()" [seed]="me.seed()" [initial]="initial()" />
+          <span class="edit" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16z" /></svg>
+          </span>
+        </button>
+        <h1>{{ account.user()?.username }}</h1>
+        @if (playerId()) {
+          <div class="id">
+            <span>ID {{ playerId() }}</span>
+            <span class="copy">
+              <button type="button" class="copy-btn" aria-label="Copy your player id" (click)="copyId()">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V6a2 2 0 0 1 2-2h9" /></svg>
+              </button>
+              @if (copied()) {
+                <svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>
+              }
+            </span>
+            <span class="visually-hidden" role="status">{{ copied() ? 'Player id copied' : '' }}</span>
+          </div>
+        }
+        @if (account.country(); as c) {
+          <span class="country"><span class="code">{{ c.code }}</span>{{ c.name }}</span>
+        }
+        @if (account.user()?.publicId) {
+          <a class="btn btn-secondary public-link" [routerLink]="'/players/' + account.user()!.publicId">See your public profile</a>
+        }
+      </section>
+
+      <section aria-labelledby="account-title">
+        <h2 id="account-title">Account</h2>
+        <button type="button" class="row" (click)="open('name')">
+          <span class="row-text">
+            <span class="label">Display name</span>
+            <span class="value">{{ account.user()?.username }}</span>
+            <span class="note">Doesn’t need to be unique. Your id tells you apart.</span>
+          </span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+        </button>
+        <button type="button" class="row" (click)="open('country')">
+          <span class="row-text">
+            <span class="label">Country</span>
+            <span class="value">{{ account.country()?.name ?? 'Not set' }}</span>
+            <span class="note">Only used for country achievement stats.</span>
+          </span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+        </button>
+        <div class="row static">
+          <span class="row-text">
+            <span class="label">E-mail</span>
+            <span class="value">{{ email() }}</span>
+            <span class="note">Only you can see this.</span>
+          </span>
+        </div>
+      </section>
+
+      <app-privacy-section />
+
+      <app-shelves-section />
+
+      <app-platforms-section />
+
+      <section class="end">
+        <button type="button" class="btn btn-secondary" (click)="signOut()">Sign out</button>
+        <button type="button" class="link-btn danger" (click)="open('delete')">Delete account</button>
+      </section>
+    }
+  }
+</main>
+
+<app-modal heading="Choose your avatar" [open]="sheet() === 'avatar'" (closed)="sheet.set(null)">
+  @if (sheet() === 'avatar') {
+    <app-avatar-picker (done)="sheet.set(null)" />
+  }
+</app-modal>
+
+<app-modal heading="Display name" [open]="sheet() === 'name'" (closed)="sheet.set(null)">
+  <form class="form" (submit)="$event.preventDefault(); saveName(name.value)">
+    <label class="field">
+      <span>Name others see</span>
+      <input #name type="text" maxlength="20" autocomplete="nickname" [value]="account.user()?.username ?? ''" (input)="formError.set(null)" />
+    </label>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="busy()">Save</button>
+  </form>
+</app-modal>
+
+<app-modal heading="Country" [open]="sheet() === 'country'" (closed)="sheet.set(null)">
+  <form class="form" (submit)="$event.preventDefault(); saveCountry(country.value)">
+    <label class="field">
+      <span>Your country</span>
+      <select #country class="select">
+        <option value="">Not set</option>
+        @for (c of account.countries(); track c.id) {
+          <option [value]="c.id" [selected]="c.id === account.user()?.countryId">{{ c.name }}</option>
+        }
+      </select>
+    </label>
+    <p class="note">It’s only used to show how players in your country do on each achievement.</p>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="busy()">Save</button>
+  </form>
+</app-modal>
+
+<app-modal heading="Delete your account" [open]="sheet() === 'delete'" (closed)="sheet.set(null)">
+  <form class="form" (submit)="$event.preventDefault(); deleteAccount(confirmation.value)">
+    <p class="note">
+      This removes your profile, linked accounts, tracking list, collections and shelves from Lavrel. It can’t be undone.
+    </p>
+    <label class="field">
+      <span>Type DELETE to confirm</span>
+      <input #confirmation type="text" autocomplete="off" autocapitalize="characters" (input)="formError.set(null)" />
+    </label>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-danger" [disabled]="busy()">Delete my account</button>
+  </form>
+</app-modal>

@@ -1,0 +1,5 @@
+@if (src() && !failed()) {
+  <img [src]="src()" alt="" loading="lazy" decoding="async" (error)="failed.set(true)" />
+} @else {
+  <span class="fallback" aria-hidden="true">{{ initials() }}</span>
+}

@@ -1,0 +1,54 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.625rem;
+  border-radius: 1rem;
+  background: var(--ink-raised);
+}
+
+.cover-link {
+  display: block;
+}
+
+/* Steam's header images are wide (460×215): shown whole, not cropped to a square. */
+.cover {
+  width: 100%;
+  aspect-ratio: 460 / 215;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+
+.title {
+  min-width: 0;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.number {
+  font-family: var(--font-mark);
+  color: var(--line);
+}
+
+.perfect {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}

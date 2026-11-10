@@ -1,0 +1,39 @@
+<section aria-labelledby="privacy-title">
+  <h2 id="privacy-title">Public profile</h2>
+  <p class="intro">Everything is private until you turn it on.</p>
+  @if (failed()) {
+    <p class="alert" role="alert">Your privacy settings didn’t load.</p>
+    <button type="button" class="btn btn-secondary" (click)="load()">Try again</button>
+  } @else if (settings(); as s) {
+    <app-switch
+      label="Public profile"
+      note="Anyone can find you by name or id. Off: nobody else can see your profile."
+      [checked]="s.public"
+      [disabled]="saving()"
+      (toggled)="set('public', $event)"
+    />
+    <app-switch label="Show country" [checked]="s.showCountry" [disabled]="saving() || !s.public" (toggled)="set('showCountry', $event)" />
+    <app-switch
+      label="Show platforms"
+      note="Badges like “plays on Steam”, never account names."
+      [checked]="s.showPlatforms"
+      [disabled]="saving() || !s.public"
+      (toggled)="set('showPlatforms', $event)"
+    />
+    <app-switch label="Show avatar" [checked]="s.showAvatar" [disabled]="saving() || !s.public" (toggled)="set('showAvatar', $event)" />
+    @if (s.showLibrarySize !== undefined) {
+      <app-switch
+        label="Show how many games you own"
+        note="Off: your stats leave out the size of your library."
+        [checked]="s.showLibrarySize"
+        [disabled]="saving() || !s.public"
+        (toggled)="set('showLibrarySize', $event)"
+      />
+    }
+    @if (message(); as m) {
+      <p class="alert" role="alert">{{ m }}</p>
+    }
+  } @else {
+    <p class="intro" role="status">Loading…</p>
+  }
+</section>

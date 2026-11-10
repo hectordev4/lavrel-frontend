@@ -1,0 +1,7 @@
+<a class="tile" [routerLink]="link()">
+  <app-game-cover class="cover" [src]="game().coverImageUrl" [title]="game().title" />
+  <span class="title">{{ game().title }}</span>
+  @if (game().releaseDate) {
+    <span class="date">{{ game().releaseDate | date: 'MMM y' }}</span>
+  }
+</a>

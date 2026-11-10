@@ -1,0 +1,39 @@
+<main class="page players">
+  <div class="heading">
+    <a class="icon-btn" routerLink="/search" aria-label="Back to search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </a>
+    <h1>Find players</h1>
+  </div>
+
+  <label class="box">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
+    <span class="visually-hidden">Find a player by name or player id</span>
+    <input #box type="search" autocomplete="off" spellcheck="false" placeholder="Name or player id" (input)="onInput(box.value)" />
+  </label>
+
+  <div aria-live="polite">
+    @switch (search.state().kind) {
+      @case ('idle') {
+        <p class="hint">Only players who made their profile public show up.</p>
+      }
+      @case ('loading') {
+        <p class="hint" role="status">Searching…</p>
+      }
+      @case ('error') {
+        <p class="alert" role="alert">Search didn’t work this time. Try again in a moment.</p>
+      }
+      @case ('ready') {
+        @if ($any(search.state()).players.length === 0) {
+          <p class="hint">No public profile matches “{{ $any(search.state()).query }}”.</p>
+        } @else {
+          <div>
+            @for (p of $any(search.state()).players; track p.publicId) {
+              <app-player-row [player]="p" />
+            }
+          </div>
+        }
+      }
+    }
+  </div>
+</main>

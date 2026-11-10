@@ -1,0 +1,27 @@
+<article class="answer">
+  @if (curated()) {
+    <span class="reviewed">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>
+      Reviewed
+    </span>
+  }
+  @if (!grounded()) {
+    <p class="unchecked">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z M12 10v4 M12 17v.5" /></svg>
+      <span>This answer couldn’t be checked against a source and may be inaccurate.</span>
+    </p>
+  }
+  <div class="text" [innerHTML]="html()"></div>
+  @if (sources().length) {
+    <ul class="sources" aria-label="Sources">
+      @for (s of sources(); track s.url) {
+        <li>
+          <a class="pill" [href]="s.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="s.title + ', ' + site(s.url) + ', ' + s.license">
+            {{ site(s.url) }}
+          </a>
+        </li>
+      }
+    </ul>
+    <p class="license">Sources: {{ licenses() }}</p>
+  }
+</article>

@@ -1,0 +1,7 @@
+<app-cube-logo [mode]="mode()" label="" />
+<span class="letters" [class.reveal]="mode() === 'intro'">
+  @for (letter of letters; track $index) {
+    <span [style.--i]="$index">{{ letter }}</span>
+  }
+</span>
+<span class="visually-hidden">Lavrel</span>

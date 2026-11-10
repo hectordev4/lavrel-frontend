@@ -1,0 +1,11 @@
+<dialog #dialog [attr.aria-labelledby]="headingId" (close)="onClose()" (click)="onBackdrop($event, dialog)">
+  <div class="sheet">
+    <header>
+      <h2 [id]="headingId">{{ heading() }}</h2>
+      <button type="button" class="close" aria-label="Close" (click)="dialog.close()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18" /></svg>
+      </button>
+    </header>
+    <ng-content />
+  </div>
+</dialog>

@@ -1,0 +1,52 @@
+<section class="shelf" [attr.aria-label]="title()">
+  <h2>{{ title() }}</h2>
+
+  @if (shelf().stats; as s) {
+    <dl class="stats">
+      @if (s.gamesOwned !== null) {
+        <div><dd>{{ s.gamesOwned | number }}</dd><dt>Games</dt></div>
+      }
+      <div><dd>{{ s.achievementsUnlocked | number }}</dd><dt>Achievements</dt></div>
+      <div><dd>{{ s.gamesCompleted | number }}</dd><dt>Completed</dt></div>
+    </dl>
+  } @else if (shelf().achievements?.length) {
+    <ul class="achievements">
+      @for (a of shelf().achievements!; track $index) {
+        <li [class.rare]="isRare(a.globalPercent)">
+          <span class="icon" aria-hidden="true">
+            @if (a.iconUrl) {
+              <img [src]="a.iconUrl" alt="" loading="lazy" />
+            }
+          </span>
+          <span class="text">
+            <span class="name">{{ a.name }}</span>
+            @if (a.gameTitle) {
+              <span class="meta">{{ a.gameTitle }}</span>
+            }
+          </span>
+          @if (a.globalPercent !== null) {
+            <span class="share">{{ isRare(a.globalPercent) ? 'Rare · ' : '' }}{{ a.globalPercent }}%</span>
+          }
+        </li>
+      }
+    </ul>
+  } @else if (shelf().games?.length) {
+    <ul class="games">
+      @for (g of shelf().games!; track g.gameId) {
+        <li>
+          @if (g.slug) {
+            <a [routerLink]="gameLink(g.slug)">
+              <app-game-cover class="cover" [src]="g.coverImageUrl" [title]="g.title" />
+              <span class="game-title">{{ g.title }}</span>
+            </a>
+          } @else {
+            <app-game-cover class="cover" [src]="g.coverImageUrl" [title]="g.title" />
+            <span class="game-title">{{ g.title }}</span>
+          }
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="empty">Nothing here yet.</p>
+  }
+</section>

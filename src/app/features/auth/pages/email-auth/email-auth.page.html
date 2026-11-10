@@ -1,0 +1,68 @@
+<main class="page email-auth">
+  <header class="bar">
+    <a class="icon-btn" routerLink="/welcome" aria-label="Back to start">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </a>
+    <app-cube-logo class="mini" mode="still" label="Lavrel" />
+  </header>
+
+  <h1>{{ isRegister() ? 'Create your account' : 'Sign in' }}</h1>
+  <p class="lead">
+    {{ isRegister() ? 'We’ll send you a link to confirm your e-mail.' : 'Welcome back. Your achievements missed you.' }}
+  </p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field" [class.invalid]="fieldError('email')">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" formControlName="email" autocomplete="email" inputmode="email"
+             autocapitalize="off" spellcheck="false" [attr.aria-invalid]="!!fieldError('email')"
+             aria-describedby="email-error" (input)="flow.clearMessages()" />
+      <p class="field-error" id="email-error">{{ fieldError('email') }}</p>
+    </div>
+
+    <div class="field" [class.invalid]="fieldError('password')">
+      <label for="password">Password</label>
+      <div class="with-action">
+        <input id="password" [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+               [attr.autocomplete]="isRegister() ? 'new-password' : 'current-password'"
+               [attr.aria-invalid]="!!fieldError('password')" aria-describedby="password-error"
+               (input)="flow.clearMessages()" />
+        <button type="button" class="reveal" (click)="showPassword.set(!showPassword())"
+                [attr.aria-pressed]="showPassword()">
+          {{ showPassword() ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+      <p class="field-error" id="password-error">{{ fieldError('password') }}</p>
+    </div>
+
+    @if (flow.error(); as error) {
+      <p class="alert" role="alert">{{ error }}</p>
+    }
+    @if (flow.notice(); as notice) {
+      <p class="notice" role="status">{{ notice }}</p>
+    }
+
+    <button type="submit" class="btn btn-primary" [disabled]="flow.busy() !== null">
+      {{ isRegister() ? 'Create account' : 'Sign in' }}
+    </button>
+
+    @if (!isRegister()) {
+      <button type="button" class="link-btn" (click)="forgotPassword()" [disabled]="flow.busy() !== null">
+        {{ flow.busy() === 'reset' ? 'Sending reset link…' : 'Forgot your password?' }}
+      </button>
+    }
+  </form>
+
+  <p class="switch">
+    @if (isRegister()) {
+      Already have an account? <a routerLink="/sign-in">Sign in</a>
+    } @else {
+      New to Lavrel? <a routerLink="/register">Create an account</a>
+    }
+  </p>
+</main>
+
+@if (flow.busy() === 'email' || flow.busy() === 'register') {
+  <app-loading-screen [message]="isRegister() ? 'Creating your account' : 'Signing you in'"
+                      animate.enter="fade-in" animate.leave="fade-out" />
+}
