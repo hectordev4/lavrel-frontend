@@ -4,11 +4,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, catchError, map, of, switchMap } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PickerAchievementSort, PickerApi } from '../../data-access/picker.api';
+import { isRare } from '../../../../shared/utils/rarity';
 import { ShelfPicker } from '../../data-access/shelf-picker';
 import { UnlockedAchievement } from '../../models/achievement-game.model';
-
-/** Under 5% of owners: shown in gold as rare. */
-const RARE_BELOW = 5;
 
 /** Picker step 2: my unlocks in one game, rarest or newest first, to tick. */
 @Component({
@@ -22,7 +20,11 @@ export class PickerAchievementsPage {
   private readonly api = inject(PickerApi);
   protected readonly picker = inject(ShelfPicker);
   private readonly gameId = Number(inject(ActivatedRoute).snapshot.paramMap.get('gameId'));
-  protected readonly game = this.picker.games.get(this.gameId) ?? { gameId: this.gameId, title: 'This game', slug: '' };
+  protected readonly game = this.picker.games.get(this.gameId) ?? {
+    gameId: this.gameId,
+    title: 'This game',
+    slug: '',
+  };
 
   protected readonly sort = signal<PickerAchievementSort>('rarity');
   protected readonly achievements = signal<UnlockedAchievement[]>([]);
@@ -62,7 +64,5 @@ export class PickerAchievementsPage {
     this.requests.next(this.sort());
   }
 
-  protected rare(percent: number | null): boolean {
-    return percent !== null && percent < RARE_BELOW;
-  }
+  protected readonly rare = isRare;
 }

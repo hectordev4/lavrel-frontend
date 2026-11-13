@@ -2,12 +2,10 @@ import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
+import { isRare } from '../../../../shared/utils/rarity';
 import { gameLink } from '../../../../shared/utils/game-link';
 import { shelfTitle } from '../../data-access/shelf-labels';
 import { Shelf as ShelfModel } from '../../models/public-profile.model';
-
-/** Under 5% of owners: shown in gold as rare. */
-const RARE_BELOW = 5;
 
 /** One shelf of a public profile: a row of games, a list of achievements, or the stats. */
 @Component({
@@ -22,7 +20,5 @@ export class Shelf {
 
   protected readonly title = computed(() => shelfTitle(this.shelf()));
   protected readonly gameLink = gameLink;
-  protected isRare(percent: number | null): boolean {
-    return percent !== null && percent < RARE_BELOW;
-  }
+  protected readonly isRare = isRare;
 }
