@@ -5,6 +5,7 @@ import { Platform } from '../api/models/platform.model';
 import { PlatformAccount } from '../api/models/platform-account.model';
 import { AuthStore } from '../auth/auth.store';
 import { TrackedGames } from '../tracking/tracked-games';
+import { LatestOnly } from '../util/latest-only';
 import { linkErrorMessage, platformErrorMessage } from './platform-messages';
 
 /** Calls in one "Sync now": each imports a limited number of new games. */
@@ -35,6 +36,7 @@ export class PlatformAccounts {
   private readonly _message = signal<string | null>(null);
   private readonly _syncVersion = signal(0);
   private readonly _linking = signal(false);
+  private readonly latest = new LatestOnly();
 
   readonly accounts = this._accounts.asReadonly();
   readonly loadState = this._loadState.asReadonly();
@@ -60,12 +62,15 @@ export class PlatformAccounts {
   }
 
   async reload(): Promise<void> {
+    const isLatest = this.latest.start();
     this._loadState.set('loading');
     try {
-      this._accounts.set(await firstValueFrom(this.api.list()));
+      const accounts = await firstValueFrom(this.api.list());
+      if (!isLatest()) return;
+      this._accounts.set(accounts);
       this._loadState.set('ready');
     } catch {
-      this._loadState.set('error');
+      if (isLatest()) this._loadState.set('error');
     }
   }
 

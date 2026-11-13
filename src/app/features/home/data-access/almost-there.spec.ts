@@ -26,3 +26,17 @@ describe('AlmostThere', () => {
     expect(s.kind === 'ready' && s.games.map((g) => g.gameId)).toEqual([2]);
   });
 });
+
+describe('AlmostThere reloads', () => {
+  it('cancels the earlier load when a new one starts', () => {
+    TestBed.configureTestingModule({ providers: testProviders(AlmostThere) });
+    const almost = TestBed.inject(AlmostThere);
+    const http = TestBed.inject(HttpTestingController);
+    almost.load();
+    const first = http.expectOne((r) => r.url === '/api/currentuser/games');
+    almost.load();
+    expect(first.cancelled).toBe(true);
+    http.expectOne((r) => r.url === '/api/currentuser/games').flush({ games: [], page: 0, size: 48, hasMore: false });
+    expect(almost.state().kind).toBe('ready');
+  });
+});

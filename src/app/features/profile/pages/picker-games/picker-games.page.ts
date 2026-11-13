@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { Subject, catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
 import { PickerApi, PickerGameSort } from '../../data-access/picker.api';
 import { ShelfPicker } from '../../data-access/shelf-picker';
-import { AchievementGame } from '../../models/achievement-game.model';
+import { AchievementGame, AchievementGamePage } from '../../models/achievement-game.model';
 
 /** Picker step 1: the games where you've unlocked something, to open one. */
 @Component({
@@ -19,6 +19,8 @@ export class PickerGamesPage {
   private readonly api = inject(PickerApi);
   private readonly picker = inject(ShelfPicker);
   private readonly typed = new Subject<string>();
+  /** Each page asked for; a newer search, order or page cancels the one still loading. */
+  private readonly pages = new Subject<number>();
   private q = '';
   private page = 0;
 
@@ -29,6 +31,17 @@ export class PickerGamesPage {
   protected readonly failed = signal(false);
 
   constructor() {
+    this.pages
+      .pipe(
+        switchMap((page) =>
+          this.api.games(this.q, this.sort(), page).pipe(
+            map((result): [number, AchievementGamePage | null] => [page, result]),
+            catchError(() => of<[number, AchievementGamePage | null]>([page, null])),
+          ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe(([page, result]) => this.show(page, result));
     this.typed.pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(inject(DestroyRef))).subscribe((q) => {
       this.q = q;
       this.load(0);
@@ -48,19 +61,19 @@ export class PickerGamesPage {
   protected load(page: number): void {
     this.loading.set(true);
     this.failed.set(false);
-    this.api.games(this.q, this.sort(), page).subscribe({
-      next: (result) => {
-        this.page = page;
-        result.games.forEach((g) => this.picker.games.set(g.gameId, g));
-        this.games.update((before) => (page === 0 ? result.games : [...before, ...result.games]));
-        this.hasMore.set(result.hasMore);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.failed.set(true);
-        this.loading.set(false);
-      },
-    });
+    this.pages.next(page);
+  }
+
+  private show(page: number, result: AchievementGamePage | null): void {
+    this.loading.set(false);
+    if (!result) {
+      this.failed.set(true);
+      return;
+    }
+    this.page = page;
+    result.games.forEach((g) => this.picker.games.set(g.gameId, g));
+    this.games.update((before) => (page === 0 ? result.games : [...before, ...result.games]));
+    this.hasMore.set(result.hasMore);
   }
 
   protected more(): void {

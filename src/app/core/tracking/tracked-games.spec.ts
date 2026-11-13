@@ -82,3 +82,20 @@ describe('TrackedGames', () => {
     expect(store.loadState()).toBe('idle');
   });
 });
+
+describe('TrackedGames overlapping reloads', () => {
+  it('keeps the newest answer when an older reload finishes last', async () => {
+    TestBed.configureTestingModule({ providers: testProviders(fakeAuthProvider) });
+    signInAs(memberUser());
+    const store = TestBed.inject(TrackedGames);
+    const http = TestBed.inject(HttpTestingController);
+    const older = store.reload();
+    const newer = store.reload();
+    const [oldReq, newReq] = http.match('/api/currentuser/tracked');
+    newReq.flush({ games: [card(2)] });
+    await newer;
+    oldReq.flush({ games: [card(1)] });
+    await older;
+    expect(store.games().map((g) => g.gameId)).toEqual([2]);
+  });
+});

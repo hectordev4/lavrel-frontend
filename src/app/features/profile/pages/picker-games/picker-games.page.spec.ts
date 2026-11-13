@@ -21,3 +21,16 @@ describe('PickerGamesPage', () => {
     http.expectOne((r) => r.params.get('sort') === 'name').flush({ games: [], page: 0, size: 24, hasMore: false });
   });
 });
+
+describe('PickerGamesPage order switches', () => {
+  it('cancels the older request when the order changes', () => {
+    TestBed.configureTestingModule({ providers: testProviders(ShelfPicker) });
+    const fixture = TestBed.createComponent(PickerGamesPage);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    const recent = http.expectOne((r) => r.params.get('sort') === 'recent');
+    ([...fixture.nativeElement.querySelectorAll('.segmented button')][1] as HTMLButtonElement).click();
+    expect(recent.cancelled).toBe(true);
+    http.expectOne((r) => r.params.get('sort') === 'name').flush({ games: [], page: 0, size: 24, hasMore: false });
+  });
+});
