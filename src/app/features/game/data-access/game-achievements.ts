@@ -35,7 +35,9 @@ export class GameAchievementsStore {
     return s.data.achievements;
   });
 
-  readonly visible = computed(() => (this.showAll() ? this.filtered() : this.filtered().slice(0, FIRST_VISIBLE)));
+  readonly visible = computed(() =>
+    this.showAll() ? this.filtered() : this.filtered().slice(0, FIRST_VISIBLE),
+  );
   readonly hiddenCount = computed(() => this.filtered().length - this.visible().length);
 
   load(gameId: number): void {
@@ -47,7 +49,8 @@ export class GameAchievementsStore {
     this.revealed.set(new Set());
     this.request = this.api.list(gameId).subscribe({
       next: (data) => this.state.set({ kind: 'ready', data }),
-      error: (error: unknown) => this.state.set({ kind: 'error', message: achievementsLoadMessage(error) }),
+      error: (error: unknown) =>
+        this.state.set({ kind: 'error', message: achievementsLoadMessage(error) }),
     });
   }
 

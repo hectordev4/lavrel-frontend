@@ -28,7 +28,9 @@ export class AchievementItem {
   protected readonly guideQuery = computed(() => {
     const g = this.guideFor();
     const a = this.achievement();
-    return g ? { name: a.name, game: g.title, slug: g.slug, hidden: a.hidden && !a.unlocked ? '1' : null } : null;
+    return g
+      ? { name: a.name, game: g.title, slug: g.slug, hidden: a.hidden && !a.unlocked ? '1' : null }
+      : null;
   });
 
   /** Hidden achievements stay blurred until tapped, unless already unlocked. */

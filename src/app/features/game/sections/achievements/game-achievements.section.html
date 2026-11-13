@@ -1,0 +1,66 @@
+@let s = achievements.state();
+@if (s.kind === 'ready' && s.data.unlocked !== null && s.data.total > 0) {
+  <app-progress-card [unlocked]="s.data.unlocked" [total]="s.data.total" />
+}
+
+<section class="achievements" aria-labelledby="achievements-title">
+  <h2 id="achievements-title">Achievements</h2>
+  @switch (s.kind) {
+    @case ('loading') {
+      <p class="sub" role="status">Loading achievements…</p>
+    }
+    @case ('error') {
+      <p class="alert" role="alert">{{ s.message }}</p>
+      <button type="button" class="btn btn-secondary" (click)="achievements.retry()">
+        Try again
+      </button>
+    }
+    @case ('ready') {
+      @if (s.data.total === 0) {
+        <p class="sub">This game has no achievements.</p>
+      } @else {
+        <p class="sub">{{ s.data.total }} in total · share of players who unlocked each</p>
+        @if (achievements.personal()) {
+          <app-segmented
+            label="Show achievements"
+            [options]="filters"
+            [value]="achievements.filter()"
+            (changed)="achievements.setFilter($event)"
+          />
+        }
+        @if (achievements.filtered().length === 0) {
+          <p class="sub">
+            {{
+              achievements.filter() === 'unlocked'
+                ? 'Nothing unlocked yet.'
+                : 'You’ve unlocked them all.'
+            }}
+          </p>
+        }
+        <ul class="achievement-list">
+          @for (a of achievements.visible(); track a.id) {
+            <app-achievement-item
+              [achievement]="a"
+              [personal]="achievements.personal()"
+              [revealed]="achievements.revealed().has(a.id)"
+              (reveal)="achievements.reveal(a.id)"
+              [guideFor]="
+                signedIn() ? { gameId: game().id, slug: game().slug, title: game().title } : null
+              "
+            />
+          }
+        </ul>
+        @if (achievements.personal()) {
+          <p class="note">
+            Your country’s figure shows “—” until enough players from there own the game.
+          </p>
+        }
+        @if (achievements.hiddenCount() > 0) {
+          <button type="button" class="btn btn-secondary" (click)="achievements.showAll.set(true)">
+            Show all {{ achievements.filtered().length }}
+          </button>
+        }
+      }
+    }
+  }
+</section>
