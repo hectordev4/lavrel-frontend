@@ -25,6 +25,12 @@ domain to Firebase → Authentication → Settings → **Authorized domains**.
 On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: set
 `export NG_BUILD_SASS_EMBEDDED=false` in your shell profile to use the JavaScript compiler.
 
+## Errors
+
+Expected failures (a request that doesn't load) are handled where they happen: each section or page shows its own
+message and *Try again*. Anything unexpected ends in `AppErrorHandler` (`core/errors`), which logs it once with the
+address it happened on and keeps the latest 20 in memory, ready for a future "report a problem" screen.
+
 ## Typed templates
 
 Templates never use `$any`. A state with several shapes is read once with `@let` and switched on, so Angular narrows
