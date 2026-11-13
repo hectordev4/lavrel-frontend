@@ -25,6 +25,16 @@ domain to Firebase → Authentication → Settings → **Authorized domains**.
 On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: set
 `export NG_BUILD_SASS_EMBEDDED=false` in your shell profile to use the JavaScript compiler.
 
+## Async requests
+
+A screen must never show an answer to an older question. Two rules keep it that way:
+
+- **Requests driven by changing input** (an address id, a search box, an order toggle, a reload after sync) go
+  through `switchMap`: a new value cancels the request still running. Player profiles, both picker steps, Home's
+  Almost there, totals and recent unlocks, and every search box work this way.
+- **Shared stores that load with `async`/`await`** (`TrackedGames`, `PlatformAccounts`, `MyCollections`,
+  `MyShelves`) use `LatestOnly` (`core/util`): each reload takes a ticket, and only the most recent one may write.
+
 ## Tests and CI
 
 - `npm test` runs the unit tests (Vitest) and watches for changes; `npm run test:ci` runs them once.
