@@ -135,8 +135,8 @@ src/app
     │   └── models/           Country, AccountState, ProfileSettings
     ├── games/                the Games tab for members
     │   ├── pages/            games (tracking list), library (/library)
-    │   ├── ui/               tracked-card, library-card
-    │   ├── data-access/      tracked-list (filter and sort), MyLibrary (paging), CollectionsApi, MyCollections,
+    │   ├── ui/               tracked-card, library-card, collections-bar, library-game-menu
+    │   ├── data-access/      tracked-list (filter and sort), MyLibrary (paging), MyCollections, CollectionsUi,
     │   │                     library labels, messages
     │   └── models/           StatusFilter, TrackedSort, LibraryQuery, LibraryState, Collection
     ├── game/
