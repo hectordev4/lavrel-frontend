@@ -1,7 +1,4 @@
 <main class="page home">
-  @let almostState = almost.state();
-  @let popular = discover.popular();
-  @let newest = discover.newest();
   @switch (profile.state().kind) {
     @case ('loading') {
       <div class="center" role="status">
@@ -22,144 +19,33 @@
         <h1>{{ profile.username() ?? 'Welcome' }}</h1>
       </section>
 
-      @if (overview.stats(); as s) {
-        @if (s.gamesOwned > 0) {
-          <app-stats-row [stats]="s" />
-        }
+      <app-stats-section />
+      <app-sync-section />
+      <app-playing-now-section />
+
+      @defer (on viewport) {
+        <app-almost-there-section />
+      } @placeholder {
+        <div class="lazy" aria-hidden="true"></div>
+      } @error {
+        <p class="muted small">This part of Home didn’t load. Pull to refresh or reopen Home.</p>
       }
 
-      @if (accounts.message(); as m) {
-        <p class="alert" role="alert">{{ m }}</p>
-      }
-
-      @if (accounts.steam(); as steam) {
-        <div class="sync">
-          <span class="muted">Steam · {{ lastSynced() }}</span>
-          <button
-            type="button"
-            class="btn btn-secondary sync-btn"
-            [disabled]="accounts.syncing() !== null"
-            (click)="syncNow()"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" [class.spin]="accounts.syncing() !== null">
-              <path d="M21 12a9 9 0 1 1-2.64-6.36 M21 4v5h-5" />
-            </svg>
-            <span>
-              @if (accounts.syncing(); as p) {
-                Syncing… {{ p.gamesSynced }}
-              } @else {
-                Sync now
-              }
-            </span>
-          </button>
-        </div>
-      } @else if (firstVisit()) {
-        <app-connect-steam-card [busy]="accounts.linking()" (connect)="connectSteam()" />
-      }
-
-      <section aria-labelledby="playing-title">
-        <div class="section-head">
-          <div>
-            <h2 id="playing-title">Playing now</h2>
-            <span class="muted small">
-              @if (tracked.pinnedCount()) {
-                {{ tracked.pinnedCount() }} of {{ maxPinned }} pinned
-              } @else {
-                Pin up to {{ maxPinned }} games to keep them one tap away.
-              }
-            </span>
-          </div>
-          @if (tracked.pinnedCount()) {
-            <a class="edit" routerLink="/games">Edit</a>
-          }
-        </div>
-        @if (tracked.loadState() === 'ready') {
-          @if (tracked.pinnedCount()) {
-            <div class="rows">
-              @for (game of tracked.pinned(); track game.gameId) {
-                <app-pinned-row [game]="game" />
-              }
-            </div>
-            <a
-              class="dashed"
-              [routerLink]="tracked.games().length > tracked.pinnedCount() ? '/games' : '/search'"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
-              <span>Pin a game</span>
-            </a>
-          } @else {
-            <div class="empty">
-              <span class="strong">Nothing pinned yet</span>
-              <span class="muted small"
-                >Find a game in Search, track it, and pin it here. Any game in the catalog works,
-                owned or not.</span
-              >
-              <a class="btn btn-secondary" routerLink="/search">Find a game</a>
-            </div>
-          }
-        } @else if (tracked.loadState() === 'error') {
-          <button type="button" class="btn btn-secondary" (click)="tracked.reload()">
-            Your pinned games didn’t load. Try again
-          </button>
-        } @else {
-          <div
-            class="skeleton row-skeleton"
-            role="status"
-            aria-label="Loading your pinned games"
-          ></div>
-        }
-      </section>
-
-      @if (almostState.kind === 'ready' && almostState.games.length) {
-        <section aria-labelledby="almost-title">
-          <div class="section-head">
-            <h2 id="almost-title">Almost there</h2>
-            <span class="muted small">Closest to 100%</span>
-          </div>
-          <div class="carousel">
-            @for (game of almostState.games; track game.gameId) {
-              <app-almost-tile [game]="game" />
-            }
-          </div>
-        </section>
-      }
-
-      @if (overview.recent()?.length) {
-        <section aria-labelledby="recent-title">
-          <div class="section-head"><h2 id="recent-title">Recent unlocks</h2></div>
-          <div>
-            @for (u of overview.recent(); track u.achievementId) {
-              <app-recent-unlock [unlock]="u" />
-            }
-          </div>
-        </section>
+      @defer (on viewport) {
+        <app-recent-unlocks-section />
+      } @placeholder {
+        <div class="lazy" aria-hidden="true"></div>
+      } @error {
+        <p class="muted small">This part of Home didn’t load. Pull to refresh or reopen Home.</p>
       }
 
       @if (firstVisit()) {
-        @if (popular.kind === 'ready') {
-          <section aria-labelledby="popular-title">
-            <div class="section-head">
-              <div>
-                <h2 id="popular-title">Popular on Lavrel</h2>
-                <span class="muted small">Most reviewed games in the catalog</span>
-              </div>
-            </div>
-            <div class="rows">
-              @for (game of popular.games; track game.id) {
-                <app-game-row [game]="game" />
-              }
-            </div>
-          </section>
-        }
-        @if (newest.kind === 'ready') {
-          <section aria-labelledby="new-title">
-            <div class="section-head"><h2 id="new-title">New releases</h2></div>
-            <div class="carousel">
-              @for (game of newest.games; track game.id) {
-                <app-game-tile [game]="game" />
-              }
-            </div>
-          </section>
+        @defer (on viewport) {
+          <app-discover-section />
+        } @placeholder {
+          <div class="lazy" aria-hidden="true"></div>
+        } @error {
+          <p class="muted small">This part of Home didn’t load. Pull to refresh or reopen Home.</p>
         }
       }
     }

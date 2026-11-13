@@ -9,7 +9,9 @@ describe('AlmostThere', () => {
     TestBed.configureTestingModule({ providers: testProviders(AlmostThere) });
     const almost = TestBed.inject(AlmostThere);
     almost.load();
-    const req = TestBed.inject(HttpTestingController).expectOne((r) => r.url === '/api/currentuser/games');
+    const req = TestBed.inject(HttpTestingController).expectOne(
+      (r) => r.url === '/api/currentuser/games',
+    );
     expect(req.request.params.get('sort')).toBe('progress');
     req.flush({
       games: [
@@ -36,7 +38,9 @@ describe('AlmostThere reloads', () => {
     const first = http.expectOne((r) => r.url === '/api/currentuser/games');
     almost.load();
     expect(first.cancelled).toBe(true);
-    http.expectOne((r) => r.url === '/api/currentuser/games').flush({ games: [], page: 0, size: 48, hasMore: false });
+    http
+      .expectOne((r) => r.url === '/api/currentuser/games')
+      .flush({ games: [], page: 0, size: 48, hasMore: false });
     expect(almost.state().kind).toBe('ready');
   });
 });

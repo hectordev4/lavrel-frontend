@@ -3,7 +3,12 @@ import { StatsRow } from './stats-row';
 
 function render(averageCompletion: number | null) {
   const fixture = TestBed.createComponent(StatsRow);
-  fixture.componentRef.setInput('stats', { achievementsUnlocked: 1240, averageCompletion, perfectGames: 6, gamesOwned: 212 });
+  fixture.componentRef.setInput('stats', {
+    achievementsUnlocked: 1240,
+    averageCompletion,
+    perfectGames: 6,
+    gamesOwned: 212,
+  });
   fixture.detectChanges();
   return (fixture.nativeElement as HTMLElement).textContent!;
 }

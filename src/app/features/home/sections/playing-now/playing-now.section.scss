@@ -1,0 +1,45 @@
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.edit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-left: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.dashed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  border-radius: 1rem;
+  border: 1px dashed rgb(242 240 234 / 0.35);
+  font-size: 0.9375rem;
+  text-decoration: none;
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1.75rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px dashed rgb(242 240 234 / 0.35);
+  text-align: center;
+}

@@ -4,7 +4,13 @@
     <dt>Achievements</dt>
   </div>
   <div class="stat">
-    <dd class="value">{{ stats().averageCompletion !== null ? (stats().averageCompletion | number: '1.0-0') + '%' : '—' }}</dd>
+    <dd class="value">
+      {{
+        stats().averageCompletion !== null
+          ? (stats().averageCompletion | number: '1.0-0') + '%'
+          : '—'
+      }}
+    </dd>
     <dt>Avg. completion</dt>
   </div>
   <div class="stat">
