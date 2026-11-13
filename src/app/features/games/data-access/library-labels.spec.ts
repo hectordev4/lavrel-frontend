@@ -10,3 +10,11 @@ describe('playtimeLabel', () => {
     expect(playtimeLabel(minutes)).toBe(text);
   });
 });
+
+describe('isLibrarySort', () => {
+  it('accepts known sorts only', async () => {
+    const { isLibrarySort } = await import('./library-labels');
+    expect(isLibrarySort('playtime')).toBe(true);
+    expect(isLibrarySort('rating')).toBe(false);
+  });
+});
