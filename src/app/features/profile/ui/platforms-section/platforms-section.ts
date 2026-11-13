@@ -62,6 +62,6 @@ export class PlatformsSection {
   }
 
   protected connect(): void {
-    void this.accounts.link('STEAM');
+    void this.accounts.connect('STEAM');
   }
 }

@@ -53,3 +53,21 @@ describe('PlatformAccounts', () => {
     expect(accounts.message()).toContain('privacy settings');
   });
 });
+
+describe('PlatformAccounts.connect', () => {
+  it('syncs instead of starting a Steam login when Steam is already linked to you', async () => {
+    TestBed.configureTestingModule({ providers: testProviders(fakeAuthProvider) });
+    signInAs(memberUser());
+    const accounts = TestBed.inject(PlatformAccounts);
+    const http = TestBed.inject(HttpTestingController);
+    const done = accounts.connect('STEAM');
+    await settle();
+    http.expectOne('/api/currentuser/accounts').flush({ accounts: [steam] });
+    await settle();
+    http.expectNone('/api/currentuser/accounts/steam/link');
+    http.expectOne('/api/currentuser/accounts/steam/7656/sync').flush({ gamesSynced: 1, gamesSkipped: 0, unlocksRecorded: 0, gamesPending: 0 });
+    await settle();
+    http.match(() => true).forEach((r) => r.flush(r.request.url.endsWith('tracked') ? { games: [] } : { accounts: [steam] }));
+    await done;
+  });
+});

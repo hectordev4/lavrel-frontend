@@ -356,6 +356,13 @@ blurred here: they're your own unlocks. Both reload after each sync. An *All* li
 Errors are explained in words: a private Steam profile (set **Game details** to Public), Steam not answering, or
 too many syncs.
 
+Every *Connect Steam* button goes through `PlatformAccounts.connect()`: it reloads the linked accounts first and, if
+Steam is already linked to you, **syncs instead of opening the Steam login** (no double login from a double tap
+either). `/steam/linked` tells three outcomes apart: linked but the sync didn't finish (*Sync again*, never a new
+login), not linked (*Connect Steam*), and linked to another Lavrel account (`account_linked_elsewhere`, no retry). An
+"already linked" answer counts as success when the account is yours. The page cleans its address after reading it,
+and goes Home when opened without a result.
+
 ## Logo modes (`<app-cube-logo mode="…">`)
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs
