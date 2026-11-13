@@ -95,6 +95,7 @@ src/app
 │   ├── modal/                bottom sheet on the native <dialog>
 │   ├── switch/               on/off setting (role="switch")
 │   ├── avatar/               animated round avatar (upload, gallery or generated Pixelbot)
+│   ├── search-box/, segmented/, select-field/, page-header/, connect-steam-card/ (shared building blocks)
 ├── shared/utils/             relativeTime, gameLink, avatar-art, formatPlayerId, isRare (under 5%), syncedLabel,
 │                             greetingFor: helpers used by more than one page live here, never copied
 │   ├── game-cover/           cover image with an initials fallback
