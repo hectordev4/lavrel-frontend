@@ -1,5 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, catchError, map, of, switchMap } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PickerAchievementSort, PickerApi } from '../../data-access/picker.api';
 import { ShelfPicker } from '../../data-access/shelf-picker';
@@ -27,7 +29,25 @@ export class PickerAchievementsPage {
   protected readonly loading = signal(true);
   protected readonly failed = signal(false);
 
+  /** Each order asked for; a newer one cancels the request still loading. */
+  private readonly requests = new Subject<PickerAchievementSort>();
+
   constructor() {
+    this.requests
+      .pipe(
+        switchMap((sort) =>
+          this.api.unlocked(this.gameId, sort).pipe(
+            map((r) => r.achievements as UnlockedAchievement[] | null),
+            catchError(() => of(null)),
+          ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((list) => {
+        this.loading.set(false);
+        if (list) this.achievements.set(list);
+        else this.failed.set(true);
+      });
     this.load();
   }
 
@@ -39,16 +59,7 @@ export class PickerAchievementsPage {
   protected load(): void {
     this.loading.set(true);
     this.failed.set(false);
-    this.api.unlocked(this.gameId, this.sort()).subscribe({
-      next: (r) => {
-        this.achievements.set(r.achievements);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.failed.set(true);
-        this.loading.set(false);
-      },
-    });
+    this.requests.next(this.sort());
   }
 
   protected rare(percent: number | null): boolean {

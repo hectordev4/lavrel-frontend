@@ -30,3 +30,19 @@ describe('PickerAchievementsPage', () => {
     expect(TestBed.inject(ShelfPicker).picked().map((p) => [p.name, p.gameTitle])).toEqual([['Rare one', 'Hades']]);
   });
 });
+
+describe('PickerAchievementsPage order switches', () => {
+  it('cancels the older order’s request, so the list matches the selected toggle', () => {
+    TestBed.configureTestingModule({
+      providers: testProviders(ShelfPicker, { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ gameId: '7' }) } } }),
+    });
+    const fixture = TestBed.createComponent(PickerAchievementsPage);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    const rarity = http.expectOne((r) => r.params.get('sort') === 'rarity');
+    ([...fixture.nativeElement.querySelectorAll('.segmented button')][1] as HTMLButtonElement).click();
+    const date = http.expectOne((r) => r.params.get('sort') === 'date');
+    expect(rarity.cancelled).toBe(true);
+    date.flush({ gameId: 7, achievements: [] });
+  });
+});
