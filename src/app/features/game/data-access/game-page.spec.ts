@@ -25,3 +25,18 @@ describe('GamePage store', () => {
     expect(store.state().kind).toBe('not-found');
   });
 });
+
+describe('GamePage store, switching games', () => {
+  it('cancels the older request when another slug loads', () => {
+    TestBed.configureTestingModule({ providers: testProviders(GamePage) });
+    const store = TestBed.inject(GamePage);
+    const http = TestBed.inject(HttpTestingController);
+    store.load('first');
+    const first = http.expectOne('/api/games/slug/first');
+    store.load('second');
+    expect(first.cancelled).toBe(true);
+    http.expectOne('/api/games/slug/second').flush(gameDetails({ title: 'Second' }));
+    const s = store.state();
+    expect(s.kind === 'ready' && s.game.title).toBe('Second');
+  });
+});
