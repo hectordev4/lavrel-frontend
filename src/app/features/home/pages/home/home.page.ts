@@ -13,7 +13,8 @@ import { CtaCard } from '../../../../shared/ui/cta-card/cta-card';
 import { CubeLogo } from '../../../../shared/ui/cube-logo/cube-logo';
 import { GameRow } from '../../../../shared/ui/game-row/game-row';
 import { GameTile } from '../../../../shared/ui/game-tile/game-tile';
-import { relativeTime } from '../../../../shared/utils/relative-time';
+import { greetingFor } from '../../../../shared/utils/greeting';
+import { syncedLabel } from '../../../../shared/utils/synced-label';
 import { AlmostThere } from '../../data-access/almost-there';
 import { Discover } from '../../data-access/discover';
 import { HomeProfile } from '../../data-access/home-profile';
@@ -56,8 +57,7 @@ export class HomePage {
   protected readonly maxPinned = MAX_PINNED;
   protected readonly greeting = greetingFor(new Date());
   protected readonly lastSynced = computed(() => {
-    const at = this.accounts.steam()?.lastSyncedAt;
-    return at ? `synced ${relativeTime(at)}` : 'not synced yet';
+    return syncedLabel(this.accounts.steam()?.lastSyncedAt);
   });
   /** No Steam account yet: show the connect card and popular games to start from. */
   protected readonly firstVisit = computed(
@@ -100,12 +100,4 @@ export class HomePage {
   protected connectSteam(): void {
     void this.accounts.connect('STEAM');
   }
-}
-
-function greetingFor(date: Date): string {
-  const hour = date.getHours();
-  if (hour < 5) return 'Good night,';
-  if (hour < 12) return 'Good morning,';
-  if (hour < 19) return 'Good afternoon,';
-  return 'Good evening,';
 }

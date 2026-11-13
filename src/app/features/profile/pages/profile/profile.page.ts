@@ -5,6 +5,7 @@ import { AuthStore } from '../../../../core/auth/auth.store';
 import { MyAvatar } from '../../../../core/profile/my-avatar';
 import { Avatar } from '../../../../shared/ui/avatar/avatar';
 import { Modal } from '../../../../shared/ui/modal/modal';
+import { formatPlayerId } from '../../../../shared/utils/player-id';
 import { MyAccount } from '../../data-access/my-account';
 import { AvatarPicker } from '../../ui/avatar-picker/avatar-picker';
 import { PlatformsSection } from '../../ui/platforms-section/platforms-section';
@@ -17,7 +18,15 @@ type Sheet = 'name' | 'country' | 'delete' | 'avatar' | null;
 @Component({
   selector: 'app-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Avatar, AvatarPicker, Modal, PlatformsSection, PrivacySection, ShelvesSection],
+  imports: [
+    RouterLink,
+    Avatar,
+    AvatarPicker,
+    Modal,
+    PlatformsSection,
+    PrivacySection,
+    ShelvesSection,
+  ],
   providers: [MyAccount],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',
@@ -32,12 +41,14 @@ export class ProfilePage {
   protected readonly formError = signal<string | null>(null);
   protected readonly busy = signal(false);
   protected readonly copied = signal(false);
-  protected readonly email = computed(() => this.account.user()?.email ?? this.auth.user()?.email ?? '');
-  protected readonly initial = computed(() => (this.account.user()?.username ?? '?').charAt(0).toUpperCase());
-  /** 4829103755210846 → "4829 1037 5521 0846". */
-  protected readonly playerId = computed(() =>
-    String(this.account.user()?.publicId ?? '').replace(/(\d{4})(?=\d)/g, '$1 '),
+  protected readonly email = computed(
+    () => this.account.user()?.email ?? this.auth.user()?.email ?? '',
   );
+  protected readonly initial = computed(() =>
+    (this.account.user()?.username ?? '?').charAt(0).toUpperCase(),
+  );
+  /** 4829103755210846 → "4829 1037 5521 0846". */
+  protected readonly playerId = computed(() => formatPlayerId(this.account.user()?.publicId));
 
   constructor() {
     void this.account.load();
