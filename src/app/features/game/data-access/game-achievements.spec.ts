@@ -10,7 +10,9 @@ describe('GameAchievementsStore', () => {
     const store = TestBed.inject(GameAchievementsStore);
     store.load(7);
     const list = Array.from({ length: 12 }, (_, i) => achievement(i, { unlocked: i < 3 }));
-    TestBed.inject(HttpTestingController).expectOne('/api/games/7/achievements').flush({ gameId: 7, total: 12, unlocked, achievements: list });
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/games/7/achievements')
+      .flush({ gameId: 7, total: 12, unlocked, achievements: list });
     return store;
   }
 

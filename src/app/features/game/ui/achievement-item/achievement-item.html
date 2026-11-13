@@ -3,7 +3,11 @@
     @if (achievement().iconUrl && !blurred()) {
       <img [src]="achievement().iconUrl" alt="" loading="lazy" />
     } @else {
-      <svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z M16 5h3v2a3 3 0 0 1-3 3 M8 5H5v2a3 3 0 0 0 3 3 M12 13v4 M9 20h6" /></svg>
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M8 4h8v5a4 4 0 0 1-8 0z M16 5h3v2a3 3 0 0 1-3 3 M8 5H5v2a3 3 0 0 0 3 3 M12 13v4 M9 20h6"
+        />
+      </svg>
     }
   </div>
   <div class="body">
@@ -23,9 +27,19 @@
       }
     }
     <span class="stats">
-      <span><span class="number">{{ achievement().globalPercent !== null ? achievement().globalPercent + '%' : '—' }}</span> worldwide</span>
+      <span
+        ><span class="number">{{
+          achievement().globalPercent !== null ? achievement().globalPercent + '%' : '—'
+        }}</span>
+        worldwide</span
+      >
       @if (personal()) {
-        <span><span class="number">{{ achievement().countryPercent !== null ? achievement().countryPercent + '%' : '—' }}</span> in your country</span>
+        <span
+          ><span class="number">{{
+            achievement().countryPercent !== null ? achievement().countryPercent + '%' : '—'
+          }}</span>
+          in your country</span
+        >
       }
       @if (achievement().unlockedAt) {
         <span class="when">Unlocked {{ achievement().unlockedAt | date: 'd MMM y' }}</span>
@@ -33,8 +47,17 @@
     </span>
   </div>
   @if (guideLink(); as link) {
-    <a class="guide" [routerLink]="link" [queryParams]="guideQuery()" [attr.aria-label]="'AI guide for ' + (blurred() ? 'this hidden achievement' : achievement().name)">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /></svg>
+    <a
+      class="guide"
+      [routerLink]="link"
+      [queryParams]="guideQuery()"
+      [attr.aria-label]="
+        'AI guide for ' + (blurred() ? 'this hidden achievement' : achievement().name)
+      "
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+      </svg>
       <span>Guide</span>
     </a>
   }

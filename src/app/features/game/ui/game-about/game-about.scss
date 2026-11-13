@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.about {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .link-btn {
+    align-self: flex-start;
+    padding: 0;
+  }
+}
+
+.description {
+  margin: 0;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  &.open {
+    display: block;
+  }
+}

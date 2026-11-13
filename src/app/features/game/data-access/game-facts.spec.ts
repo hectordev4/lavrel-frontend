@@ -8,7 +8,9 @@ describe('game-facts', () => {
 
   it('falls back to PC for a desktop game, nothing otherwise', () => {
     expect(systemsOf(gameDetails())).toEqual(['PC']);
-    expect(systemsOf(gameDetails({ platforms: { windows: false, mac: false, linux: false } }))).toEqual([]);
+    expect(
+      systemsOf(gameDetails({ platforms: { windows: false, mac: false, linux: false } })),
+    ).toEqual([]);
   });
 
   it('lists the store features of one group', () => {

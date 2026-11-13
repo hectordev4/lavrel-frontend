@@ -1,6 +1,5 @@
 <main class="page game">
   @let gameState = store.state();
-  @let achievementsState = achievements.state();
   <div class="bar">
     <button type="button" class="icon-btn" aria-label="Back" (click)="back()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
@@ -57,31 +56,7 @@
                 }
               </ul>
             }
-            <app-track-control
-              [gameTitle]="g.title"
-              [status]="trackedEntry()?.status ?? null"
-              [pinned]="trackedEntry()?.pinPosition != null"
-              [busy]="tracked.busy().has(g.id)"
-              [signedIn]="signedIn()"
-              (track)="track($event)"
-              (untrack)="untrack()"
-              (pinToggle)="togglePin()"
-            />
-            @if (trackMessage(); as m) {
-              <p class="alert" role="alert">{{ m }}</p>
-            }
-            @if (signedIn()) {
-              <a
-                class="btn btn-secondary ask-ai"
-                [routerLink]="'/assistant/chat/' + g.id"
-                [queryParams]="{ game: g.title, slug: g.slug }"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
-                </svg>
-                Ask the AI about this game
-              </a>
-            }
+            <app-game-tracking [game]="g" />
             @if (g.storeUrl) {
               <a
                 class="btn btn-secondary"
@@ -93,134 +68,17 @@
             }
           </section>
 
-          @if (
-            achievementsState.kind === 'ready' &&
-            achievementsState.data.unlocked !== null &&
-            achievementsState.data.total > 0
-          ) {
-            <app-progress-card
-              [unlocked]="achievementsState.data.unlocked"
-              [total]="achievementsState.data.total"
-            />
+          <app-game-about [description]="g.description" />
+
+          @defer (on viewport) {
+            <app-game-achievements-section [game]="g" />
+          } @placeholder {
+            <div class="lazy" aria-hidden="true"></div>
+          } @error {
+            <p class="muted">The achievements didn’t load. Reopen the game to try again.</p>
           }
 
-          @if (g.description) {
-            <section class="about">
-              <h2>About</h2>
-              <p class="description" [class.open]="descriptionOpen()">{{ g.description }}</p>
-              @if (g.description.length > 220) {
-                <button
-                  type="button"
-                  class="link-btn"
-                  (click)="descriptionOpen.set(!descriptionOpen())"
-                >
-                  {{ descriptionOpen() ? 'Show less' : 'Read more' }}
-                </button>
-              }
-            </section>
-          }
-
-          <section class="achievements" aria-labelledby="achievements-title">
-            <h2 id="achievements-title">Achievements</h2>
-            @switch (achievementsState.kind) {
-              @case ('loading') {
-                <p class="sub" role="status">Loading achievements…</p>
-              }
-              @case ('error') {
-                <p class="alert" role="alert">{{ achievementsState.message }}</p>
-                <button type="button" class="btn btn-secondary" (click)="achievements.retry()">
-                  Try again
-                </button>
-              }
-              @case ('ready') {
-                @if (achievementsState.data.total === 0) {
-                  <p class="sub">This game has no achievements.</p>
-                } @else {
-                  <p class="sub">
-                    {{ achievementsState.data.total }} in total · share of players who unlocked each
-                  </p>
-                  @if (achievements.personal()) {
-                    <app-segmented
-                      label="Show achievements"
-                      [options]="filters"
-                      [value]="achievements.filter()"
-                      (changed)="achievements.setFilter($event)"
-                    />
-                  }
-                  @if (achievements.filtered().length === 0) {
-                    <p class="sub">
-                      {{
-                        achievements.filter() === 'unlocked'
-                          ? 'Nothing unlocked yet.'
-                          : 'You’ve unlocked them all.'
-                      }}
-                    </p>
-                  }
-                  <ul class="achievement-list">
-                    @for (a of achievements.visible(); track a.id) {
-                      <app-achievement-item
-                        [achievement]="a"
-                        [personal]="achievements.personal()"
-                        [revealed]="achievements.revealed().has(a.id)"
-                        (reveal)="achievements.reveal(a.id)"
-                        [guideFor]="
-                          signedIn() ? { gameId: g.id, slug: g.slug, title: g.title } : null
-                        "
-                      />
-                    }
-                  </ul>
-                  @if (achievements.personal()) {
-                    <p class="note">
-                      Your country’s figure shows “—” until enough players from there own the game.
-                    </p>
-                  }
-                  @if (achievements.hiddenCount() > 0) {
-                    <button
-                      type="button"
-                      class="btn btn-secondary"
-                      (click)="achievements.showAll.set(true)"
-                    >
-                      Show all {{ achievements.filtered().length }}
-                    </button>
-                  }
-                }
-              }
-            }
-          </section>
-
-          @if (g.tags.length || g.genres.length) {
-            <section class="labels">
-              @if (g.tags.length) {
-                <h2>Tags</h2>
-                <ul class="pills">
-                  @for (tag of tags(); track tag.id) {
-                    <li>
-                      <a
-                        routerLink="/search/results"
-                        [queryParams]="{ tag: tag.id + ':' + tag.name }"
-                        >{{ tag.name }}</a
-                      >
-                    </li>
-                  }
-                </ul>
-                @if (g.tags.length > shortTagCount) {
-                  <button type="button" class="link-btn" (click)="allTags.set(!allTags())">
-                    {{ allTags() ? 'Fewer tags' : 'All ' + g.tags.length + ' tags' }}
-                  </button>
-                }
-              }
-              @if (g.genres.length) {
-                <h3>Genres</h3>
-                <ul class="pills">
-                  @for (genre of g.genres; track genre.id) {
-                    <li>
-                      <span>{{ genre.name }}</span>
-                    </li>
-                  }
-                </ul>
-              }
-            </section>
-          }
+          <app-game-labels [tags]="g.tags" [genres]="g.genres" />
 
           @if (details().length) {
             <section class="details">

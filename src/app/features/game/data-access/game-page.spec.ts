@@ -10,14 +10,18 @@ describe('GamePage store', () => {
   it('loads by slug', () => {
     const store = TestBed.inject(GamePage);
     store.load('rogue-harbor');
-    TestBed.inject(HttpTestingController).expectOne('/api/games/slug/rogue-harbor').flush(gameDetails());
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/games/slug/rogue-harbor')
+      .flush(gameDetails());
     expect(store.state().kind).toBe('ready');
   });
 
   it('turns a 404 into not-found', () => {
     const store = TestBed.inject(GamePage);
     store.load('nope');
-    TestBed.inject(HttpTestingController).expectOne('/api/games/slug/nope').flush(null, { status: 404, statusText: 'x' });
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/games/slug/nope')
+      .flush(null, { status: 404, statusText: 'x' });
     expect(store.state().kind).toBe('not-found');
   });
 });
