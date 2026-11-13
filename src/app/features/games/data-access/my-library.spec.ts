@@ -20,3 +20,19 @@ describe('MyLibrary', () => {
     expect(library.state().kind).toBe('ready');
   });
 });
+
+describe('MyLibrary, a new query while one is loading', () => {
+  it('cancels the older request', () => {
+    TestBed.configureTestingModule({ providers: testProviders(MyLibrary) });
+    const library = TestBed.inject(MyLibrary);
+    const http = TestBed.inject(HttpTestingController);
+    library.setQuery({ sort: 'name' });
+    const first = http.expectOne((r) => r.params.get('sort') === 'name');
+    library.setQuery({ sort: 'playtime' });
+    expect(first.cancelled).toBe(true);
+    http
+      .expectOne((r) => r.params.get('sort') === 'playtime')
+      .flush({ games: [], page: 0, size: 48, hasMore: false });
+    expect(library.state().kind).toBe('ready');
+  });
+});

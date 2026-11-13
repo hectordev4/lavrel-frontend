@@ -17,8 +17,14 @@ describe('SearchSuggestions', () => {
     suggestions.type('rog');
     vi.advanceTimersByTime(250);
     expect(suggestions.state().kind).toBe('loading');
-    http.expectOne((r) => r.url === '/api/search' && r.params.get('q') === 'rog').flush({ games: [], tags: [], franchises: [] });
-    expect(suggestions.state()).toEqual({ kind: 'ready', query: 'rog', results: { games: [], tags: [], franchises: [] } });
+    http
+      .expectOne((r) => r.url === '/api/search' && r.params.get('q') === 'rog')
+      .flush({ games: [], tags: [], franchises: [] });
+    expect(suggestions.state()).toEqual({
+      kind: 'ready',
+      query: 'rog',
+      results: { games: [], tags: [], franchises: [] },
+    });
     http.verify();
   });
 

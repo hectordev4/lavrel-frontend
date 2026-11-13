@@ -11,6 +11,8 @@ export class QuickSearchApi {
   private readonly base = inject(APP_ENV).apiBaseUrl;
 
   search(query: string): Observable<QuickResults> {
-    return this.http.get<QuickResults>(`${this.base}/api/search`, { params: new HttpParams().set('q', query) });
+    return this.http.get<QuickResults>(`${this.base}/api/search`, {
+      params: new HttpParams().set('q', query),
+    });
   }
 }
