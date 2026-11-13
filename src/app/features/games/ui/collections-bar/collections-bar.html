@@ -1,0 +1,86 @@
+<div class="collections" role="group" aria-label="Collections">
+  <app-chip label="All games" [pressed]="ui.current() === null" (activate)="ui.browse(null)" />
+  @for (c of ui.collections.list(); track c.id) {
+    <app-chip
+      [label]="c.name"
+      [count]="c.gameCount"
+      [pressed]="ui.current()?.id === c.id"
+      (activate)="ui.browse(c.id)"
+    />
+  }
+  <button type="button" class="new" (click)="ui.openCreate()">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
+    <span>New collection</span>
+  </button>
+</div>
+
+@if (ui.current(); as c) {
+  <div class="current">
+    <span>{{ c.name }} · {{ c.gameCount }} {{ c.gameCount === 1 ? 'game' : 'games' }}</span>
+    <span class="current-actions">
+      <button type="button" class="link-btn" (click)="ui.openRename()">Rename</button>
+      <button type="button" class="link-btn danger" (click)="ui.deleteCurrent()">Delete</button>
+    </span>
+  </div>
+}
+
+@if (ui.message(); as m) {
+  <p class="notice" role="status">{{ m }}</p>
+}
+
+<app-modal heading="Rename collection" [open]="ui.renaming()" (closed)="ui.renaming.set(false)">
+  <form class="form" (submit)="$event.preventDefault(); ui.rename(newName.value)">
+    <label class="field">
+      <span>Name</span>
+      <input
+        #newName
+        type="text"
+        maxlength="40"
+        autocomplete="off"
+        [value]="ui.current()?.name ?? ''"
+        (input)="ui.formError.set(null)"
+      />
+    </label>
+    @if (ui.formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary">Save name</button>
+  </form>
+</app-modal>
+
+<app-modal
+  [heading]="'Add ' + (ui.adding()?.title ?? '') + ' to…'"
+  [open]="ui.adding() !== null"
+  (closed)="ui.adding.set(null)"
+>
+  <ul class="pick">
+    @for (c of ui.collections.list(); track c.id) {
+      <li>
+        <button type="button" (click)="ui.addTo(c)">
+          <span>{{ c.name }}</span>
+          <span class="count">{{ c.gameCount }} games</span>
+        </button>
+      </li>
+    }
+  </ul>
+</app-modal>
+
+<app-modal heading="New collection" [open]="ui.creating()" (closed)="ui.creating.set(false)">
+  <form class="form" (submit)="$event.preventDefault(); ui.create(name.value)">
+    <label class="field">
+      <span>Name</span>
+      <input
+        #name
+        type="text"
+        maxlength="40"
+        autocomplete="off"
+        placeholder="Cozy games"
+        (input)="ui.formError.set(null)"
+      />
+    </label>
+    @if (ui.formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary">Create collection</button>
+  </form>
+</app-modal>
