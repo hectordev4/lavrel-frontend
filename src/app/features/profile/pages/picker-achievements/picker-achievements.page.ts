@@ -7,12 +7,13 @@ import { PickerAchievementSort, PickerApi } from '../../data-access/picker.api';
 import { isRare } from '../../../../shared/utils/rarity';
 import { ShelfPicker } from '../../data-access/shelf-picker';
 import { UnlockedAchievement } from '../../models/achievement-game.model';
+import { Segmented, SegmentedOption } from '../../../../shared/ui/segmented/segmented';
 
 /** Picker step 2: my unlocks in one game, rarest or newest first, to tick. */
 @Component({
   selector: 'app-picker-achievements-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, RouterLink],
+  imports: [Segmented, DatePipe, RouterLink],
   templateUrl: './picker-achievements.page.html',
   styleUrl: './picker-achievements.page.scss',
 })
@@ -26,6 +27,10 @@ export class PickerAchievementsPage {
     slug: '',
   };
 
+  protected readonly orders: SegmentedOption<PickerAchievementSort>[] = [
+    { value: 'rarity', label: 'Rarest first' },
+    { value: 'date', label: 'Newest first' },
+  ];
   protected readonly sort = signal<PickerAchievementSort>('rarity');
   protected readonly achievements = signal<UnlockedAchievement[]>([]);
   protected readonly loading = signal(true);

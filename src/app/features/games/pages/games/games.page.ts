@@ -12,12 +12,13 @@ import { SORT_LABELS, filterAndSort, isTrackedSort } from '../../data-access/tra
 import { StatusFilter } from '../../models/status-filter.model';
 import { TrackedSort } from '../../models/tracked-sort.model';
 import { TrackedCard } from '../../ui/tracked-card/tracked-card';
+import { SelectField } from '../../../../shared/ui/select-field/select-field';
 
 /** The Games tab for members: the tracking list with status filters, sort and pins. */
 @Component({
   selector: 'app-games-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Chip, TrackedCard],
+  imports: [SelectField, RouterLink, Chip, TrackedCard],
   templateUrl: './games.page.html',
   styleUrl: './games.page.scss',
 })

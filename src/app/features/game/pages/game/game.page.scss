@@ -204,32 +204,6 @@ h3 {
   gap: 0.625rem;
 }
 
-.segmented {
-  display: flex;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  border-radius: var(--radius);
-  background: var(--ink-raised);
-
-  button {
-    flex: 1;
-    min-height: 2.5rem;
-    border: 0;
-    border-radius: 0.625rem;
-    background: transparent;
-    color: var(--muted);
-    font: inherit;
-    font-weight: 700;
-    font-size: 0.875rem;
-    cursor: pointer;
-
-    &.on {
-      background: var(--line);
-      color: var(--ink);
-    }
-  }
-}
-
 .achievement-list {
   margin: 0;
   padding: 0;

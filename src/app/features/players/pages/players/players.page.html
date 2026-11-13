@@ -1,26 +1,12 @@
 <main class="page players">
   @let state = search.state();
-  <div class="heading">
-    <a class="icon-btn" routerLink="/search" aria-label="Back to search">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-    </a>
-    <h1>Find players</h1>
-  </div>
+  <app-page-header heading="Find players" backLink="/search" backLabel="Back to search" />
 
-  <label class="box">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" />
-    </svg>
-    <span class="visually-hidden">Find a player by name or player id</span>
-    <input
-      #box
-      type="search"
-      autocomplete="off"
-      spellcheck="false"
-      placeholder="Name or player id"
-      (input)="onInput(box.value)"
-    />
-  </label>
+  <app-search-box
+    label="Find a player by name or player id"
+    placeholder="Name or player id"
+    (typed)="onInput($event)"
+  />
 
   <div aria-live="polite">
     @switch (state.kind) {

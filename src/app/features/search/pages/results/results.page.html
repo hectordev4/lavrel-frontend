@@ -24,17 +24,12 @@
     <span class="hint">{{
       filterCount() ? 'Games with every selected filter' : 'All games in the catalog'
     }}</span>
-    <label class="sort">
-      <span class="visually-hidden">Sort by</span>
-      <select #sortSelect [value]="sort()" (change)="changeSort(sortSelect.value)">
-        @for (option of sortOptions(); track option.value) {
-          <option [value]="option.value" [selected]="option.value === sort()">
-            {{ option.label }}
-          </option>
-        }
-      </select>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
-    </label>
+    <app-select-field
+      label="Sort by"
+      [options]="sortOptions()"
+      [value]="sort()"
+      (changed)="changeSort($event)"
+    />
   </div>
 
   @if (trackMessage(); as m) {

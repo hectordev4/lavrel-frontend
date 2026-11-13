@@ -23,6 +23,7 @@ import {
 import { SearchResults } from '../../data-access/search-results';
 import { SearchFilters } from '../../models/search-filters.model';
 import { ResultCard } from '../../ui/result-card/result-card';
+import { SelectField } from '../../../../shared/ui/select-field/select-field';
 
 /** One removable chip for an active filter. */
 interface ActiveChip {
@@ -35,7 +36,7 @@ interface ActiveChip {
 @Component({
   selector: 'app-results-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Chip, ResultCard, TrackControl],
+  imports: [SelectField, RouterLink, Chip, ResultCard, TrackControl],
   providers: [SearchResults],
   templateUrl: './results.page.html',
   styleUrl: './results.page.scss',

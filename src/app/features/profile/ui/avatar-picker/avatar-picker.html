@@ -7,18 +7,12 @@
     label="Preview of your avatar"
   />
 
-  <div class="segmented" role="group" aria-label="Avatar source">
-    @for (s of sources; track s.value) {
-      <button
-        type="button"
-        [class.on]="source() === s.value"
-        [attr.aria-pressed]="source() === s.value"
-        (click)="source.set(s.value)"
-      >
-        {{ s.label }}
-      </button>
-    }
-  </div>
+  <app-segmented
+    label="Avatar source"
+    [options]="sources"
+    [value]="source()"
+    (changed)="source.set($event)"
+  />
 
   @switch (source()) {
     @case ('GENERATED') {

@@ -11,19 +11,11 @@
   </nav>
 
   @if (accounts.loadState() === 'ready' && !accounts.steam()) {
-    <app-cta-card
-      heading="Connect your Steam account"
+    <app-connect-steam-card
       text="Your library fills in from your linked accounts: games, playtime and achievements."
-    >
-      <button
-        type="button"
-        class="btn btn-primary"
-        [disabled]="accounts.linking()"
-        (click)="connectSteam()"
-      >
-        Connect Steam
-      </button>
-    </app-cta-card>
+      [busy]="accounts.linking()"
+      (connect)="connectSteam()"
+    />
   } @else {
     <div class="collections" role="group" aria-label="Collections">
       <app-chip
@@ -60,30 +52,17 @@
     }
 
     <div class="tools">
-      <label class="box">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" />
-        </svg>
-        <span class="visually-hidden">Find a game in your library</span>
-        <input
-          #box
-          type="search"
-          placeholder="Find in your library"
-          autocomplete="off"
-          (input)="onType(box.value)"
-        />
-      </label>
-      <label class="sort">
-        <span class="visually-hidden">Sort by</span>
-        <select #sortSelect (change)="setSort(sortSelect.value)">
-          @for (o of sortOptions; track o.value) {
-            <option [value]="o.value" [selected]="o.value === library.query().sort">
-              {{ o.label }}
-            </option>
-          }
-        </select>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
-      </label>
+      <app-search-box
+        label="Find a game in your library"
+        placeholder="Find in your library"
+        (typed)="onType($event)"
+      />
+      <app-select-field
+        label="Sort by"
+        [options]="sortOptions"
+        [value]="library.query().sort"
+        (changed)="setSort($event)"
+      />
     </div>
 
     @switch (libraryState.kind) {

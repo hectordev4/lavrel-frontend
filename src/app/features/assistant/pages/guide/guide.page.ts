@@ -4,6 +4,7 @@ import { gameLink } from '../../../../shared/utils/game-link';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { GuideConversation } from '../../data-access/guide-conversation';
 import { GuideAnswer } from '../../ui/guide-answer/guide-answer';
+import { PageHeader } from '../../../../shared/ui/page-header/page-header';
 
 /**
  * /assistant/guide/:gameId/:achievementId?name=…&game=…&slug=…&hidden=1 — the chat about one achievement.
@@ -12,7 +13,7 @@ import { GuideAnswer } from '../../ui/guide-answer/guide-answer';
 @Component({
   selector: 'app-guide-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Modal, GuideAnswer],
+  imports: [PageHeader, RouterLink, Modal, GuideAnswer],
   providers: [GuideConversation],
   templateUrl: './guide.page.html',
   styleUrl: './guide.page.scss',
@@ -26,7 +27,9 @@ export class GuidePage {
   protected readonly hidden = this.route.queryParamMap.get('hidden') === '1';
   private readonly slug = this.route.queryParamMap.get('slug');
   protected readonly backLink = this.slug ? gameLink(this.slug) : '/assistant';
-  protected readonly lastIsAnswer = computed(() => this.convo.messages().at(-1)?.role === 'assistant');
+  protected readonly lastIsAnswer = computed(
+    () => this.convo.messages().at(-1)?.role === 'assistant',
+  );
 
   constructor() {
     const gameId = Number(this.route.paramMap.get('gameId'));

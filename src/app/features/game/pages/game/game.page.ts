@@ -1,5 +1,13 @@
 import { DatePipe, DecimalPipe, Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -16,6 +24,7 @@ import { AchievementFilter } from '../../models/achievement-filter.model';
 import { GameDetails } from '../../models/game-details.model';
 import { AchievementItem } from '../../ui/achievement-item/achievement-item';
 import { ProgressCard } from '../../ui/progress-card/progress-card';
+import { Segmented } from '../../../../shared/ui/segmented/segmented';
 
 const SHORT_TAGS = 8;
 
@@ -23,7 +32,16 @@ const SHORT_TAGS = 8;
 @Component({
   selector: 'app-game-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, DecimalPipe, RouterLink, GameCover, TrackControl, AchievementItem, ProgressCard],
+  imports: [
+    Segmented,
+    DatePipe,
+    DecimalPipe,
+    RouterLink,
+    GameCover,
+    TrackControl,
+    AchievementItem,
+    ProgressCard,
+  ],
   providers: [GamePageStore, GameAchievementsStore],
   templateUrl: './game.page.html',
   styleUrl: './game.page.scss',
@@ -62,8 +80,14 @@ export class GamePage {
     const g = this.game();
     if (!g) return [];
     const rows: { label: string; value: string }[] = [
-      { label: g.developers.length > 1 ? 'Developers' : 'Developer', value: g.developers.join(', ') },
-      { label: g.publishers.length > 1 ? 'Publishers' : 'Publisher', value: g.publishers.join(', ') },
+      {
+        label: g.developers.length > 1 ? 'Developers' : 'Developer',
+        value: g.developers.join(', '),
+      },
+      {
+        label: g.publishers.length > 1 ? 'Publishers' : 'Publisher',
+        value: g.publishers.join(', '),
+      },
       { label: 'Franchise', value: g.franchises.join(', ') },
       { label: 'Price', value: g.free ? 'Free to play' : 'Paid' },
       { label: 'Available on', value: this.systems().join(', ') },
@@ -82,7 +106,10 @@ export class GamePage {
 
   constructor() {
     inject(ActivatedRoute)
-      .paramMap.pipe(map((params) => params.get('slug')?.trim() ?? ''), takeUntilDestroyed())
+      .paramMap.pipe(
+        map((params) => params.get('slug')?.trim() ?? ''),
+        takeUntilDestroyed(),
+      )
       .subscribe((slug) => {
         this.invalidAddress.set(!slug);
         if (slug) this.store.load(slug);
@@ -122,7 +149,9 @@ export class GamePage {
     const g = this.game();
     const entry = this.trackedEntry();
     if (!g || !entry) return;
-    this.trackMessage.set(entry.pinPosition === null ? await this.tracked.pin(g.id) : await this.tracked.unpin(g.id));
+    this.trackMessage.set(
+      entry.pinPosition === null ? await this.tracked.pin(g.id) : await this.tracked.unpin(g.id),
+    );
   }
 
   protected back(): void {

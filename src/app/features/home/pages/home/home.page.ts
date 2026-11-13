@@ -9,7 +9,6 @@ import {
 import { RouterLink } from '@angular/router';
 import { PlatformAccounts } from '../../../../core/platforms/platform-accounts';
 import { MAX_PINNED, TrackedGames } from '../../../../core/tracking/tracked-games';
-import { CtaCard } from '../../../../shared/ui/cta-card/cta-card';
 import { CubeLogo } from '../../../../shared/ui/cube-logo/cube-logo';
 import { GameRow } from '../../../../shared/ui/game-row/game-row';
 import { GameTile } from '../../../../shared/ui/game-tile/game-tile';
@@ -23,6 +22,7 @@ import { AlmostTile } from '../../ui/almost-tile/almost-tile';
 import { PinnedRow } from '../../ui/pinned-row/pinned-row';
 import { RecentUnlock } from '../../ui/recent-unlock/recent-unlock';
 import { StatsRow } from '../../ui/stats-row/stats-row';
+import { ConnectSteamCard } from '../../../../shared/ui/connect-steam-card/connect-steam-card';
 
 /**
  * Home for members: greeting, Steam sync (or Connect Steam), the pinned games, the games closest to 100%,
@@ -32,8 +32,9 @@ import { StatsRow } from '../../ui/stats-row/stats-row';
   selector: 'app-home-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ConnectSteamCard,
     RouterLink,
-    CtaCard,
+
     CubeLogo,
     GameRow,
     GameTile,

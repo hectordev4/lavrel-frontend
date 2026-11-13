@@ -54,19 +54,7 @@
           </button>
         </div>
       } @else if (firstVisit()) {
-        <app-cta-card
-          heading="Connect your Steam account"
-          text="You’ll sign in on Steam, then we bring in your games and every achievement you’ve unlocked. Your Steam game details need to be public."
-        >
-          <button
-            type="button"
-            class="btn btn-primary"
-            [disabled]="accounts.linking()"
-            (click)="connectSteam()"
-          >
-            Connect Steam
-          </button>
-        </app-cta-card>
+        <app-connect-steam-card [busy]="accounts.linking()" (connect)="connectSteam()" />
       }
 
       <section aria-labelledby="playing-title">
