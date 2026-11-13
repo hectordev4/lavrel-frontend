@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { LatestOnly } from '../../../core/util/latest-only';
 import { firstValueFrom } from 'rxjs';
 import { Collection } from '../../../core/api/models/collection.model';
 import { CollectionsApi } from '../../../core/api/collections.api';
@@ -11,13 +12,17 @@ export class MyCollections {
 
   readonly list = signal<Collection[]>([]);
   readonly failed = signal(false);
+  private readonly latest = new LatestOnly();
 
   async reload(): Promise<void> {
+    const isLatest = this.latest.start();
     try {
-      this.list.set(await firstValueFrom(this.api.list()));
+      const list = await firstValueFrom(this.api.list());
+      if (!isLatest()) return;
+      this.list.set(list);
       this.failed.set(false);
     } catch {
-      this.failed.set(true);
+      if (isLatest()) this.failed.set(true);
     }
   }
 

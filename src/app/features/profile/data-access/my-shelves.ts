@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { LatestOnly } from '../../../core/util/latest-only';
 import { firstValueFrom } from 'rxjs';
 import { ShelfType } from '../../../core/profile/shelf-types';
 import { MyShelf } from '../models/my-shelf.model';
@@ -12,13 +13,17 @@ export class MyShelves {
 
   readonly list = signal<MyShelf[]>([]);
   readonly failed = signal(false);
+  private readonly latest = new LatestOnly();
 
   async reload(): Promise<void> {
+    const isLatest = this.latest.start();
     try {
-      this.list.set(sorted(await firstValueFrom(this.api.list())));
+      const list = sorted(await firstValueFrom(this.api.list()));
+      if (!isLatest()) return;
+      this.list.set(list);
       this.failed.set(false);
     } catch {
-      this.failed.set(true);
+      if (isLatest()) this.failed.set(true);
     }
   }
 

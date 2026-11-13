@@ -4,6 +4,7 @@ import { TrackedGame } from '../api/models/tracked-game.model';
 import { TrackingStatus } from '../api/models/tracking-status.model';
 import { TrackingApi } from '../api/tracking.api';
 import { AuthStore } from '../auth/auth.store';
+import { LatestOnly } from '../util/latest-only';
 import { trackingErrorMessage } from './tracking-messages';
 
 export const MAX_PINNED = 20;
@@ -22,6 +23,7 @@ export class TrackedGames {
   private readonly _games = signal<TrackedGame[]>([]);
   private readonly _loadState = signal<LoadState>('idle');
   private readonly _busy = signal<ReadonlySet<number>>(new Set());
+  private readonly latest = new LatestOnly();
 
   readonly games = this._games.asReadonly();
   readonly loadState = this._loadState.asReadonly();
@@ -46,12 +48,15 @@ export class TrackedGames {
   }
 
   async reload(): Promise<void> {
+    const isLatest = this.latest.start();
     this._loadState.set('loading');
     try {
-      this._games.set(await firstValueFrom(this.api.list()));
+      const games = await firstValueFrom(this.api.list());
+      if (!isLatest()) return;
+      this._games.set(games);
       this._loadState.set('ready');
     } catch {
-      this._loadState.set('error');
+      if (isLatest()) this._loadState.set('error');
     }
   }
 
