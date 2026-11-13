@@ -1,13 +1,10 @@
-<label class="box">
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
-  <span class="visually-hidden">Find one of your games</span>
-  <input #box type="search" autocomplete="off" placeholder="Find one of your games" (input)="search(box.value)" />
-</label>
+<app-search-box
+  label="Find one of your games"
+  placeholder="Find one of your games"
+  (typed)="search($event)"
+/>
 
-<div class="segmented" role="group" aria-label="Order">
-  <button type="button" [class.on]="sort() === 'recent'" [attr.aria-pressed]="sort() === 'recent'" (click)="setSort('recent')">Recent</button>
-  <button type="button" [class.on]="sort() === 'name'" [attr.aria-pressed]="sort() === 'name'" (click)="setSort('name')">Name</button>
-</div>
+<app-segmented label="Order" [options]="orders" [value]="sort()" (changed)="setSort($event)" />
 
 @if (failed()) {
   <p class="alert" role="alert">Your games didn’t load.</p>

@@ -1,23 +1,25 @@
 <main class="page guide">
-  <div class="heading">
-    <a class="icon-btn" [routerLink]="backLink" aria-label="Back">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-    </a>
-    <div class="titles">
-      <span class="kicker">AI guide</span>
-      <h1>{{ hidden && convo.spoilers() !== true ? 'Hidden achievement' : name }}</h1>
-      @if (gameTitle) {
-        <span class="game">{{ gameTitle }}</span>
-      }
-    </div>
-  </div>
+  <app-page-header
+    kicker="AI guide"
+    [heading]="hidden && convo.spoilers() !== true ? 'Hidden achievement' : name"
+    [backLink]="backLink"
+  >
+    @if (gameTitle) {
+      <span class="game">{{ gameTitle }}</span>
+    }
+  </app-page-header>
 
   <div class="thread" aria-live="polite">
     @for (m of convo.messages(); track $index) {
       @if (m.role === 'user') {
         <p class="question">{{ m.text }}</p>
       } @else {
-        <app-guide-answer [html]="m.html" [grounded]="m.grounded" [curated]="m.curated" [sources]="m.sources" />
+        <app-guide-answer
+          [html]="m.html"
+          [grounded]="m.grounded"
+          [curated]="m.curated"
+          [sources]="m.sources"
+        />
       }
     }
 
@@ -27,8 +29,12 @@
       }
       @case ('consent') {
         <div class="consent">
-          <p>This is a hidden achievement: even its name is a secret, so its guide needs spoilers.</p>
-          <button type="button" class="btn btn-primary" (click)="convo.start(true)">Show it with spoilers</button>
+          <p>
+            This is a hidden achievement: even its name is a secret, so its guide needs spoilers.
+          </p>
+          <button type="button" class="btn btn-primary" (click)="convo.start(true)">
+            Show it with spoilers
+          </button>
           <a class="btn btn-secondary" [routerLink]="backLink">Not now</a>
         </div>
       }
@@ -46,26 +52,49 @@
     <form class="reply" (submit)="$event.preventDefault(); send(box)">
       <label class="box">
         <span class="visually-hidden">Ask a follow-up question</span>
-        <textarea #box rows="1" maxlength="500" placeholder="Ask a follow-up" (keydown)="onKey($event, box)"></textarea>
-        <button type="submit" class="send" aria-label="Send question" [disabled]="convo.status() === 'answering' || convo.left() === 0">
+        <textarea
+          #box
+          rows="1"
+          maxlength="500"
+          placeholder="Ask a follow-up"
+          (keydown)="onKey($event, box)"
+        ></textarea>
+        <button
+          type="submit"
+          class="send"
+          aria-label="Send question"
+          [disabled]="convo.status() === 'answering' || convo.left() === 0"
+        >
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2-6z" /></svg>
         </button>
       </label>
       @if (convo.unlimited()) {
         <span class="left">No daily limit for you</span>
       } @else if (convo.left() !== null) {
-        <span class="left">{{ convo.left() }} of {{ convo.usage()!.dailyLimit }} new answers left today</span>
+        <span class="left"
+          >{{ convo.left() }} of {{ convo.usage()!.dailyLimit }} new answers left today</span
+        >
       }
     </form>
   }
 </main>
 
-<app-modal heading="Spoilers or no spoilers?" [open]="convo.status() === 'choosing'" (closed)="convo.status() === 'choosing' && convo.start(false)">
+<app-modal
+  heading="Spoilers or no spoilers?"
+  [open]="convo.status() === 'choosing'"
+  (closed)="convo.status() === 'choosing' && convo.start(false)"
+>
   <div class="choice">
-    <p>Tell the AI how much you want to know about <strong>{{ hidden ? 'this hidden achievement' : name }}</strong>.</p>
+    <p>
+      Tell the AI how much you want to know about
+      <strong>{{ hidden ? 'this hidden achievement' : name }}</strong
+      >.
+    </p>
     <button type="button" class="option" (click)="convo.start(false)">
       <span class="option-title">No spoilers</span>
-      <span class="option-text">Hints that point you the right way, without story details or secrets.</span>
+      <span class="option-text"
+        >Hints that point you the right way, without story details or secrets.</span
+      >
     </button>
     <button type="button" class="option" (click)="convo.start(true)">
       <span class="option-title">Spoilers are fine</span>

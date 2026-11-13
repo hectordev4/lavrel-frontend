@@ -140,18 +140,12 @@
                     {{ achievementsState.data.total }} in total · share of players who unlocked each
                   </p>
                   @if (achievements.personal()) {
-                    <div class="segmented" role="group" aria-label="Show achievements">
-                      @for (f of filters; track f.value) {
-                        <button
-                          type="button"
-                          [attr.aria-pressed]="achievements.filter() === f.value"
-                          [class.on]="achievements.filter() === f.value"
-                          (click)="achievements.setFilter(f.value)"
-                        >
-                          {{ f.label }}
-                        </button>
-                      }
-                    </div>
+                    <app-segmented
+                      label="Show achievements"
+                      [options]="filters"
+                      [value]="achievements.filter()"
+                      (changed)="achievements.setFilter($event)"
+                    />
                   }
                   @if (achievements.filtered().length === 0) {
                     <p class="sub">

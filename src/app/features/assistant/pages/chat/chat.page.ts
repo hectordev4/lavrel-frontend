@@ -1,10 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { GameChat } from '../../data-access/game-chat';
 import { GuideAnswer } from '../../ui/guide-answer/guide-answer';
+import { PageHeader } from '../../../../shared/ui/page-header/page-header';
 
 /** Ideas to start with when the chat is empty. */
-const STARTERS = ['Where should I start?', 'Which achievements are missable?', 'Tips for the hardest achievements'];
+const STARTERS = [
+  'Where should I start?',
+  'Which achievements are missable?',
+  'Tips for the hardest achievements',
+];
 
 /**
  * /assistant/chat/:gameId?game=…&slug=… — talk freely with the AI about one game. Answers keep their sources at
@@ -13,7 +18,7 @@ const STARTERS = ['Where should I start?', 'Which achievements are missable?', '
 @Component({
   selector: 'app-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, GuideAnswer],
+  imports: [PageHeader, GuideAnswer],
   providers: [GameChat],
   templateUrl: './chat.page.html',
   styleUrls: ['../guide/guide.page.scss', './chat.page.scss'],
@@ -26,7 +31,9 @@ export class ChatPage {
   /** Back always returns to the AI tab, where you pick the next game to talk about. */
   protected readonly backLink = '/assistant';
   protected readonly starters = STARTERS;
-  protected readonly lastIsAnswer = computed(() => this.chat.messages().at(-1)?.role === 'assistant');
+  protected readonly lastIsAnswer = computed(
+    () => this.chat.messages().at(-1)?.role === 'assistant',
+  );
 
   constructor() {
     this.chat.open(Number(this.route.paramMap.get('gameId')));

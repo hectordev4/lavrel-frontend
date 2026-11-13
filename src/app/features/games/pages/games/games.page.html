@@ -52,17 +52,12 @@
           <span class="sub"
             >{{ visible().length }} {{ visible().length === 1 ? 'game' : 'games' }}</span
           >
-          <label class="sort">
-            <span class="visually-hidden">Sort by</span>
-            <select #sortSelect (change)="setSort(sortSelect.value)">
-              @for (option of sortOptions; track option.value) {
-                <option [value]="option.value" [selected]="option.value === sort()">
-                  {{ option.label }}
-                </option>
-              }
-            </select>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
-          </label>
+          <app-select-field
+            label="Sort by"
+            [options]="sortOptions"
+            [value]="sort()"
+            (changed)="setSort($event)"
+          />
         </div>
         @if (visible().length === 0) {
           <p class="sub">No games with this status.</p>

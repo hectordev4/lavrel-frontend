@@ -6,32 +6,6 @@
   padding-top: 0.5rem;
 }
 
-.heading {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.25rem;
-}
-
-.titles {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-
-  h1 {
-    margin: 0;
-    font-size: 1.375rem;
-    font-weight: 700;
-  }
-}
-
-.kicker {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--unlock);
-}
-
 .game {
   font-size: 0.875rem;
   color: var(--muted);

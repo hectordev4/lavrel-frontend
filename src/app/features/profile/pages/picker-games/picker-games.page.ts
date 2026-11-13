@@ -6,12 +6,14 @@ import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
 import { PickerApi, PickerGameSort } from '../../data-access/picker.api';
 import { ShelfPicker } from '../../data-access/shelf-picker';
 import { AchievementGame, AchievementGamePage } from '../../models/achievement-game.model';
+import { SearchBox } from '../../../../shared/ui/search-box/search-box';
+import { Segmented, SegmentedOption } from '../../../../shared/ui/segmented/segmented';
 
 /** Picker step 1: the games where you've unlocked something, to open one. */
 @Component({
   selector: 'app-picker-games-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, GameCover],
+  imports: [Segmented, SearchBox, RouterLink, GameCover],
   templateUrl: './picker-games.page.html',
   styleUrl: './picker-games.page.scss',
 })
@@ -24,6 +26,10 @@ export class PickerGamesPage {
   private q = '';
   private page = 0;
 
+  protected readonly orders: SegmentedOption<PickerGameSort>[] = [
+    { value: 'recent', label: 'Recent' },
+    { value: 'name', label: 'Name' },
+  ];
   protected readonly sort = signal<PickerGameSort>('recent');
   protected readonly games = signal<AchievementGame[]>([]);
   protected readonly hasMore = signal(false);
@@ -42,10 +48,12 @@ export class PickerGamesPage {
         takeUntilDestroyed(),
       )
       .subscribe(([page, result]) => this.show(page, result));
-    this.typed.pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(inject(DestroyRef))).subscribe((q) => {
-      this.q = q;
-      this.load(0);
-    });
+    this.typed
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(inject(DestroyRef)))
+      .subscribe((q) => {
+        this.q = q;
+        this.load(0);
+      });
     this.load(0);
   }
 

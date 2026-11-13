@@ -13,7 +13,6 @@ import { LibraryGame } from '../../../../core/api/models/library-game.model';
 import { LibrarySort } from '../../../../core/api/models/library-sort.model';
 import { PlatformAccounts } from '../../../../core/platforms/platform-accounts';
 import { Chip } from '../../../../shared/ui/chip/chip';
-import { CtaCard } from '../../../../shared/ui/cta-card/cta-card';
 import { DismissableMenu } from '../../../../shared/ui/menu/dismissable-menu';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { LIBRARY_SORT_LABELS, isLibrarySort } from '../../data-access/library-labels';
@@ -21,12 +20,24 @@ import { MyCollections } from '../../data-access/my-collections';
 import { MyLibrary } from '../../data-access/my-library';
 import { Collection } from '../../../../core/api/models/collection.model';
 import { LibraryCard } from '../../ui/library-card/library-card';
+import { SearchBox } from '../../../../shared/ui/search-box/search-box';
+import { SelectField } from '../../../../shared/ui/select-field/select-field';
+import { ConnectSteamCard } from '../../../../shared/ui/connect-steam-card/connect-steam-card';
 
 /** /library: the games the member owns on linked accounts, with a name filter, five sorts and paging. */
 @Component({
   selector: 'app-library-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Chip, CtaCard, DismissableMenu, LibraryCard, Modal],
+  imports: [
+    ConnectSteamCard,
+    SelectField,
+    SearchBox,
+    RouterLink,
+    Chip,
+    DismissableMenu,
+    LibraryCard,
+    Modal,
+  ],
   providers: [MyLibrary, MyCollections],
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
