@@ -1,4 +1,11 @@
-import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDragPlaceholder,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -16,10 +23,7 @@ import { MyShelves } from '../../data-access/my-shelves';
 import { MyShelf } from '../../models/my-shelf.model';
 
 type Sheet =
-  | { kind: 'add' }
-  | { kind: 'title'; shelf: MyShelf }
-  | { kind: 'remove'; shelf: MyShelf }
-  | null;
+  { kind: 'add' } | { kind: 'title'; shelf: MyShelf } | { kind: 'remove'; shelf: MyShelf } | null;
 
 /**
  * Profile tab: the shelves my public profile shows. Drag the six-dot handle to reorder (or use the arrow keys on it),
@@ -62,7 +66,10 @@ export class ShelvesSection {
   protected label(shelf: MyShelf): string {
     if (shelf.title) return shelf.title;
     if (shelf.type === 'COLLECTION') {
-      return this.collections().find((c) => c.id === shelf.collectionId)?.name ?? SHELF_TYPE_NAMES.COLLECTION;
+      return (
+        this.collections().find((c) => c.id === shelf.collectionId)?.name ??
+        SHELF_TYPE_NAMES.COLLECTION
+      );
     }
     return SHELF_TYPE_NAMES[shelf.type];
   }
@@ -82,7 +89,9 @@ export class ShelvesSection {
       this.formError.set('Pick the collection to show.');
       return;
     }
-    await this.save(() => this.shelves.add(type, title, type === 'COLLECTION' ? collectionId : null));
+    await this.save(() =>
+      this.shelves.add(type, title, type === 'COLLECTION' ? collectionId : null),
+    );
   }
 
   protected async retitle(shelf: MyShelf, title: string): Promise<void> {
@@ -112,9 +121,6 @@ export class ShelvesSection {
     this.message.set(await this.shelves.move(shelf.id, step));
     handle.focus();
   }
-
-
-
 
   private async save(work: () => Promise<string | null>): Promise<void> {
     this.busy.set(true);

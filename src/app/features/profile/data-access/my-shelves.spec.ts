@@ -24,7 +24,9 @@ describe('MyShelves', () => {
     shelves = TestBed.inject(MyShelves);
     http = TestBed.inject(HttpTestingController);
     const loading = shelves.reload();
-    http.expectOne('/api/currentuser/profile/shelves').flush({ shelves: [shelf('b', 2), shelf('a', 1, { type: 'STATS' })] });
+    http
+      .expectOne('/api/currentuser/profile/shelves')
+      .flush({ shelves: [shelf('b', 2), shelf('a', 1, { type: 'STATS' })] });
     await loading;
   });
 
@@ -54,7 +56,9 @@ describe('MyShelves', () => {
   it('explains the 10-shelf limit', async () => {
     const done = shelves.add('COMPLETED', '', null);
     await settle();
-    http.expectOne('/api/currentuser/profile/shelves').flush({ error: 'shelf_limit_reached' }, { status: 409, statusText: 'x' });
+    http
+      .expectOne('/api/currentuser/profile/shelves')
+      .flush({ error: 'shelf_limit_reached' }, { status: 409, statusText: 'x' });
     expect(await done).toContain('10 shelves');
   });
 });
@@ -65,7 +69,9 @@ describe('MyShelves reorder', () => {
     const shelves = TestBed.inject(MyShelves);
     const http = TestBed.inject(HttpTestingController);
     const loading = shelves.reload();
-    http.expectOne('/api/currentuser/profile/shelves').flush({ shelves: [shelf('a', 1), shelf('b', 2), shelf('c', 3)] });
+    http
+      .expectOne('/api/currentuser/profile/shelves')
+      .flush({ shelves: [shelf('a', 1), shelf('b', 2), shelf('c', 3)] });
     await loading;
 
     const done = shelves.reorder(['c', 'a', 'b']);

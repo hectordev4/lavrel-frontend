@@ -12,14 +12,18 @@ async function render() {
   signInAs(memberUser());
   const fixture = TestBed.createComponent(AvatarPicker);
   fixture.detectChanges();
-  TestBed.inject(HttpTestingController).expectOne('/api/avatars/gallery').flush({ galleryIds: ['gallery-01', 'gallery-02'] });
+  TestBed.inject(HttpTestingController)
+    .expectOne('/api/avatars/gallery')
+    .flush({ galleryIds: ['gallery-01', 'gallery-02'] });
   await settle();
   fixture.detectChanges();
   return fixture;
 }
 
 const button = (el: HTMLElement, text: string) =>
-  [...el.querySelectorAll('button')].find((b) => b.textContent!.trim() === text) as HTMLButtonElement;
+  [...el.querySelectorAll('button')].find(
+    (b) => b.textContent!.trim() === text,
+  ) as HTMLButtonElement;
 
 describe('AvatarPicker', () => {
   it('saves a gallery picture once one is chosen', async () => {
@@ -32,7 +36,9 @@ describe('AvatarPicker', () => {
     fixture.detectChanges();
     button(el, 'Save avatar').click();
     await settle();
-    const req = TestBed.inject(HttpTestingController).expectOne('/api/currentuser/profile/avatar/gallery');
+    const req = TestBed.inject(HttpTestingController).expectOne(
+      '/api/currentuser/profile/avatar/gallery',
+    );
     expect(req.request.body).toEqual({ galleryId: 'gallery-02' });
   });
 
@@ -42,7 +48,9 @@ describe('AvatarPicker', () => {
     button(el, 'Upload').click();
     fixture.detectChanges();
     const input = el.querySelector('input[type="file"]') as HTMLInputElement;
-    Object.defineProperty(input, 'files', { value: [new File(['x'], 'x.bmp', { type: 'image/bmp' })] });
+    Object.defineProperty(input, 'files', {
+      value: [new File(['x'], 'x.bmp', { type: 'image/bmp' })],
+    });
     input.dispatchEvent(new Event('change'));
     fixture.detectChanges();
     expect(el.textContent).toContain('Choose a JPG, PNG or GIF.');
@@ -83,7 +91,11 @@ describe('AvatarPicker uploads', () => {
     await settle();
     const req = TestBed.inject(HttpTestingController).expectOne('/api/currentuser/profile/avatar');
     expect(req.request.body).toBe(png);
-    req.flush({ kind: 'UPLOADED', galleryId: null, imageUrl: 'https://x.supabase.co/storage/v1/object/public/avatars/a.png' });
+    req.flush({
+      kind: 'UPLOADED',
+      galleryId: null,
+      imageUrl: 'https://x.supabase.co/storage/v1/object/public/avatars/a.png',
+    });
     await settle();
     expect(TestBed.inject(MyAvatar).avatar()?.imageUrl).toContain('/avatars/a.png');
   });

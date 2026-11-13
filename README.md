@@ -101,7 +101,7 @@ src/app
 │   ├── modal/                bottom sheet on the native <dialog>
 │   ├── switch/               on/off setting (role="switch")
 │   ├── avatar/               animated round avatar (upload, gallery or generated Pixelbot)
-│   ├── search-box/, segmented/, select-field/, page-header/, connect-steam-card/ (shared building blocks)
+│   ├── search-box/, segmented/, select-field/, page-header/, connect-steam-card/, copy-button/ (shared building blocks)
 ├── shared/utils/             relativeTime, gameLink, avatar-art, formatPlayerId, isRare (under 5%), syncedLabel,
 │                             greetingFor: helpers used by more than one page live here, never copied
 │   ├── game-cover/           cover image with an initials fallback
@@ -130,7 +130,8 @@ src/app
     │   └── models/           PublicProfile, Shelf and its items, PlayerPageState
     ├── profile/
     │   ├── pages/            profile (the Profile tab), picker, picker-games, picker-achievements
-    │   ├── ui/               privacy-section, platforms-section, avatar-picker, shelves-section
+    │   ├── ui/               account-section, account-end, privacy-section, platforms-section, avatar-picker,
+    │   │                     shelves-section (the Profile page only shows the header and places these)
     │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, PrivacyApi, messages
     │   └── models/           Country, AccountState, ProfileSettings
     ├── games/                the Games tab for members

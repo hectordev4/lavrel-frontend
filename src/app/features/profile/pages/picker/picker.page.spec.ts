@@ -8,7 +8,10 @@ const settle = () => new Promise((resolve) => setTimeout(resolve));
 
 async function render() {
   TestBed.configureTestingModule({
-    providers: testProviders({ provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ shelfId: 's1' }) } } }),
+    providers: testProviders({
+      provide: ActivatedRoute,
+      useValue: { snapshot: { paramMap: convertToParamMap({ shelfId: 's1' }) } },
+    }),
   });
   const fixture = TestBed.createComponent(PickerPage);
   fixture.detectChanges();
@@ -23,7 +26,18 @@ async function render() {
           position: 1,
           collectionId: null,
           achievementIds: [10],
-          achievements: [{ achievementId: 10, name: 'Phoenix Rising', iconUrl: null, gameId: 7, gameTitle: 'Hades', gameSlug: 'hades', globalPercent: 2.3, unlockedAt: null }],
+          achievements: [
+            {
+              achievementId: 10,
+              name: 'Phoenix Rising',
+              iconUrl: null,
+              gameId: 7,
+              gameTitle: 'Hades',
+              gameSlug: 'hades',
+              globalPercent: 2.3,
+              unlockedAt: null,
+            },
+          ],
         },
       ],
     });
@@ -56,7 +70,11 @@ describe('PickerPage', () => {
     expect(page.canLeave()).toBe(true);
     (fixture.nativeElement.querySelector('.count') as HTMLButtonElement).click();
     fixture.detectChanges();
-    (fixture.nativeElement.querySelector('[aria-label="Remove Phoenix Rising"]') as HTMLButtonElement).click();
+    (
+      fixture.nativeElement.querySelector(
+        '[aria-label="Remove Phoenix Rising"]',
+      ) as HTMLButtonElement
+    ).click();
     expect(page.canLeave()).toBe(false);
     expect(confirmSpy).toHaveBeenCalled();
 
@@ -64,7 +82,9 @@ describe('PickerPage', () => {
     fixture.detectChanges();
     (fixture.nativeElement.querySelector('.save') as HTMLButtonElement).click();
     await settle();
-    TestBed.inject(HttpTestingController).expectOne('/api/currentuser/profile/shelves/s1/achievements').flush({});
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/currentuser/profile/shelves/s1/achievements')
+      .flush({});
     await settle();
     expect(navigate).toHaveBeenCalledWith('/profile');
   });
