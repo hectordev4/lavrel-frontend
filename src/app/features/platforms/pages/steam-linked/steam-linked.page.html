@@ -23,10 +23,24 @@
         <a class="btn btn-primary" routerLink="/home">Go to Home</a>
       </app-cta-card>
     }
-    @case ('failed') {
+    @case ('sync-failed') {
+      <app-cta-card [centered]="true" heading="Steam is connected, but the sync didn’t finish">
+        <p class="alert" role="alert">{{ accounts.message() }}</p>
+        <p class="hint">Your account stays linked. Fix the issue, then sync again: no need to sign in to Steam again.</p>
+        <button type="button" class="btn btn-primary" [disabled]="accounts.syncing() !== null" (click)="syncNow()">Sync again</button>
+        <a class="btn btn-secondary" routerLink="/home">Go to Home</a>
+      </app-cta-card>
+    }
+    @case ('elsewhere') {
+      <app-cta-card [centered]="true" heading="This Steam account is taken">
+        <p class="alert" role="alert">{{ accounts.message() }}</p>
+        <a class="btn btn-secondary" routerLink="/profile">Go to Profile</a>
+      </app-cta-card>
+    }
+    @case ('link-failed') {
       <app-cta-card [centered]="true" heading="Steam isn’t linked yet">
         <p class="alert" role="alert">{{ accounts.message() }}</p>
-        <button type="button" class="btn btn-primary" (click)="tryAgain()">Try again</button>
+        <button type="button" class="btn btn-primary" [disabled]="accounts.linking()" (click)="connectAgain()">Connect Steam</button>
         <a class="btn btn-secondary" routerLink="/home">Go to Home</a>
       </app-cta-card>
     }
