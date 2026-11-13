@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, catchError, map, of, startWith, switchMap } from 'rxjs';
 import { Achievement } from '../models/achievement.model';
 import { AchievementFilter } from '../models/achievement-filter.model';
 import { AchievementsState } from '../models/achievements-state.model';
@@ -12,7 +13,7 @@ const FIRST_VISIBLE = 10;
 @Injectable()
 export class GameAchievementsStore {
   private readonly api = inject(GameAchievementsApi);
-  private request: Subscription | null = null;
+  private readonly loads = new Subject<number>();
   private gameId: number | null = null;
 
   readonly state = signal<AchievementsState>({ kind: 'loading' });
@@ -40,18 +41,30 @@ export class GameAchievementsStore {
   );
   readonly hiddenCount = computed(() => this.filtered().length - this.visible().length);
 
+  constructor() {
+    // A new game (or Try again) cancels the request still running.
+    this.loads
+      .pipe(
+        switchMap((gameId) =>
+          this.api.list(gameId).pipe(
+            map((data): AchievementsState => ({ kind: 'ready', data })),
+            catchError((error: unknown) =>
+              of<AchievementsState>({ kind: 'error', message: achievementsLoadMessage(error) }),
+            ),
+            startWith<AchievementsState>({ kind: 'loading' }),
+          ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((state) => this.state.set(state));
+  }
+
   load(gameId: number): void {
     this.gameId = gameId;
-    this.request?.unsubscribe();
-    this.state.set({ kind: 'loading' });
     this.filter.set('all');
     this.showAll.set(false);
     this.revealed.set(new Set());
-    this.request = this.api.list(gameId).subscribe({
-      next: (data) => this.state.set({ kind: 'ready', data }),
-      error: (error: unknown) =>
-        this.state.set({ kind: 'error', message: achievementsLoadMessage(error) }),
-    });
+    this.loads.next(gameId);
   }
 
   retry(): void {

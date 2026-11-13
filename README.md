@@ -42,8 +42,8 @@ it per case; form values come from template references (`#sortSelect`), and stri
 A screen must never show an answer to an older question. Two rules keep it that way:
 
 - **Requests driven by changing input** (an address id, a search box, an order toggle, a reload after sync) go
-  through `switchMap`: a new value cancels the request still running. Player profiles, both picker steps, Home's
-  Almost there, totals and recent unlocks, and every search box work this way.
+  through `switchMap`: a new value cancels the request still running, and `takeUntilDestroyed()` cancels it when the
+  screen closes. Every store and page works this way, with no exceptions: no request is ever cancelled by hand.
 - **Shared stores that load with `async`/`await`** (`TrackedGames`, `PlatformAccounts`, `MyCollections`,
   `MyShelves`) use `LatestOnly` (`core/util`): each reload takes a ticket, and only the most recent one may write.
 
