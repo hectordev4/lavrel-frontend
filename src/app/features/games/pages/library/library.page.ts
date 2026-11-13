@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -9,7 +16,7 @@ import { Chip } from '../../../../shared/ui/chip/chip';
 import { CtaCard } from '../../../../shared/ui/cta-card/cta-card';
 import { DismissableMenu } from '../../../../shared/ui/menu/dismissable-menu';
 import { Modal } from '../../../../shared/ui/modal/modal';
-import { LIBRARY_SORT_LABELS } from '../../data-access/library-labels';
+import { LIBRARY_SORT_LABELS, isLibrarySort } from '../../data-access/library-labels';
 import { MyCollections } from '../../data-access/my-collections';
 import { MyLibrary } from '../../data-access/my-library';
 import { Collection } from '../../../../core/api/models/collection.model';
@@ -39,10 +46,12 @@ export class LibraryPage {
   protected readonly renaming = signal(false);
   /** The game whose "Add to collection" sheet is open. */
   protected readonly adding = signal<LibraryGame | null>(null);
-  protected readonly sortOptions = (Object.keys(LIBRARY_SORT_LABELS) as LibrarySort[]).map((value) => ({
-    value,
-    label: LIBRARY_SORT_LABELS[value],
-  }));
+  protected readonly sortOptions = (Object.keys(LIBRARY_SORT_LABELS) as LibrarySort[]).map(
+    (value) => ({
+      value,
+      label: LIBRARY_SORT_LABELS[value],
+    }),
+  );
   private readonly typed = new Subject<string>();
 
   constructor() {
@@ -52,6 +61,10 @@ export class LibraryPage {
     this.typed
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(inject(DestroyRef)))
       .subscribe((q) => this.library.setQuery({ q }));
+  }
+
+  protected setSort(value: string): void {
+    if (isLibrarySort(value)) this.library.setQuery({ sort: value });
   }
 
   protected onType(value: string): void {

@@ -9,47 +9,79 @@
     <p class="alert" role="alert">{{ m }}</p>
   }
   @if (shelves.failed()) {
-    <button type="button" class="btn btn-secondary" (click)="shelves.reload()">Your shelves didn’t load. Try again</button>
+    <button type="button" class="btn btn-secondary" (click)="shelves.reload()">
+      Your shelves didn’t load. Try again
+    </button>
   }
 
-  <ol class="list" cdkDropList cdkDropListLockAxis="y" [cdkDropListData]="shelves.list()" (cdkDropListDropped)="dropped($event)">
+  <ol
+    class="list"
+    cdkDropList
+    cdkDropListLockAxis="y"
+    [cdkDropListData]="shelves.list()"
+    (cdkDropListDropped)="dropped($event)"
+  >
     @for (shelf of shelves.list(); track shelf.id) {
       <li class="row" cdkDrag>
         <button
           type="button"
           class="handle"
           cdkDragHandle
-          [attr.aria-label]="'Reorder ' + label(shelf) + '. Drag, or use the up and down arrow keys'"
+          [attr.aria-label]="
+            'Reorder ' + label(shelf) + '. Drag, or use the up and down arrow keys'
+          "
           (keydown.arrowup)="move(shelf, -1, $event)"
           (keydown.arrowdown)="move(shelf, 1, $event)"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="9" cy="6" r="1.5" /><circle cx="15" cy="6" r="1.5" />
-            <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
-            <circle cx="9" cy="18" r="1.5" /><circle cx="15" cy="18" r="1.5" />
+            <circle cx="9" cy="6" r="1.5" />
+            <circle cx="15" cy="6" r="1.5" />
+            <circle cx="9" cy="12" r="1.5" />
+            <circle cx="15" cy="12" r="1.5" />
+            <circle cx="9" cy="18" r="1.5" />
+            <circle cx="15" cy="18" r="1.5" />
           </svg>
         </button>
         <span class="text">
-          <button type="button" class="name" [attr.aria-label]="'Change the title of ' + label(shelf)" (click)="formError.set(null); sheet.set({ kind: 'title', shelf })">
+          <button
+            type="button"
+            class="name"
+            [attr.aria-label]="'Change the title of ' + label(shelf)"
+            (click)="formError.set(null); sheet.set({ kind: 'title', shelf })"
+          >
             {{ label(shelf) }}
           </button>
           <span class="muted">
             {{ names[shelf.type] }}
             @if (shelf.type === 'ACHIEVEMENTS') {
               · {{ shelf.achievementIds.length }} picked ·
-              <a class="link" [routerLink]="'/profile/shelves/' + shelf.id + '/achievements'">Pick</a>
+              <a class="link" [routerLink]="'/profile/shelves/' + shelf.id + '/achievements'"
+                >Pick</a
+              >
             }
           </span>
         </span>
-        <button type="button" class="bin" [attr.aria-label]="'Remove ' + label(shelf)" (click)="askRemove(shelf)">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16 M10 11v6 M14 11v6 M6 7l1 13h10l1-13 M9 7V4h6v3" /></svg>
+        <button
+          type="button"
+          class="bin"
+          [attr.aria-label]="'Remove ' + label(shelf)"
+          (click)="askRemove(shelf)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16 M10 11v6 M14 11v6 M6 7l1 13h10l1-13 M9 7V4h6v3" />
+          </svg>
         </button>
         <div class="placeholder" *cdkDragPlaceholder></div>
       </li>
     }
   </ol>
 
-  <button type="button" class="add" [disabled]="full() || addable().length === 0" (click)="openAdd()">
+  <button
+    type="button"
+    class="add"
+    [disabled]="full() || addable().length === 0"
+    (click)="openAdd()"
+  >
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
     <span>{{ full() ? 'Shelves are full' : 'Add a shelf' }}</span>
   </button>
@@ -62,14 +94,21 @@
       @for (t of addable(); track t) {
         <label class="type">
           <input type="radio" name="type" [checked]="newType() === t" (change)="newType.set(t)" />
-          <span><span class="name">{{ names[t] }}</span><span class="muted">{{ hints[t] }}</span></span>
+          <span
+            ><span class="name">{{ names[t] }}</span
+            ><span class="muted">{{ hints[t] }}</span></span
+          >
         </label>
       }
     </fieldset>
     @if (newType() === 'COLLECTION') {
       <label class="field">
         <span>Collection</span>
-        <select class="select" (change)="chosenCollection.set($any($event.target).value)">
+        <select
+          #collectionSelect
+          class="select"
+          (change)="chosenCollection.set(collectionSelect.value)"
+        >
           <option value="">Choose one</option>
           @for (c of collections(); track c.id) {
             <option [value]="c.id">{{ c.name }} ({{ c.gameCount }})</option>
@@ -79,7 +118,13 @@
     }
     <label class="field">
       <span>Title (optional)</span>
-      <input #title type="text" maxlength="40" autocomplete="off" [placeholder]="names[newType()]" />
+      <input
+        #title
+        type="text"
+        maxlength="40"
+        autocomplete="off"
+        [placeholder]="names[newType()]"
+      />
     </label>
     @if (formError(); as e) {
       <p class="alert" role="alert">{{ e }}</p>
@@ -101,7 +146,9 @@
         @if (formError(); as e) {
           <p class="alert" role="alert">{{ e }}</p>
         }
-        <button type="button" class="btn btn-danger" [disabled]="busy()" (click)="remove(s.shelf)">Remove shelf</button>
+        <button type="button" class="btn btn-danger" [disabled]="busy()" (click)="remove(s.shelf)">
+          Remove shelf
+        </button>
         <button type="button" class="btn btn-secondary" (click)="sheet.set(null)">Keep it</button>
       </div>
     </app-modal>
@@ -111,7 +158,14 @@
       <form class="form" (submit)="$event.preventDefault(); retitle(s.shelf, newTitle.value)">
         <label class="field">
           <span>Title</span>
-          <input #newTitle type="text" maxlength="40" autocomplete="off" [value]="s.shelf.title ?? ''" [placeholder]="names[s.shelf.type]" />
+          <input
+            #newTitle
+            type="text"
+            maxlength="40"
+            autocomplete="off"
+            [value]="s.shelf.title ?? ''"
+            [placeholder]="names[s.shelf.type]"
+          />
         </label>
         <p class="muted">Leave it empty to use “{{ names[s.shelf.type] }}”.</p>
         @if (formError(); as e) {

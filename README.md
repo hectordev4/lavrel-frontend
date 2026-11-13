@@ -25,6 +25,12 @@ domain to Firebase → Authentication → Settings → **Authorized domains**.
 On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: set
 `export NG_BUILD_SASS_EMBEDDED=false` in your shell profile to use the JavaScript compiler.
 
+## Typed templates
+
+Templates never use `$any`. A state with several shapes is read once with `@let` and switched on, so Angular narrows
+it per case; form values come from template references (`#sortSelect`), and strings from selects pass a type guard
+(`isGameSort`, `isLibrarySort`, `isTrackedSort`, `isTrackingStatus`) before use. A wrong field is a build error.
+
 ## Async requests
 
 A screen must never show an answer to an older question. Two rules keep it that way:

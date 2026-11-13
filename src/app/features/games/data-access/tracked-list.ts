@@ -9,7 +9,11 @@ export const SORT_LABELS: Record<TrackedSort, string> = {
 };
 
 /** The games a status filter keeps, in the chosen order (games without a release date last). */
-export function filterAndSort(games: TrackedGame[], status: StatusFilter, sort: TrackedSort): TrackedGame[] {
+export function filterAndSort(
+  games: TrackedGame[],
+  status: StatusFilter,
+  sort: TrackedSort,
+): TrackedGame[] {
   const kept = status === 'ALL' ? [...games] : games.filter((g) => g.status === status);
   return kept.sort(comparator(sort));
 }
@@ -23,4 +27,9 @@ function comparator(sort: TrackedSort): (a: TrackedGame, b: TrackedGame) => numb
     if (!b.releaseDate) return -1;
     return b.releaseDate.localeCompare(a.releaseDate);
   };
+}
+
+/** True for an order the tracking list knows. */
+export function isTrackedSort(value: string): value is TrackedSort {
+  return value in SORT_LABELS;
 }

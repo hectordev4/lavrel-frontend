@@ -5,7 +5,7 @@
       <a class="title" [routerLink]="link()">{{ game().title }}</a>
       <label class="status">
         <span class="visually-hidden">Status of {{ game().title }}</span>
-        <select [disabled]="busy()" (change)="onStatus($any($event.target).value)">
+        <select #statusSelect [disabled]="busy()" (change)="onStatus(statusSelect.value)">
           @for (s of statuses; track s.value) {
             <option [value]="s.value" [selected]="s.value === game().status">{{ s.label }}</option>
           }
@@ -19,18 +19,26 @@
         class="icon-action"
         [class.pinned]="pinned()"
         [attr.aria-pressed]="pinned()"
-        [attr.aria-label]="(pinned() ? 'Unpin ' : 'Pin ') + game().title + (pinned() ? ' from Home' : ' to Home')"
+        [attr.aria-label]="
+          (pinned() ? 'Unpin ' : 'Pin ') + game().title + (pinned() ? ' from Home' : ' to Home')
+        "
         [disabled]="busy()"
         (click)="pinToggle.emit()"
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5 M9 3h6l-1 6 3 3v2H7v-2l3-3z" /></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 17v5 M9 3h6l-1 6 3 3v2H7v-2l3-3z" />
+        </svg>
       </button>
       <details class="menu" appMenu #menu>
         <summary class="icon-action" [attr.aria-label]="'More for ' + game().title">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01 M12 12h.01 M19 12h.01" /></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h.01 M12 12h.01 M19 12h.01" />
+          </svg>
         </summary>
         <div class="menu-panel">
-          <button type="button" [disabled]="busy()" (click)="menu.open = false; remove.emit()">Remove from tracking</button>
+          <button type="button" [disabled]="busy()" (click)="menu.open = false; remove.emit()">
+            Remove from tracking
+          </button>
         </div>
       </details>
     </div>
@@ -41,7 +49,9 @@
       <div class="progress-line">
         <span>{{ game().unlocked }} of {{ game().total }} unlocked</span>
         @if (percent() === 100) {
-          <span class="perfect"><app-perfect-diamond label="" /><span class="number">100%</span></span>
+          <span class="perfect"
+            ><app-perfect-diamond label="" /><span class="number">100%</span></span
+          >
         } @else {
           <span class="number">{{ percent() }}%</span>
         }
