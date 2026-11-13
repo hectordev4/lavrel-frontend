@@ -140,8 +140,9 @@ src/app
     │   │                     library labels, messages
     │   └── models/           StatusFilter, TrackedSort, LibraryQuery, LibraryState, Collection
     ├── game/
-    │   ├── pages/            game (/games/:slug)
-    │   ├── ui/               progress-card, achievement-item
+    │   ├── pages/            game (/games/:slug): loads the game and lays out its parts
+    │   ├── sections/         achievements (progress + list, own data and error, deferred)
+    │   ├── ui/               progress-card, achievement-item, game-tracking, game-about, game-labels
     │   ├── data-access/      GameDetailsApi → GET /api/games/{id}, GameAchievementsApi → …/achievements,
     │   │                     GamePage, GameAchievementsStore (filter, show all, reveal), game-facts, messages
     │   └── models/           GameDetails, GamePageState, Achievement, GameAchievements, AchievementFilter,
