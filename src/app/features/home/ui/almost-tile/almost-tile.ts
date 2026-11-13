@@ -18,6 +18,8 @@ export class AlmostTile {
   readonly game = input.required<LibraryGame>();
 
   protected readonly link = computed(() => gameLink(this.game().slug));
-  protected readonly percent = computed(() => progressPercent(this.game().unlocked, this.game().total));
+  protected readonly percent = computed(() =>
+    progressPercent(this.game().unlocked, this.game().total),
+  );
   protected readonly left = computed(() => this.game().total - this.game().unlocked);
 }

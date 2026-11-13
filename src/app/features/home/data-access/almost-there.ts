@@ -22,12 +22,12 @@ export class AlmostThere {
       .pipe(
         switchMap(() =>
           this.api.list({ sort: 'progress', size: 48 }).pipe(
-            map(
-              (page): AlmostThereState => ({
-                kind: 'ready',
-                games: page.games.filter((g) => g.total > 0 && g.unlocked > 0 && g.unlocked < g.total).slice(0, SHOWN),
-              }),
-            ),
+            map((page): AlmostThereState => ({
+              kind: 'ready',
+              games: page.games
+                .filter((g) => g.total > 0 && g.unlocked > 0 && g.unlocked < g.total)
+                .slice(0, SHOWN),
+            })),
             catchError(() => of<AlmostThereState>({ kind: 'error' })),
             startWith<AlmostThereState>({ kind: 'loading' }),
           ),

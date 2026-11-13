@@ -13,6 +13,9 @@ describe('Discover', () => {
     expect(popular.request.params.get('size')).toBe('5');
     expect(newest.request.params.get('size')).toBe('8');
     popular.flush(null, { status: 0, statusText: 'offline' });
-    expect(TestBed.inject(Discover).popular()).toEqual({ kind: 'error', message: expect.stringContaining('connection') });
+    expect(TestBed.inject(Discover).popular()).toEqual({
+      kind: 'error',
+      message: expect.stringContaining('connection'),
+    });
   });
 });

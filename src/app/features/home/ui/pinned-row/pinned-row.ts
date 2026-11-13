@@ -19,5 +19,7 @@ export class PinnedRow {
   readonly game = input.required<TrackedGame>();
 
   protected readonly link = computed(() => gameLink(this.game().slug));
-  protected readonly percent = computed(() => progressPercent(this.game().unlocked, this.game().total));
+  protected readonly percent = computed(() =>
+    progressPercent(this.game().unlocked, this.game().total),
+  );
 }
