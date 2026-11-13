@@ -28,7 +28,9 @@ describe('MyCollections', () => {
   it('returns the message when the name is taken', async () => {
     const done = store.create('Cozy games');
     await settle();
-    http.expectOne('/api/currentuser/collections').flush({ error: 'collection_name_taken' }, { status: 409, statusText: 'x' });
+    http
+      .expectOne('/api/currentuser/collections')
+      .flush({ error: 'collection_name_taken' }, { status: 409, statusText: 'x' });
     expect(await done).toContain('already have a collection');
   });
 
@@ -37,7 +39,9 @@ describe('MyCollections', () => {
     await settle();
     http.expectOne('/api/currentuser/collections/c1/games/7').flush(null);
     await settle();
-    http.expectOne('/api/currentuser/collections').flush({ collections: [{ id: 'c1', name: 'Cozy', position: 1, gameCount: 1 }] });
+    http
+      .expectOne('/api/currentuser/collections')
+      .flush({ collections: [{ id: 'c1', name: 'Cozy', position: 1, gameCount: 1 }] });
     expect(await done).toBeNull();
     expect(store.list()[0].gameCount).toBe(1);
   });

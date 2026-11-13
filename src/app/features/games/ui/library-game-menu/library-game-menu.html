@@ -1,0 +1,23 @@
+<details class="menu" appMenu #menu>
+  <summary [attr.aria-label]="'More for ' + game().title">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 12h.01 M12 12h.01 M19 12h.01" />
+    </svg>
+  </summary>
+  <div class="menu-panel">
+    @if (ui.collections.list().length) {
+      <button type="button" (click)="menu.open = false; ui.adding.set(game())">
+        Add to collection…
+      </button>
+    } @else {
+      <button type="button" (click)="menu.open = false; ui.openCreate()">
+        Create a collection first
+      </button>
+    }
+    @if (ui.current(); as c) {
+      <button type="button" (click)="menu.open = false; ui.removeFromCurrent(game())">
+        Remove from {{ c.name }}
+      </button>
+    }
+  </div>
+</details>

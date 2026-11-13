@@ -50,13 +50,24 @@ export class MyLibrary {
         next: (result) => {
           this.page = page;
           const before = this.state();
-          const games = append && before.kind === 'ready' ? [...before.games, ...result.games] : result.games;
-          this.state.set({ kind: 'ready', games, hasMore: result.hasMore, loadingMore: false, moreError: null });
+          const games =
+            append && before.kind === 'ready' ? [...before.games, ...result.games] : result.games;
+          this.state.set({
+            kind: 'ready',
+            games,
+            hasMore: result.hasMore,
+            loadingMore: false,
+            moreError: null,
+          });
         },
         error: (error: unknown) => {
           const before = this.state();
           if (append && before.kind === 'ready') {
-            this.state.set({ ...before, loadingMore: false, moreError: libraryErrorMessage(error) });
+            this.state.set({
+              ...before,
+              loadingMore: false,
+              moreError: libraryErrorMessage(error),
+            });
           } else {
             this.state.set({ kind: 'error', message: libraryErrorMessage(error) });
           }

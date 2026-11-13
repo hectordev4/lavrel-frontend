@@ -20,6 +20,8 @@ export class LibraryCard {
   readonly game = input.required<LibraryGame>();
 
   protected readonly link = computed(() => gameLink(this.game().slug));
-  protected readonly percent = computed(() => progressPercent(this.game().unlocked, this.game().total));
+  protected readonly percent = computed(() =>
+    progressPercent(this.game().unlocked, this.game().total),
+  );
   protected readonly playtime = computed(() => playtimeLabel(this.game().playtimeMinutes));
 }
