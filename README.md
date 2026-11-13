@@ -141,10 +141,11 @@ src/app
     │   └── models/           GameDetails, GamePageState, Achievement, GameAchievements, AchievementFilter,
     │                         AchievementsState
     ├── home/
-    │   ├── pages/            home (members), guest-home (discover)
+    │   ├── pages/            home (members: greeting + sections), guest-home (discover)
+    │   ├── sections/         sync, stats, playing-now, almost-there, recent-unlocks, discover (each loads and fails on its own)
     │   ├── ui/               pinned-row, almost-tile, stats-row, recent-unlock
     │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), AlmostThere,
-    │   │                     MemberOverviewApi → /api/currentuser/stats, …/achievements/recent, MemberOverview, messages
+    │   │                     sectionLoader (switchMap + error state per section), messages
     │   └── models/           HomeState, DiscoverSection, AlmostThereState, MemberStats, RecentUnlock
     └── search/
         ├── pages/            search (box + suggestions), results, filters (full screen)
@@ -347,6 +348,11 @@ characters). Inside a collection: *Rename*, *Delete* (the games stay in the libr
 Every game's menu has *Add to collection…*, a sheet listing the collections. Sheets use the shared `Modal`.
 
 ## Home for members
+
+Home is built from **self-contained sections**. The page itself only waits for the first `GET /api/currentuser` (which
+creates the user), greets, and places them. Each section loads its own data and, if that fails, shows one quiet line
+with *Try again* while the rest of Home stays. Almost there, Recent unlocks and Discover are in `@defer (on viewport)`,
+so their code loads as they scroll into view.
 
 In order: a greeting with the username, the Steam line (*synced 2 hours ago* and **Sync now**, which shows how many
 games came in), **Playing now** (pinned games in their pin order, with the tiered bar and the diamond at 100%,
