@@ -1,18 +1,20 @@
 <main class="page game">
+  @let gameState = store.state();
+  @let achievementsState = achievements.state();
   <div class="bar">
     <button type="button" class="icon-btn" aria-label="Back" (click)="back()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
     </button>
   </div>
 
-  @if (invalidAddress() || store.state().kind === 'not-found') {
+  @if (invalidAddress() || gameState.kind === 'not-found') {
     <div class="message">
       <h1>Game not found</h1>
       <p>This game isn’t in the Lavrel catalog, or its address is wrong.</p>
       <a class="btn btn-primary" routerLink="/search">Search games</a>
     </div>
   } @else {
-    @switch (store.state().kind) {
+    @switch (gameState.kind) {
       @case ('loading') {
         <div class="skeleton cover-skeleton" role="status" aria-label="Loading the game"></div>
         <div class="skeleton line"></div>
@@ -20,7 +22,7 @@
       }
       @case ('error') {
         <div class="message">
-          <p class="alert" role="alert">{{ $any(store.state()).message }}</p>
+          <p class="alert" role="alert">{{ gameState.message }}</p>
           <button type="button" class="btn btn-secondary" (click)="store.retry()">Try again</button>
         </div>
       }
@@ -69,18 +71,37 @@
               <p class="alert" role="alert">{{ m }}</p>
             }
             @if (signedIn()) {
-              <a class="btn btn-secondary ask-ai" [routerLink]="'/assistant/chat/' + g.id" [queryParams]="{ game: g.title, slug: g.slug }">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /></svg>
+              <a
+                class="btn btn-secondary ask-ai"
+                [routerLink]="'/assistant/chat/' + g.id"
+                [queryParams]="{ game: g.title, slug: g.slug }"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+                </svg>
                 Ask the AI about this game
               </a>
             }
             @if (g.storeUrl) {
-              <a class="btn btn-secondary" [href]="g.storeUrl" target="_blank" rel="noopener noreferrer">View on Steam</a>
+              <a
+                class="btn btn-secondary"
+                [href]="g.storeUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                >View on Steam</a
+              >
             }
           </section>
 
-          @if (achievements.state().kind === 'ready' && $any(achievements.state()).data.unlocked !== null && $any(achievements.state()).data.total > 0) {
-            <app-progress-card [unlocked]="$any(achievements.state()).data.unlocked" [total]="$any(achievements.state()).data.total" />
+          @if (
+            achievementsState.kind === 'ready' &&
+            achievementsState.data.unlocked !== null &&
+            achievementsState.data.total > 0
+          ) {
+            <app-progress-card
+              [unlocked]="achievementsState.data.unlocked"
+              [total]="achievementsState.data.total"
+            />
           }
 
           @if (g.description) {
@@ -88,7 +109,11 @@
               <h2>About</h2>
               <p class="description" [class.open]="descriptionOpen()">{{ g.description }}</p>
               @if (g.description.length > 220) {
-                <button type="button" class="link-btn" (click)="descriptionOpen.set(!descriptionOpen())">
+                <button
+                  type="button"
+                  class="link-btn"
+                  (click)="descriptionOpen.set(!descriptionOpen())"
+                >
                   {{ descriptionOpen() ? 'Show less' : 'Read more' }}
                 </button>
               }
@@ -97,19 +122,23 @@
 
           <section class="achievements" aria-labelledby="achievements-title">
             <h2 id="achievements-title">Achievements</h2>
-            @switch (achievements.state().kind) {
+            @switch (achievementsState.kind) {
               @case ('loading') {
                 <p class="sub" role="status">Loading achievements…</p>
               }
               @case ('error') {
-                <p class="alert" role="alert">{{ $any(achievements.state()).message }}</p>
-                <button type="button" class="btn btn-secondary" (click)="achievements.retry()">Try again</button>
+                <p class="alert" role="alert">{{ achievementsState.message }}</p>
+                <button type="button" class="btn btn-secondary" (click)="achievements.retry()">
+                  Try again
+                </button>
               }
               @case ('ready') {
-                @if ($any(achievements.state()).data.total === 0) {
+                @if (achievementsState.data.total === 0) {
                   <p class="sub">This game has no achievements.</p>
                 } @else {
-                  <p class="sub">{{ $any(achievements.state()).data.total }} in total · share of players who unlocked each</p>
+                  <p class="sub">
+                    {{ achievementsState.data.total }} in total · share of players who unlocked each
+                  </p>
                   @if (achievements.personal()) {
                     <div class="segmented" role="group" aria-label="Show achievements">
                       @for (f of filters; track f.value) {
@@ -125,7 +154,13 @@
                     </div>
                   }
                   @if (achievements.filtered().length === 0) {
-                    <p class="sub">{{ achievements.filter() === 'unlocked' ? 'Nothing unlocked yet.' : 'You’ve unlocked them all.' }}</p>
+                    <p class="sub">
+                      {{
+                        achievements.filter() === 'unlocked'
+                          ? 'Nothing unlocked yet.'
+                          : 'You’ve unlocked them all.'
+                      }}
+                    </p>
                   }
                   <ul class="achievement-list">
                     @for (a of achievements.visible(); track a.id) {
@@ -134,15 +169,23 @@
                         [personal]="achievements.personal()"
                         [revealed]="achievements.revealed().has(a.id)"
                         (reveal)="achievements.reveal(a.id)"
-                        [guideFor]="signedIn() ? { gameId: g.id, slug: g.slug, title: g.title } : null"
+                        [guideFor]="
+                          signedIn() ? { gameId: g.id, slug: g.slug, title: g.title } : null
+                        "
                       />
                     }
                   </ul>
                   @if (achievements.personal()) {
-                    <p class="note">Your country’s figure shows “—” until enough players from there own the game.</p>
+                    <p class="note">
+                      Your country’s figure shows “—” until enough players from there own the game.
+                    </p>
                   }
                   @if (achievements.hiddenCount() > 0) {
-                    <button type="button" class="btn btn-secondary" (click)="achievements.showAll.set(true)">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      (click)="achievements.showAll.set(true)"
+                    >
                       Show all {{ achievements.filtered().length }}
                     </button>
                   }
@@ -158,7 +201,11 @@
                 <ul class="pills">
                   @for (tag of tags(); track tag.id) {
                     <li>
-                      <a routerLink="/search/results" [queryParams]="{ tag: tag.id + ':' + tag.name }">{{ tag.name }}</a>
+                      <a
+                        routerLink="/search/results"
+                        [queryParams]="{ tag: tag.id + ':' + tag.name }"
+                        >{{ tag.name }}</a
+                      >
                     </li>
                   }
                 </ul>
@@ -172,7 +219,9 @@
                 <h3>Genres</h3>
                 <ul class="pills">
                   @for (genre of g.genres; track genre.id) {
-                    <li><span>{{ genre.name }}</span></li>
+                    <li>
+                      <span>{{ genre.name }}</span>
+                    </li>
                   }
                 </ul>
               }

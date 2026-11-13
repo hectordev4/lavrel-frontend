@@ -1,4 +1,5 @@
 <main class="page results">
+  @let resultsState = results.state();
   <div class="heading">
     <a class="icon-btn" routerLink="/search" aria-label="Back to search">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
@@ -20,12 +21,16 @@
   </div>
 
   <div class="bar">
-    <span class="hint">{{ filterCount() ? 'Games with every selected filter' : 'All games in the catalog' }}</span>
+    <span class="hint">{{
+      filterCount() ? 'Games with every selected filter' : 'All games in the catalog'
+    }}</span>
     <label class="sort">
       <span class="visually-hidden">Sort by</span>
-      <select [value]="sort()" (change)="changeSort($any($event.target).value)">
+      <select #sortSelect [value]="sort()" (change)="changeSort(sortSelect.value)">
         @for (option of sortOptions(); track option.value) {
-          <option [value]="option.value" [selected]="option.value === sort()">{{ option.label }}</option>
+          <option [value]="option.value" [selected]="option.value === sort()">
+            {{ option.label }}
+          </option>
         }
       </select>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
@@ -36,7 +41,7 @@
     <p class="alert" role="alert">{{ m }}</p>
   }
 
-  @switch (results.state().kind) {
+  @switch (resultsState.kind) {
     @case ('loading') {
       <div class="list" role="status" aria-label="Loading results">
         @for (i of [1, 2, 3]; track i) {
@@ -46,16 +51,16 @@
     }
     @case ('error') {
       <div class="failed">
-        <p class="alert" role="alert">{{ $any(results.state()).message }}</p>
+        <p class="alert" role="alert">{{ resultsState.message }}</p>
         <button type="button" class="btn btn-secondary" (click)="results.retry()">Try again</button>
       </div>
     }
     @case ('ready') {
-      @if ($any(results.state()).games.length === 0) {
+      @if (resultsState.games.length === 0) {
         <p class="empty">No games match. Remove a filter, or try another name.</p>
       } @else {
         <div class="list">
-          @for (game of $any(results.state()).games; track game.id) {
+          @for (game of resultsState.games; track game.id) {
             <app-result-card [game]="game">
               @if (signedIn()) {
                 <app-track-control
@@ -71,17 +76,17 @@
             </app-result-card>
           }
         </div>
-        @if ($any(results.state()).moreError) {
-          <p class="alert" role="alert">{{ $any(results.state()).moreError }}</p>
+        @if (resultsState.moreError) {
+          <p class="alert" role="alert">{{ resultsState.moreError }}</p>
         }
-        @if ($any(results.state()).hasMore) {
+        @if (resultsState.hasMore) {
           <button
             type="button"
             class="btn btn-secondary"
-            [disabled]="$any(results.state()).loadingMore"
+            [disabled]="resultsState.loadingMore"
             (click)="results.loadMore()"
           >
-            {{ $any(results.state()).loadingMore ? 'Loading…' : 'Show more' }}
+            {{ resultsState.loadingMore ? 'Loading…' : 'Show more' }}
           </button>
         }
       }

@@ -2,10 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink } from '@angular/router';
 import { TrackedGame } from '../../../../core/api/models/tracked-game.model';
 import { TrackingStatus } from '../../../../core/api/models/tracking-status.model';
-import { TRACKING_STATUSES, TRACKING_STATUS_LABELS } from '../../../../core/tracking/tracking-labels';
+import {
+  TRACKING_STATUSES,
+  TRACKING_STATUS_LABELS,
+} from '../../../../core/tracking/tracking-labels';
 import { MAX_PINNED, TrackedGames } from '../../../../core/tracking/tracked-games';
 import { Chip } from '../../../../shared/ui/chip/chip';
-import { SORT_LABELS, filterAndSort } from '../../data-access/tracked-list';
+import { SORT_LABELS, filterAndSort, isTrackedSort } from '../../data-access/tracked-list';
 import { StatusFilter } from '../../models/status-filter.model';
 import { TrackedSort } from '../../models/tracked-sort.model';
 import { TrackedCard } from '../../ui/tracked-card/tracked-card';
@@ -40,7 +43,13 @@ export class GamesPage {
     value,
     label: SORT_LABELS[value],
   }));
-  protected readonly visible = computed(() => filterAndSort(this.tracked.games(), this.status(), this.sort()));
+  protected readonly visible = computed(() =>
+    filterAndSort(this.tracked.games(), this.status(), this.sort()),
+  );
+
+  protected setSort(value: string): void {
+    if (isTrackedSort(value)) this.sort.set(value);
+  }
 
   constructor() {
     this.tracked.ensureLoaded();
@@ -52,7 +61,9 @@ export class GamesPage {
 
   protected async togglePin(game: TrackedGame): Promise<void> {
     this.message.set(
-      game.pinPosition === null ? await this.tracked.pin(game.gameId) : await this.tracked.unpin(game.gameId),
+      game.pinPosition === null
+        ? await this.tracked.pin(game.gameId)
+        : await this.tracked.unpin(game.gameId),
     );
   }
 
