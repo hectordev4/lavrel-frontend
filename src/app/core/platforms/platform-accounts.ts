@@ -34,6 +34,7 @@ export class PlatformAccounts {
   private readonly _syncing = signal<SyncProgress | null>(null);
   private readonly _message = signal<string | null>(null);
   private readonly _syncVersion = signal(0);
+  private readonly _linking = signal(false);
 
   readonly accounts = this._accounts.asReadonly();
   readonly loadState = this._loadState.asReadonly();
@@ -41,6 +42,8 @@ export class PlatformAccounts {
   readonly message = this._message.asReadonly();
   /** Goes up after every finished sync. */
   readonly syncVersion = this._syncVersion.asReadonly();
+  /** True while asking for the platform's login address (buttons stay disabled, no double login). */
+  readonly linking = this._linking.asReadonly();
   readonly steam = computed(() => this._accounts().find((a) => a.platform === 'STEAM') ?? null);
 
   constructor() {
@@ -66,13 +69,28 @@ export class PlatformAccounts {
     }
   }
 
-  /** Sends the browser to the platform's login page; it comes back to /steam/linked. */
-  async link(platform: Platform): Promise<void> {
+  /**
+   * What every "Connect Steam" button calls. It first checks the accounts again: if Steam is already linked to
+   * this member (another tab, a stale screen, a sync that failed after linking), it syncs instead of logging in
+   * again. Only without a linked account does it send the browser to the platform's login (back on /steam/linked).
+   */
+  async connect(platform: Platform): Promise<void> {
+    if (this._linking() || this._syncing()) return;
     this._message.set(null);
+    this._linking.set(true);
     try {
+      await this.reload();
+      const linked = this._accounts().find((a) => a.platform === platform);
+      if (linked) {
+        this._linking.set(false);
+        await this.sync(linked);
+        return;
+      }
       window.location.assign(await firstValueFrom(this.api.linkUrl(platform)));
     } catch (error) {
       this._message.set(platformErrorMessage(error));
+    } finally {
+      this._linking.set(false);
     }
   }
 

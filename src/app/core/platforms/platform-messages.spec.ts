@@ -12,7 +12,8 @@ describe('platform messages', () => {
   });
 
   it('explains a Steam account linked elsewhere', () => {
-    expect(linkErrorMessage('account_already_linked')).toContain('already linked');
+    expect(linkErrorMessage('account_already_linked')).toContain('linked to another Lavrel account');
+    expect(linkErrorMessage('account_linked_elsewhere')).toContain('unlink it there');
     expect(linkErrorMessage(null)).toContain('didn’t confirm');
   });
 });

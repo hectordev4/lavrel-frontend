@@ -128,6 +128,6 @@ export class LibraryPage {
   }
 
   protected connectSteam(): void {
-    void this.accounts.link('STEAM');
+    void this.accounts.connect('STEAM');
   }
 }
