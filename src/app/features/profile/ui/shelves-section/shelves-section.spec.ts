@@ -11,7 +11,9 @@ async function render(shelves: object[]) {
   TestBed.configureTestingModule({ providers: testProviders() });
   const fixture = TestBed.createComponent(ShelvesSection);
   fixture.detectChanges();
-  TestBed.inject(HttpTestingController).expectOne('/api/currentuser/profile/shelves').flush({ shelves });
+  TestBed.inject(HttpTestingController)
+    .expectOne('/api/currentuser/profile/shelves')
+    .flush({ shelves });
   await settle();
   fixture.detectChanges();
   return fixture;
@@ -54,9 +56,15 @@ describe('ShelvesSection', () => {
     TestBed.tick();
     expect(el.textContent).toContain('The collection itself and its games stay in your library.');
     TestBed.inject(HttpTestingController).expectNone((r) => r.method === 'DELETE');
-    ([...el.querySelectorAll('button')].find((b) => b.textContent!.trim() === 'Remove shelf') as HTMLButtonElement).click();
+    (
+      [...el.querySelectorAll('button')].find(
+        (b) => b.textContent!.trim() === 'Remove shelf',
+      ) as HTMLButtonElement
+    ).click();
     await settle();
-    TestBed.inject(HttpTestingController).expectOne((r) => r.method === 'DELETE' && r.url.endsWith('/a')).flush(null);
+    TestBed.inject(HttpTestingController)
+      .expectOne((r) => r.method === 'DELETE' && r.url.endsWith('/a'))
+      .flush(null);
   });
 
   it('opens the title sheet when the name is tapped', async () => {
@@ -65,7 +73,9 @@ describe('ShelvesSection', () => {
     (el.querySelector('.name') as HTMLButtonElement).click();
     fixture.detectChanges();
     TestBed.tick();
-    const dialogs = [...el.querySelectorAll('dialog')].filter((d) => d.querySelector('h2')!.textContent === 'Shelf title');
+    const dialogs = [...el.querySelectorAll('dialog')].filter(
+      (d) => d.querySelector('h2')!.textContent === 'Shelf title',
+    );
     expect((dialogs[0].querySelector('input') as HTMLInputElement).value).toBe('Now');
   });
 
@@ -73,7 +83,9 @@ describe('ShelvesSection', () => {
     const fixture = await render([shelf('a', 'PLAYING', 1), shelf('b', 'STATS', 2)]);
     const el = fixture.nativeElement as HTMLElement;
     (el.querySelector('.add') as HTMLButtonElement).click();
-    TestBed.inject(HttpTestingController).expectOne('/api/currentuser/collections').flush({ collections: [] });
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/currentuser/collections')
+      .flush({ collections: [] });
     await settle();
     fixture.detectChanges();
     const types = [...el.querySelectorAll('.type .name')].map((n) => n.textContent);
@@ -91,8 +103,19 @@ describe('ShelvesSection', () => {
 
 describe('ShelvesSection Pick link', () => {
   it('opens the picker page for an achievements shelf', async () => {
-    const fixture = await render([{ id: 'a', type: 'ACHIEVEMENTS', title: null, position: 1, collectionId: null, achievementIds: [1, 2] }]);
-    const link = [...fixture.nativeElement.querySelectorAll('a')].find((a: Element) => a.textContent!.trim() === 'Pick') as HTMLAnchorElement;
+    const fixture = await render([
+      {
+        id: 'a',
+        type: 'ACHIEVEMENTS',
+        title: null,
+        position: 1,
+        collectionId: null,
+        achievementIds: [1, 2],
+      },
+    ]);
+    const link = [...fixture.nativeElement.querySelectorAll('a')].find(
+      (a: Element) => a.textContent!.trim() === 'Pick',
+    ) as HTMLAnchorElement;
     expect(link.getAttribute('href')).toBe('/profile/shelves/a/achievements');
     expect(fixture.nativeElement.textContent).toContain('2 picked');
   });

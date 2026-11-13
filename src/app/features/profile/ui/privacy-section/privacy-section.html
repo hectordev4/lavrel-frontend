@@ -12,7 +12,12 @@
       [disabled]="saving()"
       (toggled)="set('public', $event)"
     />
-    <app-switch label="Show country" [checked]="s.showCountry" [disabled]="saving() || !s.public" (toggled)="set('showCountry', $event)" />
+    <app-switch
+      label="Show country"
+      [checked]="s.showCountry"
+      [disabled]="saving() || !s.public"
+      (toggled)="set('showCountry', $event)"
+    />
     <app-switch
       label="Show platforms"
       note="Badges like “plays on Steam”, never account names."
@@ -20,7 +25,12 @@
       [disabled]="saving() || !s.public"
       (toggled)="set('showPlatforms', $event)"
     />
-    <app-switch label="Show avatar" [checked]="s.showAvatar" [disabled]="saving() || !s.public" (toggled)="set('showAvatar', $event)" />
+    <app-switch
+      label="Show avatar"
+      [checked]="s.showAvatar"
+      [disabled]="saving() || !s.public"
+      (toggled)="set('showAvatar', $event)"
+    />
     @if (s.showLibrarySize !== undefined) {
       <app-switch
         label="Show how many games you own"

@@ -21,7 +21,9 @@ async function render(accounts: object[]) {
 
 describe('PlatformsSection', () => {
   it('shows Steam as connected, with automatic sync and unlink', async () => {
-    const el = await render([{ platform: 'STEAM', externalId: '1', displayName: 'OtterPlays', lastSyncedAt: null }]);
+    const el = await render([
+      { platform: 'STEAM', externalId: '1', displayName: 'OtterPlays', lastSyncedAt: null },
+    ]);
     expect(el.querySelector('.connected')!.textContent).toContain('Connected');
     expect(el.textContent).toContain('Signed in as OtterPlays');
     expect(el.textContent).toContain('Sync automatically');

@@ -1,3 +1,4 @@
+import { installIntersectionObserverStandIn } from '../../../../../testing/intersection-observer';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -6,6 +7,8 @@ import { fakeAuthProvider, signInAs } from '../../../../../testing/auth-testing'
 import { gameDetails } from '../../../../../testing/fixtures';
 import { testProviders } from '../../../../../testing/test-env';
 import { GamePage } from './game.page';
+
+installIntersectionObserverStandIn();
 
 describe('GamePage', () => {
   it('loads the game by slug and lays out its parts, with the achievements loading as they scroll in', () => {

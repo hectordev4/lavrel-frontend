@@ -17,11 +17,16 @@ export class PickerApi {
   games(q: string, sort: PickerGameSort, page: number, size = 24): Observable<AchievementGamePage> {
     let params = new HttpParams().set('sort', sort).set('page', page).set('size', size);
     if (q.trim()) params = params.set('q', q.trim());
-    return this.http.get<AchievementGamePage>(`${this.base}/api/currentuser/achievements/games`, { params });
+    return this.http.get<AchievementGamePage>(`${this.base}/api/currentuser/achievements/games`, {
+      params,
+    });
   }
 
   /** rarity: rarest first (no data last); date: newest unlock first. */
-  unlocked(gameId: number, sort: PickerAchievementSort): Observable<{ gameId: number; achievements: UnlockedAchievement[] }> {
+  unlocked(
+    gameId: number,
+    sort: PickerAchievementSort,
+  ): Observable<{ gameId: number; achievements: UnlockedAchievement[] }> {
     return this.http.get<{ gameId: number; achievements: UnlockedAchievement[] }>(
       `${this.base}/api/currentuser/games/${gameId}/achievements/unlocked`,
       { params: new HttpParams().set('sort', sort) },

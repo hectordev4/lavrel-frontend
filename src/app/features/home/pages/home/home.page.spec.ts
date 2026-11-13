@@ -1,3 +1,4 @@
+import { installIntersectionObserverStandIn } from '../../../../../testing/intersection-observer';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { fakeAuthProvider, signInAs } from '../../../../../testing/auth-testing';
@@ -17,6 +18,8 @@ async function render() {
   fixture.detectChanges();
   return { fixture, http, el: fixture.nativeElement as HTMLElement };
 }
+
+installIntersectionObserverStandIn();
 
 describe('HomePage (members)', () => {
   it('greets by name and places the sections', async () => {

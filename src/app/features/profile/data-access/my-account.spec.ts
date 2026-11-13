@@ -17,7 +17,9 @@ describe('MyAccount', () => {
     account = TestBed.inject(MyAccount);
     http = TestBed.inject(HttpTestingController);
     const loading = account.load();
-    http.expectOne('/api/currentuser').flush({ username: 'SwiftOtter', countryId: 2, publicId: '4829103755210846' });
+    http
+      .expectOne('/api/currentuser')
+      .flush({ username: 'SwiftOtter', countryId: 2, publicId: '4829103755210846' });
     http.expectOne('/api/countries').flush({ countries: [{ id: 2, code: 'ES', name: 'Spain' }] });
     await loading;
   });

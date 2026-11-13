@@ -53,7 +53,9 @@ export class MyShelves {
     const before = this.list();
     const byId = new Map(before.map((s) => [s.id, s]));
     this.list.set(ids.map((id, i) => ({ ...byId.get(id)!, position: i + 1 })));
-    const error = await this.run(async () => this.list.set(sorted(await firstValueFrom(this.api.reorder(ids)))));
+    const error = await this.run(async () =>
+      this.list.set(sorted(await firstValueFrom(this.api.reorder(ids)))),
+    );
     if (error) this.list.set(before);
     return error;
   }
