@@ -95,7 +95,8 @@ src/app
 │   ├── modal/                bottom sheet on the native <dialog>
 │   ├── switch/               on/off setting (role="switch")
 │   ├── avatar/               animated round avatar (upload, gallery or generated Pixelbot)
-├── shared/utils/             relativeTime ("2 hours ago"), gameLink (/games/{slug}), avatar-art (Pixelbot drawing)
+├── shared/utils/             relativeTime, gameLink, avatar-art, formatPlayerId, isRare (under 5%), syncedLabel,
+│                             greetingFor: helpers used by more than one page live here, never copied
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
