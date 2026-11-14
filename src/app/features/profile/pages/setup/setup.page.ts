@@ -11,7 +11,8 @@ import { AvatarPicker } from '../../ui/avatar-picker/avatar-picker';
 /**
  * /setup: the first time a new account opens Lavrel. It shows the name, avatar and country Lavrel gave it, to
  * change now or keep: Save and continue applies what changed; Skip for now keeps the defaults (the given name,
- * the generated avatar, no country). Either way it isn't offered again.
+ * the generated avatar, no country). Either way it tells the backend (PUT /api/currentuser/setup) so it isn't
+ * offered again, and goes to Home.
  */
 @Component({
   selector: 'app-setup-page',
@@ -57,8 +58,8 @@ export class SetupPage {
     const countryId = countryValue ? Number(countryValue) : null;
     if (!error && countryId !== (user.countryId ?? null))
       error = await this.account.setCountry(countryId);
-    this.saving.set(false);
     if (error) {
+      this.saving.set(false);
       this.error.set(error);
       return;
     }
@@ -71,7 +72,8 @@ export class SetupPage {
   }
 
   private async finish(): Promise<void> {
-    this.firstSetup.markDone();
+    this.saving.set(true);
+    await this.firstSetup.complete();
     await this.router.navigateByUrl('/home', { replaceUrl: true });
   }
 }
