@@ -1,4 +1,4 @@
-<main class="page home">
+<main class="page page-wide home">
   @switch (profile.state().kind) {
     @case ('loading') {
       <div class="center" role="status">
@@ -19,9 +19,15 @@
         <h1>{{ profile.username() ?? 'Welcome' }}</h1>
       </section>
 
-      <app-stats-section />
-      <app-sync-section />
-      <app-playing-now-section />
+      <div class="overview">
+        <app-stats-section />
+        <app-sync-section />
+      </div>
+      <div class="columns">
+        <div class="primary">
+          <app-playing-now-section />
+        </div>
+        <div class="secondary">
 
       @defer (on viewport) {
         <app-almost-there-section />
@@ -38,6 +44,9 @@
       } @error {
         <p class="muted small">This part of Home didn’t load. Pull to refresh or reopen Home.</p>
       }
+
+        </div>
+      </div>
 
       @if (firstVisit()) {
         @defer (on viewport) {

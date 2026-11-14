@@ -45,3 +45,35 @@
 .lazy {
   min-height: 6rem;
 }
+
+// Phone: everything stacks in the order above.
+.overview,
+.columns,
+.primary,
+.secondary {
+  display: contents;
+}
+
+// Desktop: totals and the Steam line in one row; Playing now on the left, Almost there and Recent unlocks on the right.
+@media (min-width: 64rem) {
+  .overview {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1.4fr);
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.75rem;
+  }
+
+  .primary,
+  .secondary {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+}
