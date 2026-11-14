@@ -318,10 +318,12 @@ show as coming soon.
 
 ## First setup
 
-The first time a **new account** (created in the last 14 days, from Firebase's creation time) reaches Home, it goes to
-`/setup`, "Make it yours": the name Lavrel gave it, the generated avatar (*Change avatar* opens the avatar sheet) and an
-optional country. *Save and continue* saves only what changed; *Skip for now* keeps the defaults (the given name, the
-generated avatar, no country). Either way it's remembered on that device (`FirstSetup`) and not offered again;
+Until the backend says otherwise, a member who reaches Home goes to `/setup`, "Make it yours": the name Lavrel gave
+them, the generated avatar (*Change avatar* opens the avatar sheet) and an optional country. The flag comes from the
+same `GET /api/currentuser` Home already makes: `setupCompleted` is `false` for a new account. *Save and continue*
+saves only what changed; *Skip for now* keeps the defaults (the given name, the generated avatar, no country). Either
+way `FirstSetup` calls `PUT /api/currentuser/setup` (no body, 204) and goes to Home. If that call fails the person
+still goes on, and the setup is offered again the next time Lavrel opens. It follows the account across devices;
 everything stays editable in Profile.
 
 ## Avatars

@@ -6,6 +6,4 @@ export interface AuthUser {
   email: string | null;
   emailVerified: boolean;
   provider: AuthProvider;
-  /** When the Firebase account was created (ISO), if known: tells a brand-new account from an older one. */
-  createdAt?: string | null;
 }

@@ -19,7 +19,6 @@ describe('toAuthUser', () => {
       email: 'a@b.c',
       emailVerified: false,
       provider: 'password',
-      createdAt: null,
     });
   });
 

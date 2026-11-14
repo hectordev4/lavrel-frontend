@@ -45,11 +45,12 @@ export class HomePage {
 
   constructor() {
     this.profile.load();
-    // A new account goes through the first setup once (the user record exists by then).
+    // Until the backend says the first setup is done, Home sends the member there.
     const firstSetup = inject(FirstSetup);
     const router = inject(Router);
     effect(() => {
-      if (this.profile.state().kind === 'ready' && firstSetup.needed()) {
+      const state = this.profile.state();
+      if (state.kind === 'ready' && firstSetup.neededFor(state.user)) {
         void router.navigateByUrl('/setup', { replaceUrl: true });
       }
     });

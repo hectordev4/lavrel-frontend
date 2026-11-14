@@ -15,4 +15,17 @@ describe('CurrentUserApi', () => {
       .flush({ username: 'SwiftOtter' });
     expect(name).toBe('SwiftOtter');
   });
+
+  it('marks the first setup as done', () => {
+    TestBed.configureTestingModule({ providers: testProviders() });
+    let done = false;
+    TestBed.inject(CurrentUserApi)
+      .completeSetup()
+      .subscribe(() => (done = true));
+    const req = TestBed.inject(HttpTestingController).expectOne('/api/currentuser/setup');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toBeNull();
+    req.flush(null, { status: 204, statusText: 'No Content' });
+    expect(done).toBe(true);
+  });
 });

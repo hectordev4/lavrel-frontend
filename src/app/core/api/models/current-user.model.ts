@@ -9,4 +9,6 @@ export interface CurrentUser {
   emailVerified?: boolean;
   role?: 'USER' | 'SUPPORT' | 'ADMIN';
   countryId?: number | null;
+  /** False until the first setup is saved or skipped (PUT /api/currentuser/setup); a new account starts false. */
+  setupCompleted?: boolean;
 }

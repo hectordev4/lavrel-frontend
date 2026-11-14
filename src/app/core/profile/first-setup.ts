@@ -1,44 +1,33 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { CurrentUserApi } from '../api/current-user.api';
+import { CurrentUser } from '../api/models/current-user.model';
 import { AuthStore } from '../auth/auth.store';
 
-/** Accounts created within this many days are offered the first setup; older ones never are. */
-const NEW_ACCOUNT_DAYS = 14;
-const KEY = 'lavrel.first-setup-done.';
-
 /**
- * Whether to offer the first-time setup (name, avatar, country) to the signed-in member: only for a new account,
- * and only until they finish or skip it on this device.
+ * The first-time setup (name, avatar, country). The backend decides who gets it: GET /api/currentuser says
+ * `setupCompleted: false` until PUT /api/currentuser/setup is called, whether the person saved or skipped.
  */
 @Injectable({ providedIn: 'root' })
 export class FirstSetup {
+  private readonly api = inject(CurrentUserApi);
   private readonly auth = inject(AuthStore);
+  /** Accounts that finished or skipped in this session, so Home never sends them back even if the PUT failed. */
   private readonly done = signal<ReadonlySet<string>>(new Set());
 
-  readonly needed = computed(() => {
-    const user = this.auth.user();
-    if (!user?.emailVerified || !user.createdAt) return false;
-    if (this.done().has(user.uid) || readDone(user.uid)) return false;
-    const ageDays = (Date.now() - Date.parse(user.createdAt)) / 86_400_000;
-    return ageDays <= NEW_ACCOUNT_DAYS;
-  });
-
-  /** Finished or skipped: never offered again for this account on this device. */
-  markDone(): void {
+  /** Whether this user, as GET /api/currentuser returned it, still has the first setup to do. */
+  neededFor(user: CurrentUser): boolean {
     const uid = this.auth.user()?.uid;
-    if (!uid) return;
-    try {
-      localStorage.setItem(KEY + uid, 'true');
-    } catch {
-      // Private mode: it is still remembered until the page closes.
-    }
-    this.done.update((all) => new Set([...all, uid]));
+    return user.setupCompleted === false && !(uid && this.done().has(uid));
   }
-}
 
-function readDone(uid: string): boolean {
-  try {
-    return localStorage.getItem(KEY + uid) === 'true';
-  } catch {
-    return false;
+  /**
+   * Saved or skipped: tells the backend. If that call fails the person still goes on; the setup is simply offered
+   * again the next time Lavrel opens.
+   */
+  async complete(): Promise<void> {
+    const uid = this.auth.user()?.uid;
+    if (uid) this.done.update((all) => new Set([...all, uid]));
+    await firstValueFrom(this.api.completeSetup()).catch(() => undefined);
   }
 }
