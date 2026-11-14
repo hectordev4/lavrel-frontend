@@ -22,8 +22,14 @@ export class ResultCard {
   protected readonly modes = computed(() => {
     const m = this.game().modes;
     if (!m) return '';
-    const list = [m.singlePlayer && MODE_LABELS['single-player'], m.coOp && MODE_LABELS['co-op'], m.multiplayer && MODE_LABELS.multiplayer];
+    const list = [
+      m.singlePlayer && MODE_LABELS['single-player'],
+      m.coOp && MODE_LABELS['co-op'],
+      m.multiplayer && MODE_LABELS.multiplayer,
+    ];
     return list.filter(Boolean).join(', ');
   });
-  protected readonly systems = computed(() => (this.game().availableOn ?? []).map((s) => SYSTEM_LABELS[s]).join(' · '));
+  protected readonly systems = computed(() =>
+    (this.game().availableOn ?? []).map((s) => SYSTEM_LABELS[s]).join(' · '),
+  );
 }

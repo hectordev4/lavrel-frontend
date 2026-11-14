@@ -24,6 +24,9 @@ describe('ResultCard', () => {
     expect(el.textContent).toContain('Single-player, Co-op');
     expect(el.textContent).toContain('12,480 reviews');
     expect(el.textContent).toContain('PC · PlayStation');
-    expect([...el.querySelectorAll('.tags li')].map((li) => li.textContent)).toEqual(['Roguelike', 'Pirates']);
+    expect([...el.querySelectorAll('.tags li')].map((li) => li.textContent)).toEqual([
+      'Roguelike',
+      'Pirates',
+    ]);
   });
 });

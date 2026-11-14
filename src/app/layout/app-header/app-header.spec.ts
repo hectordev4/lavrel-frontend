@@ -37,3 +37,18 @@ describe('AppHeader desktop search', () => {
     expect(navigate).toHaveBeenCalledWith(['/search/results'], { queryParams: { q: 'hades' } });
   });
 });
+
+describe('AppHeader on search results', () => {
+  it('shows the current search in its field', async () => {
+    TestBed.configureTestingModule({ providers: testProviders(fakeAuthProvider) });
+    signInAs(null);
+    const router = TestBed.inject(Router);
+    router.resetConfig([{ path: '**', children: [] }]);
+    await router.navigateByUrl('/search/results?q=rogue');
+    const fixture = TestBed.createComponent(AppHeader);
+    fixture.detectChanges();
+    expect(
+      (fixture.nativeElement.querySelector('.desktop-search input') as HTMLInputElement).value,
+    ).toBe('rogue');
+  });
+});

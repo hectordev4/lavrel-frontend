@@ -20,9 +20,15 @@
       <section aria-labelledby="sg-tags">
         <h2 id="sg-tags">Tags</h2>
         @for (tag of results().tags; track tag.id) {
-          <a class="item" routerLink="/search/results" [queryParams]="{ tag: filterValue(tag.id, tag.name) }">
+          <a
+            class="item"
+            routerLink="/search/results"
+            [queryParams]="{ tag: filterValue(tag.id, tag.name) }"
+          >
             <span class="badge" aria-hidden="true">#</span>
-            <span class="text"><span class="name">{{ tag.name }}</span></span>
+            <span class="text"
+              ><span class="name">{{ tag.name }}</span></span
+            >
             <span class="count">{{ tag.gameCount }} games</span>
           </a>
         }
@@ -32,9 +38,15 @@
       <section aria-labelledby="sg-franchises">
         <h2 id="sg-franchises">Franchises</h2>
         @for (franchise of results().franchises; track franchise.id) {
-          <a class="item" routerLink="/search/results" [queryParams]="{ franchise: filterValue(franchise.id, franchise.name) }">
+          <a
+            class="item"
+            routerLink="/search/results"
+            [queryParams]="{ franchise: filterValue(franchise.id, franchise.name) }"
+          >
             <span class="badge" aria-hidden="true">F</span>
-            <span class="text"><span class="name">{{ franchise.name }}</span></span>
+            <span class="text"
+              ><span class="name">{{ franchise.name }}</span></span
+            >
             <span class="count">{{ franchise.gameCount }} games</span>
           </a>
         }

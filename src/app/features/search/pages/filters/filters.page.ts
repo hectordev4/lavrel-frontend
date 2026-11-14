@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameSort } from '../../../../core/api/models/game-sort.model';
 import { GameSystem } from '../../../../core/api/models/game-system.model';
@@ -6,7 +15,12 @@ import { Chip } from '../../../../shared/ui/chip/chip';
 import { FilterOptionsApi } from '../../data-access/filter-options.api';
 import { OptionSearch } from '../../data-access/option-search';
 import { MODE_LABELS, SORT_LABELS, SYSTEM_LABELS } from '../../data-access/search-labels';
-import { MAX_TAGS, emptyFilters, parseFilters, toQueryParams } from '../../data-access/search-query';
+import {
+  MAX_TAGS,
+  emptyFilters,
+  parseFilters,
+  toQueryParams,
+} from '../../data-access/search-query';
 import { FilterOption } from '../../models/filter-option.model';
 import { PlayerMode } from '../../models/player-mode.model';
 import { SearchFilters } from '../../models/search-filters.model';
@@ -17,6 +31,7 @@ type CreatorKey = 'franchise' | 'developer' | 'publisher';
 /** Full-screen filters. Changes stay in a draft until "Show results". */
 @Component({
   selector: 'app-filters-page',
+  host: { '[class.embedded]': 'embedded()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, Chip, TypeaheadField],
   templateUrl: './filters.page.html',
@@ -24,7 +39,10 @@ type CreatorKey = 'franchise' | 'developer' | 'publisher';
 })
 export class FiltersPage {
   private readonly router = inject(Router);
-  private readonly original = parseFilters(inject(ActivatedRoute).snapshot.queryParamMap);
+  private readonly route = inject(ActivatedRoute);
+  private readonly original = parseFilters(this.route.snapshot.queryParamMap);
+  /** Shown as the results page's side panel on desktop: no close button, and it follows the address. */
+  readonly embedded = input(false);
 
   protected readonly draft = signal<SearchFilters>(this.original);
   protected readonly maxTags = MAX_TAGS;
@@ -34,7 +52,9 @@ export class FiltersPage {
       .filter((s) => s !== 'relevance' || this.draft().q)
       .map((value) => ({ value, label: SORT_LABELS[value] })),
   );
-  protected readonly currentSort = computed<GameSort>(() => this.draft().sort ?? (this.draft().q ? 'relevance' : 'popular'));
+  protected readonly currentSort = computed<GameSort>(
+    () => this.draft().sort ?? (this.draft().q ? 'relevance' : 'popular'),
+  );
   protected readonly modes = Object.entries(MODE_LABELS) as [PlayerMode, string][];
   protected readonly systems = Object.entries(SYSTEM_LABELS) as [GameSystem, string][];
   protected readonly creators: { key: CreatorKey; label: string }[] = [
@@ -47,6 +67,11 @@ export class FiltersPage {
   protected readonly creatorSearch: Record<CreatorKey, OptionSearch>;
 
   constructor() {
+    // As the results' side panel, the address changes under it (a chip removed, a new search in the header):
+    // start again from what the address says.
+    this.route.queryParamMap
+      ?.pipe(takeUntilDestroyed())
+      .subscribe((params) => this.draft.set(parseFilters(params)));
     const api = inject(FilterOptionsApi);
     const destroyRef = inject(DestroyRef);
     this.tagSearch = new OptionSearch((q) => api.tags(q), destroyRef);
@@ -85,7 +110,10 @@ export class FiltersPage {
   }
 
   protected setCreator(key: CreatorKey, option: FilterOption | null): void {
-    this.draft.update((f) => ({ ...f, [key]: option ? { id: option.id, name: option.name } : null }));
+    this.draft.update((f) => ({
+      ...f,
+      [key]: option ? { id: option.id, name: option.name } : null,
+    }));
   }
 
   protected clearAll(): void {

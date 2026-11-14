@@ -7,6 +7,7 @@ import { TrackingStatus } from '../../../../core/api/models/tracking-status.mode
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { TrackedGames } from '../../../../core/tracking/tracked-games';
 import { Chip } from '../../../../shared/ui/chip/chip';
+import { FiltersPage } from '../filters/filters.page';
 import { TrackControl } from '../../../../shared/ui/track-control/track-control';
 import {
   MODE_LABELS,
@@ -36,7 +37,7 @@ interface ActiveChip {
 @Component({
   selector: 'app-results-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SelectField, RouterLink, Chip, ResultCard, TrackControl],
+  imports: [FiltersPage, SelectField, RouterLink, Chip, ResultCard, TrackControl],
   providers: [SearchResults],
   templateUrl: './results.page.html',
   styleUrl: './results.page.scss',
