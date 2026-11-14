@@ -90,8 +90,36 @@
   text-align: center;
 }
 
-// Desktop: results in a three-column grid.
+// Phone: filters open as their own screen, from the Filters button.
+.panel {
+  display: none;
+}
+
+// Desktop: the filters stay open in a panel on the left, and results form a three-column grid beside it.
 @media (min-width: 64rem) {
+  .results {
+    display: grid;
+    grid-template-columns: 18.5rem minmax(0, 1fr);
+    column-gap: 2rem;
+    align-items: start;
+  }
+
+  .results > * {
+    grid-column: 2;
+  }
+
+  .results > .panel {
+    display: block;
+    grid-column: 1;
+    grid-row: 1 / span 20;
+    position: sticky;
+    top: 1.5rem;
+  }
+
+  .filters-link {
+    display: none;
+  }
+
   .list {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

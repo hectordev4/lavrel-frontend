@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs';
 import { AuthStore } from '../../core/auth/auth.store';
 import { MyAvatar } from '../../core/profile/my-avatar';
 import { Avatar } from '../../shared/ui/avatar/avatar';
@@ -21,6 +23,20 @@ export class AppHeader {
   private readonly store = inject(AuthStore);
   protected readonly me = inject(MyAvatar);
   private readonly router = inject(Router);
+  /** On search results, the header's field shows what was searched, ready to refine. */
+  protected readonly currentQuery = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationEnd),
+      startWith(null),
+      map(() => {
+        const tree = this.router.parseUrl(this.router.url);
+        const onResults =
+          tree.root.children['primary']?.segments.map((s) => s.path).join('/') === 'search/results';
+        return onResults ? String(tree.queryParams['q'] ?? '') : '';
+      }),
+    ),
+    { initialValue: '' },
+  );
 
   protected readonly signedIn = computed(() => this.store.user() !== null);
 

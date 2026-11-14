@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  input,
+  output,
+  signal,
+  untracked,
+} from '@angular/core';
 
 /**
  * A search field with its magnifier icon and, once something is typed, a discreet clear button (the browser's own
@@ -19,6 +27,7 @@ import { ChangeDetectionStrategy, Component, input, output, signal } from '@angu
         autocomplete="off"
         spellcheck="false"
         [placeholder]="placeholder()"
+        [value]="value()"
         (input)="onInput(box.value)"
         (keydown.enter)="submitted.emit(box.value)"
       />
@@ -35,10 +44,19 @@ export class SearchBox {
   /** Read by screen readers. */
   readonly label = input.required<string>();
   readonly placeholder = input('');
+  /** Text to show in the field (for example the current search); typing changes it locally. */
+  readonly value = input('');
   readonly typed = output<string>();
   /** Enter pressed in the field. */
   readonly submitted = output<string>();
   protected readonly hasText = signal(false);
+
+  constructor() {
+    effect(() => {
+      const v = this.value();
+      untracked(() => this.hasText.set(v.length > 0));
+    });
+  }
 
   protected onInput(value: string): void {
     this.hasText.set(value.length > 0);

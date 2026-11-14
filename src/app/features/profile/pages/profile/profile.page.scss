@@ -102,3 +102,21 @@
   min-height: 2.75rem;
   font-size: 0.875rem;
 }
+
+// Desktop: the header across the top, then the sections two by two (account beside privacy, shelves beside
+// platforms), and the end across the bottom.
+@media (min-width: 64rem) {
+  .profile {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+
+  .profile > .head,
+  .profile > app-account-end,
+  .profile > .failed,
+  .profile > .skeleton {
+    grid-column: 1 / -1;
+  }
+}

@@ -109,3 +109,10 @@
 .save {
   min-width: 7rem;
 }
+
+// Desktop: no tab bar under the picks bar, so it sits at the bottom of the window.
+@media (min-width: 64rem) {
+  .bar {
+    bottom: 0;
+  }
+}

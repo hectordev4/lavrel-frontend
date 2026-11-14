@@ -6,6 +6,7 @@
     class="desktop-search"
     label="Search games"
     placeholder="Search games, tags or franchises"
+    [value]="currentQuery()"
     (submitted)="search($event)"
   />
   @if (signedIn()) {

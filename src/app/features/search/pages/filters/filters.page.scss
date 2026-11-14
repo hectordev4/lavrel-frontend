@@ -131,3 +131,34 @@ footer {
     flex: 1;
   }
 }
+
+// As the results page's side panel (desktop): a card, no close header, the buttons at its foot.
+:host(.embedded) {
+  .sheet {
+    min-height: 0;
+    max-width: none;
+    border-radius: 1.125rem;
+    background: var(--ink-raised);
+  }
+
+  header {
+    display: none;
+  }
+
+  footer {
+    position: static;
+    flex-wrap: wrap;
+    border-radius: 0 0 1.125rem 1.125rem;
+    background: var(--ink-raised);
+  }
+}
+
+// Fieldsets size to their content by default; inside the narrow panel they must fit its width.
+fieldset {
+  min-inline-size: 0;
+}
+
+// The results page has its own sort next to the list, so the panel leaves it out.
+:host(.embedded) .sort-group {
+  display: none;
+}
