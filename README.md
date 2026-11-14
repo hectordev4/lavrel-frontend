@@ -40,6 +40,12 @@ One codebase, two layouts, switching at **64rem (1024 px)**:
   opens the results), and pages get wider: 48rem by default, 72.5rem for screens with their own desktop layout
   (`.page-wide`). The tab bar and the sidebar share `activeTabPath()`.
 
+On desktop, **Home** puts the totals and the Steam line in one row, then Playing now on the left and Almost there
+and Recent unlocks on the right; the **game page** shows the cover beside the title and actions, then the
+achievements on the left and About, Tags and Details on the right; **search results** form a three-column grid; and
+the **Search** page drops its own field, since the header's opens the results. On phones the same parts stack as
+before (the desktop wrappers use `display: contents`).
+
 The start-up splash is full screen on both; loading inside a page happens in the main area, so the sidebar and
 header stay. The desktop mockups live on the "Lavrel — Desktop" canvas.
 

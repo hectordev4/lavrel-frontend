@@ -143,3 +143,57 @@ h2 {
 .muted {
   color: var(--muted);
 }
+
+// Desktop: the cover beside the title and actions; below, the achievements on the left and About, Tags and
+// Details on the right.
+@media (min-width: 64rem) {
+  .game {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    column-gap: 2rem;
+    row-gap: 1.75rem;
+    align-items: start;
+  }
+
+  .game > * {
+    grid-column: 1 / -1;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    column-gap: 2rem;
+    row-gap: 0;
+    align-content: start;
+  }
+
+  // The cover spans the column; the right side's parts keep their spacing with margins, so unused rows add nothing.
+  .hero > .cover {
+    grid-row: 1 / span 12;
+  }
+
+  .hero > :not(.cover) {
+    margin-bottom: 1rem;
+  }
+
+  .game > app-game-achievements-section,
+  .game > .lazy {
+    grid-column: 1;
+    grid-row: 3 / span 3;
+  }
+
+  .game > app-game-about {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .game > app-game-labels {
+    grid-column: 2;
+    grid-row: 4;
+  }
+
+  .game > .details {
+    grid-column: 2;
+    grid-row: 5;
+  }
+}

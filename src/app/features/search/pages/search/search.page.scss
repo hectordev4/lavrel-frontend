@@ -103,3 +103,10 @@ h1 {
     stroke-linecap: round;
   }
 }
+
+// Desktop: the header's search field is the one to use (Enter opens the results), so the page's own goes away.
+@media (min-width: 64rem) {
+  form[role='search'] {
+    display: none;
+  }
+}
