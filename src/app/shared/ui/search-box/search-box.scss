@@ -36,4 +36,26 @@
     font: inherit;
     font-size: 1rem;
   }
+
+  .clear {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: -0.5rem;
+    flex: none;
+    border: 0;
+    border-radius: 0.625rem;
+    background: transparent;
+    cursor: pointer;
+
+    svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      fill: none;
+      stroke: var(--muted);
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+  }
 }

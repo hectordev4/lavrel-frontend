@@ -22,6 +22,24 @@ describe('shared form and layout pieces', () => {
     expect(f.nativeElement.querySelector('.visually-hidden').textContent).toBe('Find a game');
   });
 
+  it('SearchBox shows its clear button only with text, and clearing empties it and tells the page', () => {
+    const f = TestBed.createComponent(SearchBox);
+    f.componentRef.setInput('label', 'Find a game');
+    f.detectChanges();
+    expect(f.nativeElement.querySelector('.clear')).toBeNull();
+    const spy = vi.fn();
+    f.componentInstance.typed.subscribe(spy);
+    const input = f.nativeElement.querySelector('input') as HTMLInputElement;
+    input.value = 'hades';
+    input.dispatchEvent(new Event('input'));
+    f.detectChanges();
+    (f.nativeElement.querySelector('.clear') as HTMLButtonElement).click();
+    f.detectChanges();
+    expect(input.value).toBe('');
+    expect(spy).toHaveBeenLastCalledWith('');
+    expect(f.nativeElement.querySelector('.clear')).toBeNull();
+  });
+
   it('Segmented presses the current value and emits the chosen one', () => {
     const f = TestBed.createComponent(Segmented);
     f.componentRef.setInput('options', [
