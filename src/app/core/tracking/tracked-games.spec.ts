@@ -72,7 +72,9 @@ describe('TrackedGames', () => {
   it('returns a message when the backend refuses', async () => {
     const done = store.pin(3);
     await Promise.resolve();
-    http.expectOne('/api/currentuser/tracked/3/pin').flush({ error: 'quick_access_full' }, { status: 409, statusText: 'Conflict' });
+    http
+      .expectOne('/api/currentuser/tracked/3/pin')
+      .flush({ error: 'quick_access_full' }, { status: 409, statusText: 'Conflict' });
     expect(await done).toContain('20 pinned games');
   });
 

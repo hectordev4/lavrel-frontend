@@ -44,11 +44,15 @@ export class FirebaseAuthGateway extends AuthGateway {
   }
 
   signInWithEmail(email: string, password: string): Promise<AuthUser> {
-    return run(async () => toAuthUser((await signInWithEmailAndPassword(this.auth, email, password)).user));
+    return run(async () =>
+      toAuthUser((await signInWithEmailAndPassword(this.auth, email, password)).user),
+    );
   }
 
   registerWithEmail(email: string, password: string): Promise<AuthUser> {
-    return run(async () => toAuthUser((await createUserWithEmailAndPassword(this.auth, email, password)).user));
+    return run(async () =>
+      toAuthUser((await createUserWithEmailAndPassword(this.auth, email, password)).user),
+    );
   }
 
   signInWithGoogle(): Promise<AuthUser | null> {
@@ -61,7 +65,10 @@ export class FirebaseAuthGateway extends AuthGateway {
         // Some in-app and mobile browsers can't open popups: fall back to a full-page redirect.
         // onAuthStateChanged picks the user up when the browser comes back.
         const code = (error as FirebaseError).code;
-        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+        if (
+          code === 'auth/popup-blocked' ||
+          code === 'auth/operation-not-supported-in-this-environment'
+        ) {
           await signInWithRedirect(this.auth, provider);
           return null;
         }

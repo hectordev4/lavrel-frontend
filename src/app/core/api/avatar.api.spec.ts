@@ -27,7 +27,9 @@ describe('AvatarApi', () => {
 
   it('picks a gallery picture and lists the gallery', () => {
     api.chooseGallery('gallery-07').subscribe();
-    expect(http.expectOne('/api/currentuser/profile/avatar/gallery').request.body).toEqual({ galleryId: 'gallery-07' });
+    expect(http.expectOne('/api/currentuser/profile/avatar/gallery').request.body).toEqual({
+      galleryId: 'gallery-07',
+    });
     let ids: string[] = [];
     api.galleryIds().subscribe((g) => (ids = g));
     http.expectOne('/api/avatars/gallery').flush({ galleryIds: ['gallery-01', 'gallery-02'] });

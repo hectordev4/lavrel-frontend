@@ -24,7 +24,11 @@ export class AppErrorHandler implements ErrorHandler {
   readonly errors = this._errors.asReadonly();
 
   handleError(error: unknown): void {
-    const entry: AppError = { message: messageOf(error), url: this.router.url, at: new Date().toISOString() };
+    const entry: AppError = {
+      message: messageOf(error),
+      url: this.router.url,
+      at: new Date().toISOString(),
+    };
     const last = this._errors().at(-1);
     // The same error repeating (for example in a loop) is logged once.
     if (last && last.message === entry.message && last.url === entry.url) return;

@@ -58,7 +58,8 @@ export class PlatformAccounts {
   }
 
   ensureLoaded(): void {
-    if (this.auth.isVerified() && (this._loadState() === 'idle' || this._loadState() === 'error')) void this.reload();
+    if (this.auth.isVerified() && (this._loadState() === 'idle' || this._loadState() === 'error'))
+      void this.reload();
   }
 
   async reload(): Promise<void> {
@@ -108,11 +109,15 @@ export class PlatformAccounts {
       for (let round = 0; round < MAX_SYNC_ROUNDS; round++) {
         const result = await firstValueFrom(this.api.sync(account));
         const before = this._syncing() ?? { gamesSynced: 0, gamesPending: 0 };
-        this._syncing.set({ gamesSynced: Math.max(before.gamesSynced, result.gamesSynced), gamesPending: result.gamesPending });
+        this._syncing.set({
+          gamesSynced: Math.max(before.gamesSynced, result.gamesSynced),
+          gamesPending: result.gamesPending,
+        });
         if (result.gamesPending === 0) break;
       }
       const left = this._syncing()?.gamesPending ?? 0;
-      if (left > 0) this._message.set(`${left} games are still waiting. Sync again to bring them in.`);
+      if (left > 0)
+        this._message.set(`${left} games are still waiting. Sync again to bring them in.`);
       await Promise.all([this.reload(), this.tracked.reload()]);
       this._syncVersion.update((v) => v + 1);
       return true;

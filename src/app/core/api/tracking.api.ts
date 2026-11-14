@@ -31,12 +31,16 @@ export class TrackingApi {
 
   /** Pinned games in their order. */
   quickAccess(): Observable<TrackedGame[]> {
-    return this.http.get<TrackedGamesResponse>(`${this.url}/quick-access`).pipe(map((r) => r.games));
+    return this.http
+      .get<TrackedGamesResponse>(`${this.url}/quick-access`)
+      .pipe(map((r) => r.games));
   }
 
   /** Pins at the end; 409 quick_access_full at 20. Returns quick access in its new order. */
   pin(gameId: number): Observable<TrackedGame[]> {
-    return this.http.put<TrackedGamesResponse>(`${this.url}/${gameId}/pin`, null).pipe(map((r) => r.games));
+    return this.http
+      .put<TrackedGamesResponse>(`${this.url}/${gameId}/pin`, null)
+      .pipe(map((r) => r.games));
   }
 
   unpin(gameId: number): Observable<void> {
@@ -45,6 +49,8 @@ export class TrackingApi {
 
   /** New order: every pinned game exactly once. */
   reorder(gameIds: number[]): Observable<TrackedGame[]> {
-    return this.http.put<TrackedGamesResponse>(`${this.url}/quick-access`, { gameIds }).pipe(map((r) => r.games));
+    return this.http
+      .put<TrackedGamesResponse>(`${this.url}/quick-access`, { gameIds })
+      .pipe(map((r) => r.games));
   }
 }

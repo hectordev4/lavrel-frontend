@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { FirstSetup } from '../../../../core/profile/first-setup';
 import { PlatformAccounts } from '../../../../core/platforms/platform-accounts';
 import { CubeLogo } from '../../../../shared/ui/cube-logo/cube-logo';
 import { greetingFor } from '../../../../shared/utils/greeting';
@@ -43,5 +45,13 @@ export class HomePage {
 
   constructor() {
     this.profile.load();
+    // A new account goes through the first setup once (the user record exists by then).
+    const firstSetup = inject(FirstSetup);
+    const router = inject(Router);
+    effect(() => {
+      if (this.profile.state().kind === 'ready' && firstSetup.needed()) {
+        void router.navigateByUrl('/setup', { replaceUrl: true });
+      }
+    });
   }
 }
