@@ -43,7 +43,10 @@ One codebase, two layouts, switching at **64rem (1024 px)**:
 On desktop, **Home** puts the totals and the Steam line in one row, then Playing now on the left and Almost there
 and Recent unlocks on the right; the **game page** shows the cover beside the title and actions, then the
 achievements on the left and About, Tags and Details on the right; **search results** form a three-column grid; and
-the **Search** page drops its own field, since the header's opens the results. On phones the same parts stack as
+the **Search** page drops its own field, since the header's opens the results (and shows the current search on the
+results page). Results keep the **filters open as a side panel** (the filters screen with `embedded`), following the
+address. **Games** lists tracked games in two columns, **My library** shows four games per row, **Profile** places
+its sections two by two, and the AI chat's reply box and the picker's bar sit at the window's bottom (no tab bar). On phones the same parts stack as
 before (the desktop wrappers use `display: contents`).
 
 The start-up splash is full screen on both; loading inside a page happens in the main area, so the sidebar and

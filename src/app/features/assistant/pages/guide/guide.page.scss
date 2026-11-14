@@ -158,3 +158,10 @@
   font-size: 0.8125rem;
   color: var(--muted);
 }
+
+// Desktop: no tab bar under the reply box, so it sits at the bottom of the window.
+@media (min-width: 64rem) {
+  .reply {
+    bottom: 1rem;
+  }
+}
