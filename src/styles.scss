@@ -67,6 +67,19 @@ body::before {
     calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
 }
 
+// Desktop: pages get room to breathe. Screens with their own desktop layout add .page-wide.
+@media (min-width: 64rem) {
+  .page {
+    min-height: auto;
+    max-width: 48rem;
+    padding: 2.25rem 2.5rem 3rem;
+  }
+
+  .page.page-wide {
+    max-width: 72.5rem;
+  }
+}
+
 a {
   color: var(--line);
   font-weight: 600;

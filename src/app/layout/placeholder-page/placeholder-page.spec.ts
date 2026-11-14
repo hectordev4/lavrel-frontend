@@ -6,7 +6,12 @@ import { PlaceholderPage } from './placeholder-page';
 describe('PlaceholderPage', () => {
   it('names the screen and the branch that brings it', () => {
     TestBed.configureTestingModule({
-      providers: [{ provide: ActivatedRoute, useValue: { data: of({ heading: 'Search', branch: 'feat/search' }) } }],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: { data: of({ heading: 'Search', branch: 'feat/search' }) },
+        },
+      ],
     });
     const fixture = TestBed.createComponent(PlaceholderPage);
     fixture.detectChanges();

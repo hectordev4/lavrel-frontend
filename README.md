@@ -31,6 +31,18 @@ Expected failures (a request that doesn't load) are handled where they happen: e
 message and *Try again*. Anything unexpected ends in `AppErrorHandler` (`core/errors`), which logs it once with the
 address it happened on and keeps the latest 20 in memory, ready for a future "report a problem" screen.
 
+## Phone and desktop
+
+One codebase, two layouts, switching at **64rem (1024 px)**:
+
+- **Phone** (narrower): header on top, one column, the bottom tab bar. This is also what the Play Store app shows.
+- **Desktop** (wider): the tabs move to a sidebar (`SideNav`), the header spans the width with a search field (Enter
+  opens the results), and pages get wider: 48rem by default, 72.5rem for screens with their own desktop layout
+  (`.page-wide`). The tab bar and the sidebar share `activeTabPath()`.
+
+The start-up splash is full screen on both; loading inside a page happens in the main area, so the sidebar and
+header stay. The desktop mockups live on the "Lavrel — Desktop" canvas.
+
 ## Typed templates
 
 Templates never use `$any`. A state with several shapes is read once with `@let` and switched on, so Angular narrows
@@ -88,7 +100,8 @@ src/app
 ├── layout/                   the frame around in-app pages
 │   ├── app-shell/            header + page + tab bar
 │   ├── app-header/           static wordmark, avatar (members) or Sign in (guests)
-│   ├── tab-bar/              Home, Search, AI, Games (Profile: the avatar at the top right)
+│   ├── tab-bar/              Home, Search, AI, Games on phones (Profile: the avatar at the top right)
+│   ├── side-nav/             the same tabs as a sidebar on desktop
 │   └── placeholder-page/     stands in for tabs whose branch hasn't landed
 ├── shared/ui/                dumb, reusable components
 │   ├── cube-logo/            animated cube L (+ geometry, models/)

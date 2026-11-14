@@ -31,3 +31,27 @@ header {
   padding: 0 1rem;
   font-size: 0.875rem;
 }
+
+.desktop-search {
+  display: none;
+}
+
+// Desktop: full width, the brand lives in the sidebar, and the search field fills the space.
+@media (min-width: 64rem) {
+  header {
+    max-width: none;
+    gap: 1rem;
+    padding: 1.25rem 2.5rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .home {
+    display: none;
+  }
+
+  .desktop-search {
+    display: block;
+    flex: 1;
+    max-width: 35rem;
+  }
+}

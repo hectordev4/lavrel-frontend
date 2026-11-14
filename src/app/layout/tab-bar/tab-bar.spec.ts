@@ -7,11 +7,15 @@ import { TabBar } from './tab-bar';
 class Blank {}
 
 async function activeAt(url: string): Promise<string[]> {
-  TestBed.configureTestingModule({ providers: [provideRouter([{ path: '**', component: Blank }])] });
+  TestBed.configureTestingModule({
+    providers: [provideRouter([{ path: '**', component: Blank }])],
+  });
   const fixture = TestBed.createComponent(TabBar);
   await TestBed.inject(Router).navigateByUrl(url);
   fixture.detectChanges();
-  return [...fixture.nativeElement.querySelectorAll('a.active')].map((a: Element) => a.textContent!.trim());
+  return [...fixture.nativeElement.querySelectorAll('a.active')].map((a: Element) =>
+    a.textContent!.trim(),
+  );
 }
 
 describe('TabBar', () => {
@@ -36,18 +40,26 @@ describe('TabBar', () => {
   });
 
   it('shows Home, Search, AI and Games, in that order', async () => {
-    TestBed.configureTestingModule({ providers: [provideRouter([{ path: '**', component: Blank }])] });
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{ path: '**', component: Blank }])],
+    });
     const fixture = TestBed.createComponent(TabBar);
     fixture.detectChanges();
-    const labels = [...fixture.nativeElement.querySelectorAll('a')].map((a: Element) => a.textContent!.trim());
+    const labels = [...fixture.nativeElement.querySelectorAll('a')].map((a: Element) =>
+      a.textContent!.trim(),
+    );
     expect(labels).toEqual(['Home', 'Search', 'AI', 'Games']);
   });
 
   it('marks the active tab as the current page', async () => {
-    TestBed.configureTestingModule({ providers: [provideRouter([{ path: '**', component: Blank }])] });
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{ path: '**', component: Blank }])],
+    });
     const fixture = TestBed.createComponent(TabBar);
     await TestBed.inject(Router).navigateByUrl('/home');
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('a.active').getAttribute('aria-current')).toBe('page');
+    expect(fixture.nativeElement.querySelector('a.active').getAttribute('aria-current')).toBe(
+      'page',
+    );
   });
 });
