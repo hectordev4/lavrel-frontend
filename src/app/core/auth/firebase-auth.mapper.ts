@@ -12,7 +12,12 @@ export function toAuthUser(user: User): AuthUser {
     uid: user.uid,
     email: user.email,
     emailVerified: user.emailVerified,
-    provider: providerIds.includes('google.com') ? 'google' : providerIds.includes('password') ? 'password' : 'other',
+    provider: providerIds.includes('google.com')
+      ? 'google'
+      : providerIds.includes('password')
+        ? 'password'
+        : 'other',
+    createdAt: toIso(user.metadata?.creationTime),
   };
 }
 
@@ -41,3 +46,9 @@ const FIREBASE_CODES: Record<string, AuthErrorCode> = {
   'auth/too-many-requests': 'too-many-requests',
   'auth/network-request-failed': 'network',
 };
+
+function toIso(date: string | undefined): string | null {
+  if (!date) return null;
+  const time = Date.parse(date);
+  return Number.isNaN(time) ? null : new Date(time).toISOString();
+}

@@ -56,7 +56,9 @@ export class MyAvatar {
   }
 
   chooseGallery(galleryId: string): Promise<string | null> {
-    return this.run(async () => this._avatar.set(await firstValueFrom(this.api.chooseGallery(galleryId))));
+    return this.run(async () =>
+      this._avatar.set(await firstValueFrom(this.api.chooseGallery(galleryId))),
+    );
   }
 
   upload(file: File): Promise<string | null> {

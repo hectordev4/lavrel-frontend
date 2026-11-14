@@ -11,7 +11,9 @@ export class AuthStore {
   private readonly _user = signal<AuthUser | null>(null);
   private readonly _status = signal<AuthStatus>('unknown');
   private resolveReady!: (user: AuthUser | null) => void;
-  private readonly readyPromise = new Promise<AuthUser | null>((resolve) => (this.resolveReady = resolve));
+  private readonly readyPromise = new Promise<AuthUser | null>(
+    (resolve) => (this.resolveReady = resolve),
+  );
 
   readonly user = this._user.asReadonly();
   readonly status = this._status.asReadonly();

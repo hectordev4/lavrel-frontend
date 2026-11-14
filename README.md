@@ -316,6 +316,14 @@ automatically* (`GET` / `PUT /api/currentuser/auto-sync`), *Sync now* and *Unlin
 (`DELETE /api/currentuser/accounts/{platform}/{externalId}`). Not connected: *Connect Steam*. Xbox and PlayStation
 show as coming soon.
 
+## First setup
+
+The first time a **new account** (created in the last 14 days, from Firebase's creation time) reaches Home, it goes to
+`/setup`, "Make it yours": the name Lavrel gave it, the generated avatar (*Change avatar* opens the avatar sheet) and an
+optional country. *Save and continue* saves only what changed; *Skip for now* keeps the defaults (the given name, the
+generated avatar, no country). Either way it's remembered on that device (`FirstSetup`) and not offered again;
+everything stays editable in Profile.
+
 ## Avatars
 
 Every robot is **[Pixelbot](https://www.dicebear.com/styles/pixelbot/) by DiceBear**, released under

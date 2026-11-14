@@ -28,23 +28,25 @@
           <app-playing-now-section />
         </div>
         <div class="secondary">
+          @defer (on viewport) {
+            <app-almost-there-section />
+          } @placeholder {
+            <div class="lazy" aria-hidden="true"></div>
+          } @error {
+            <p class="muted small">
+              This part of Home didn’t load. Pull to refresh or reopen Home.
+            </p>
+          }
 
-      @defer (on viewport) {
-        <app-almost-there-section />
-      } @placeholder {
-        <div class="lazy" aria-hidden="true"></div>
-      } @error {
-        <p class="muted small">This part of Home didn’t load. Pull to refresh or reopen Home.</p>
-      }
-
-      @defer (on viewport) {
-        <app-recent-unlocks-section />
-      } @placeholder {
-        <div class="lazy" aria-hidden="true"></div>
-      } @error {
-        <p class="muted small">This part of Home didn’t load. Pull to refresh or reopen Home.</p>
-      }
-
+          @defer (on viewport) {
+            <app-recent-unlocks-section />
+          } @placeholder {
+            <div class="lazy" aria-hidden="true"></div>
+          } @error {
+            <p class="muted small">
+              This part of Home didn’t load. Pull to refresh or reopen Home.
+            </p>
+          }
         </div>
       </div>
 

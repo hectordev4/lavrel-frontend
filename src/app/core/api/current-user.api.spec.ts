@@ -7,8 +7,12 @@ describe('CurrentUserApi', () => {
   it('loads the signed-in user', () => {
     TestBed.configureTestingModule({ providers: testProviders() });
     let name = '';
-    TestBed.inject(CurrentUserApi).get().subscribe((u) => (name = u.username ?? ''));
-    TestBed.inject(HttpTestingController).expectOne('/api/currentuser').flush({ username: 'SwiftOtter' });
+    TestBed.inject(CurrentUserApi)
+      .get()
+      .subscribe((u) => (name = u.username ?? ''));
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/currentuser')
+      .flush({ username: 'SwiftOtter' });
     expect(name).toBe('SwiftOtter');
   });
 });

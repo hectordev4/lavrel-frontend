@@ -1,5 +1,6 @@
 /** The kinds of shelf a public profile can have. Profile (to manage them) and Players (to show them) share these. */
-export type ShelfType = 'COLLECTION' | 'RECENTLY_PLAYED' | 'PLAYING' | 'COMPLETED' | 'ACHIEVEMENTS' | 'STATS';
+export type ShelfType =
+  'COLLECTION' | 'RECENTLY_PLAYED' | 'PLAYING' | 'COMPLETED' | 'ACHIEVEMENTS' | 'STATS';
 
 /** The name a shelf shows when its owner didn't give it a title. */
 export const SHELF_TYPE_NAMES: Record<ShelfType, string> = {

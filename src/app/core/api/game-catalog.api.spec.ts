@@ -8,7 +8,16 @@ describe('GameCatalogApi', () => {
 
   it('sends every filter, repeating tags and modes, and leaves empty ones out', () => {
     TestBed.inject(GameCatalogApi)
-      .search({ q: '  rogue ', tags: [1, 2], franchise: 5, modes: ['co-op', 'multiplayer'], system: 'PC', sort: 'rating', page: 2, size: 20 })
+      .search({
+        q: '  rogue ',
+        tags: [1, 2],
+        franchise: 5,
+        modes: ['co-op', 'multiplayer'],
+        system: 'PC',
+        sort: 'rating',
+        page: 2,
+        size: 20,
+      })
       .subscribe();
     const req = TestBed.inject(HttpTestingController).expectOne((r) => r.url === '/api/games');
     const p = req.request.params;

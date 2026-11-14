@@ -3,7 +3,9 @@ import { provideRouter } from '@angular/router';
 import { AppErrorHandler } from './app-error-handler';
 
 describe('AppErrorHandler', () => {
-  beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([]), AppErrorHandler] }));
+  beforeEach(() =>
+    TestBed.configureTestingModule({ providers: [provideRouter([]), AppErrorHandler] }),
+  );
 
   it('records the error with the address, and logs it once', () => {
     const handler = TestBed.inject(AppErrorHandler);
