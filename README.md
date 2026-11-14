@@ -52,6 +52,32 @@ before (the desktop wrappers use `display: contents`).
 The start-up splash is full screen on both; loading inside a page happens in the main area, so the sidebar and
 header stay. The desktop mockups live on the "Lavrel — Desktop" canvas.
 
+## Installable app and the Play Store
+
+Lavrel is a **PWA**: `public/manifest.webmanifest`, icons in `public/icons/` (rendered from `lavrel-icon.svg`,
+including a maskable one), and the Angular service worker (`ngsw-config.json`, production builds only). The service
+worker caches the app's own files, never API answers, and leaves `/.well-known/` alone. When a new version has
+downloaded, a line at the top offers to reload into it.
+
+The **Play Store** app is the same site wrapped as a **Trusted Web Activity (TWA)** with Google's Bubblewrap. Each
+Vercel deploy updates it; a store update is only needed to change the wrapper itself (icon, name, package).
+
+1. Deploy, then check the PWA: Chrome DevTools → Application → Manifest shows no errors, and *Install Lavrel*
+   appears.
+2. Install Bubblewrap (needs Node and a JDK; it can download both): `npm i -g @bubblewrap/cli`.
+3. In an empty folder **outside this repo**: `bubblewrap init --manifest https://<your-domain>/manifest.webmanifest`.
+   Choose the package id (for example `app.lavrel.twa`) and let it create a signing key. Keep the key and its
+   passwords safe and out of git: every future update must be signed with it.
+4. `bubblewrap build` produces an `.aab` (for the Play Store) and an `.apk` (to try on a phone).
+5. Get the SHA-256 fingerprint: `bubblewrap fingerprint list`, or, once uploaded, Play Console → Setup → App
+   signing (use **Google's app signing key** fingerprint if Play signs the app).
+6. Copy `docs/twa/assetlinks.example.json` to `public/.well-known/assetlinks.json`, fill in the package id and the
+   fingerprint (both keys if you test the local `.apk` too), commit and deploy. Check it at
+   `https://<your-domain>/.well-known/assetlinks.json`. Without it the app still opens, but with a browser bar.
+7. Upload the `.aab` in Play Console (internal testing first).
+
+The phone layout is what Android shows; the desktop layout only appears from 1024 px wide.
+
 ## Typed templates
 
 Templates never use `$any`. A state with several shapes is read once with `@let` and switched on, so Angular narrows
