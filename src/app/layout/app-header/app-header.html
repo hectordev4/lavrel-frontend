@@ -2,6 +2,12 @@
   <a class="home" routerLink="/home" aria-label="Lavrel home">
     <app-wordmark mode="still" />
   </a>
+  <app-search-box
+    class="desktop-search"
+    label="Search games"
+    placeholder="Search games, tags or franchises"
+    (submitted)="search($event)"
+  />
   @if (signedIn()) {
     <a class="avatar-link" routerLink="/profile" aria-label="Your profile">
       <app-avatar [avatar]="me.avatar()" [seed]="me.seed()" [initial]="me.initial()" />

@@ -9,9 +9,19 @@ import { ChangeDetectionStrategy, Component, input, output, signal } from '@angu
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <label class="box">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" />
+      </svg>
       <span class="visually-hidden">{{ label() }}</span>
-      <input #box type="search" autocomplete="off" spellcheck="false" [placeholder]="placeholder()" (input)="onInput(box.value)" />
+      <input
+        #box
+        type="search"
+        autocomplete="off"
+        spellcheck="false"
+        [placeholder]="placeholder()"
+        (input)="onInput(box.value)"
+        (keydown.enter)="submitted.emit(box.value)"
+      />
       @if (hasText()) {
         <button type="button" class="clear" aria-label="Clear search" (click)="clear(box)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18" /></svg>
@@ -26,6 +36,8 @@ export class SearchBox {
   readonly label = input.required<string>();
   readonly placeholder = input('');
   readonly typed = output<string>();
+  /** Enter pressed in the field. */
+  readonly submitted = output<string>();
   protected readonly hasText = signal(false);
 
   protected onInput(value: string): void {
