@@ -524,7 +524,7 @@ are example data.
 7. Profile, in several branches:
    - `feat/profile-account` ✓: header, display name, country, e-mail, sign out, delete account
    - `feat/profile-privacy` ✓: public profile switches
-   - `feat/profile-platforms` ✓: Steam (connected state, Sync now, automatic sync, unlink), Xbox and PlayStation soon
+   - `feat/profile-platforms` ✓: Steam (connected state, Sync now, automatic sync, unlink); Xbox and PlayStation later, after a separate discussion
    - `feat/profile-avatar` ✓: animated avatars and the avatar picker (generated, gallery, upload)
 8. Public profiles, in branches:
    - `feat/public-profile` ✓: the public profile page with its shelves
