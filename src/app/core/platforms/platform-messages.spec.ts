@@ -20,4 +20,13 @@ describe('platform messages', () => {
     expect(linkErrorMessage('account_linked_elsewhere')).toContain('unlink it there');
     expect(linkErrorMessage(null)).toContain('didn’t confirm');
   });
+
+  it('explains a link that took too long', () => {
+    expect(linkErrorMessage('link_expired')).toBe(
+      'The link took too long. Start again from your profile.',
+    );
+    expect(linkErrorMessage('invalid_link_state')).toBe(
+      'The link took too long. Start again from your profile.',
+    );
+  });
 });

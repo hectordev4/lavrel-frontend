@@ -24,7 +24,7 @@ export function linkErrorMessage(reason: string | null): string {
   if (reason && LINKED_ELSEWHERE_REASONS.includes(reason)) {
     return 'This Steam account is linked to another Lavrel account. Sign in with that account to use it, or unlink it there first.';
   }
-  if (reason === 'state_expired' || reason === 'invalid_state')
+  if (reason === 'link_expired' || reason === 'invalid_link_state')
     return 'The link took too long. Start again from your profile.';
   return 'Steam didn’t confirm the link. Try again in a moment.';
 }
