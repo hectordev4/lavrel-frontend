@@ -9,8 +9,8 @@
   </section>
 
   <section class="actions" aria-label="Sign in">
-    @if (flow.error(); as error) {
-      <p class="alert" role="alert">{{ error }}</p>
+    @if (alert(); as alert) {
+      <p class="alert" role="alert">{{ alert }}</p>
     }
 
     <app-google-button
