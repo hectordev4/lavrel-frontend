@@ -243,6 +243,27 @@ tabs show a sign-in screen.
 | `/search`, `/search/results`, `/search/filters`, `/games/:slug`, `/players`, `/players/:publicId` | ✓ | verify-email | ✓ |
 | `/games`, `/library`, `/assistant`, `/profile` | sign-in screen | verify-email | ✓ |
 
+**When the API refuses a signed-in person** (`core/auth/auth.interceptor.ts`). Firebase keeps players signed in
+on its own (local persistence, a fresh ID token every hour). Even so, the backend can answer 401, or 403
+`email_not_verified`:
+
+1. The call is sent again once with a fresh token: usually the token was just stale, and nobody notices.
+2. Firebase can't give a fresh token (password changed elsewhere, account disabled or deleted) → the session
+   ends with `session_expired`.
+3. Still 401 → the session ends with `signed_out`.
+4. Still 403 `email_not_verified` → the account is marked unverified and the verify page opens.
+
+Ending a session (`AuthSession.endSession(reason)`) signs out, clears the user and guest mode, and opens
+`/welcome?reason=…`. Several failing calls share one sign-out. Welcome shows the reason's text from
+`core/auth/sign-out-reason.ts` in its alert spot, and only for reasons it knows:
+
+| `reason` | Welcome says |
+|---|---|
+| `session_expired` | Your session has expired. Please sign in again. |
+| `signed_out` | You’ve been signed out. Please sign in again. |
+
+Guests get no retry and stay where they are; their page shows its own error.
+
 ## Search
 
 Typing in the Search tab suggests up to 5 games, 5 tags and 3 franchises after a 250 ms pause (2 characters
