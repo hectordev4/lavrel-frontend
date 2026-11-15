@@ -1,18 +1,28 @@
 <div class="sheet">
   <header>
     <h1>Filters</h1>
-    <a class="icon-btn" routerLink="/search/results" [queryParams]="backParams" aria-label="Close filters">
+    <a
+      class="icon-btn"
+      routerLink="/search/results"
+      [queryParams]="backParams"
+      aria-label="Close filters"
+    >
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18" /></svg>
     </a>
   </header>
 
   <main>
-    <fieldset>
+    <fieldset class="sort-group">
       <legend>Sort by</legend>
       <div class="radios">
         @for (option of sortOptions(); track option.value) {
           <label class="radio">
-            <input type="radio" name="sort" [checked]="option.value === currentSort()" (change)="setSort(option.value)" />
+            <input
+              type="radio"
+              name="sort"
+              [checked]="option.value === currentSort()"
+              (change)="setSort(option.value)"
+            />
             <span class="dot" aria-hidden="true"></span>
             <span>{{ option.label }}</span>
           </label>
@@ -34,7 +44,9 @@
       }
       <app-typeahead-field
         label="Add a tag"
-        [placeholder]="draft().tags.length >= maxTags ? 'You’ve picked 5 tags' : 'Add a tag, e.g. Pirates'"
+        [placeholder]="
+          draft().tags.length >= maxTags ? 'You’ve picked 5 tags' : 'Add a tag, e.g. Pirates'
+        "
         [options]="tagSearch.options()"
         [loading]="tagSearch.loading()"
         [failed]="tagSearch.failed()"
@@ -51,7 +63,11 @@
       </legend>
       <div class="chips">
         @for (mode of modes; track mode[0]) {
-          <app-chip [label]="mode[1]" [pressed]="draft().modes.includes(mode[0])" (activate)="toggleMode(mode[0])" />
+          <app-chip
+            [label]="mode[1]"
+            [pressed]="draft().modes.includes(mode[0])"
+            (activate)="toggleMode(mode[0])"
+          />
         }
       </div>
     </fieldset>
@@ -63,7 +79,11 @@
       </legend>
       <div class="chips">
         @for (system of systems; track system[0]) {
-          <app-chip [label]="system[1]" [pressed]="draft().system === system[0]" (activate)="toggleSystem(system[0])" />
+          <app-chip
+            [label]="system[1]"
+            [pressed]="draft().system === system[0]"
+            (activate)="toggleSystem(system[0])"
+          />
         }
       </div>
     </fieldset>
@@ -74,7 +94,11 @@
         <div class="creator">
           <span class="creator-label">{{ creator.label }}</span>
           @if (draft()[creator.key]; as chosen) {
-            <app-chip [label]="chosen.name" [removable]="true" (activate)="setCreator(creator.key, null)" />
+            <app-chip
+              [label]="chosen.name"
+              [removable]="true"
+              (activate)="setCreator(creator.key, null)"
+            />
           } @else {
             <app-typeahead-field
               [label]="'Choose a ' + creator.label.toLowerCase()"

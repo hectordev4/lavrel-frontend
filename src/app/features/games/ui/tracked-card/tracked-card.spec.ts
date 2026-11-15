@@ -43,7 +43,11 @@ describe('TrackedCard', () => {
 
   it('blurs hidden next achievements until tapped', () => {
     const fixture = render(
-      trackedGame(1, { nextAchievements: [{ achievementId: 9, name: 'Secret', iconUrl: null, hidden: true, globalPercent: 40 }] }),
+      trackedGame(1, {
+        nextAchievements: [
+          { achievementId: 9, name: 'Secret', iconUrl: null, hidden: true, globalPercent: 40 },
+        ],
+      }),
     );
     const el = fixture.nativeElement as HTMLElement;
     (el.querySelector('.reveal') as HTMLButtonElement).click();

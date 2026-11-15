@@ -16,17 +16,26 @@ describe('FiltersPage', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
 
-    const pc = [...el.querySelectorAll('app-chip button')].find((b) => b.textContent!.includes('PC')) as HTMLButtonElement;
+    const pc = [...el.querySelectorAll('app-chip button')].find((b) =>
+      b.textContent!.includes('PC'),
+    ) as HTMLButtonElement;
     pc.click();
     fixture.detectChanges();
     expect(navigate).not.toHaveBeenCalled();
 
-    const button = (label: string) => [...el.querySelectorAll('footer button')].find((b) => b.textContent!.includes(label)) as HTMLButtonElement;
+    const button = (label: string) =>
+      [...el.querySelectorAll('footer button')].find((b) =>
+        b.textContent!.includes(label),
+      ) as HTMLButtonElement;
     button('Show results').click();
-    expect(navigate).toHaveBeenCalledWith(['/search/results'], { queryParams: expect.objectContaining({ q: 'doom', system: 'PC', mode: ['co-op'] }) });
+    expect(navigate).toHaveBeenCalledWith(['/search/results'], {
+      queryParams: expect.objectContaining({ q: 'doom', system: 'PC', mode: ['co-op'] }),
+    });
 
     button('Clear all').click();
     button('Show results').click();
-    expect(navigate).toHaveBeenLastCalledWith(['/search/results'], { queryParams: expect.objectContaining({ q: 'doom', system: null, mode: null }) });
+    expect(navigate).toHaveBeenLastCalledWith(['/search/results'], {
+      queryParams: expect.objectContaining({ q: 'doom', system: null, mode: null }),
+    });
   });
 });

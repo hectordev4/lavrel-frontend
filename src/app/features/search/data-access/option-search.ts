@@ -1,6 +1,16 @@
 import { DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, Subject, catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { FilterOption } from '../models/filter-option.model';
 
 /**

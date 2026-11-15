@@ -26,7 +26,8 @@ export class HomeProfile {
     this._state.set({ kind: 'loading' });
     this.api.get().subscribe({
       next: (user) => this._state.set({ kind: 'ready', user }),
-      error: (error: unknown) => this._state.set({ kind: 'error', message: profileLoadMessage(error) }),
+      error: (error: unknown) =>
+        this._state.set({ kind: 'error', message: profileLoadMessage(error) }),
     });
   }
 }

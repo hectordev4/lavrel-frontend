@@ -16,7 +16,9 @@ export class AvatarApi {
   }
 
   galleryIds(): Observable<string[]> {
-    return this.http.get<{ galleryIds: string[] }>(`${this.base}/api/avatars/gallery`).pipe(map((r) => r.galleryIds));
+    return this.http
+      .get<{ galleryIds: string[] }>(`${this.base}/api/avatars/gallery`)
+      .pipe(map((r) => r.galleryIds));
   }
 
   chooseGallery(galleryId: string): Observable<ProfileAvatar> {
@@ -25,7 +27,9 @@ export class AvatarApi {
 
   /** The image file itself as the request body (JPG, PNG or GIF; animated GIFs are kept). */
   upload(file: File): Observable<ProfileAvatar> {
-    return this.http.put<ProfileAvatar>(this.url, file, { headers: new HttpHeaders({ 'Content-Type': file.type }) });
+    return this.http.put<ProfileAvatar>(this.url, file, {
+      headers: new HttpHeaders({ 'Content-Type': file.type }),
+    });
   }
 
   /** Back to the generated avatar. */

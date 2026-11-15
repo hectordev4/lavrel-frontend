@@ -8,12 +8,25 @@ describe('platform messages', () => {
   });
 
   it('explains Steam being down', () => {
-    expect(platformErrorMessage(new HttpErrorResponse({ status: 502 }))).toContain('Steam isn’t answering');
+    expect(platformErrorMessage(new HttpErrorResponse({ status: 502 }))).toContain(
+      'Steam isn’t answering',
+    );
   });
 
   it('explains a Steam account linked elsewhere', () => {
-    expect(linkErrorMessage('account_already_linked')).toContain('linked to another Lavrel account');
+    expect(linkErrorMessage('account_already_linked')).toContain(
+      'linked to another Lavrel account',
+    );
     expect(linkErrorMessage('account_linked_elsewhere')).toContain('unlink it there');
     expect(linkErrorMessage(null)).toContain('didn’t confirm');
+  });
+
+  it('explains a link that took too long', () => {
+    expect(linkErrorMessage('link_expired')).toBe(
+      'The link took too long. Start again from your profile.',
+    );
+    expect(linkErrorMessage('invalid_link_state')).toBe(
+      'The link took too long. Start again from your profile.',
+    );
   });
 });

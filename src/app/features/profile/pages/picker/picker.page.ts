@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { ShelfPicker } from '../../data-access/shelf-picker';
+import { PageHeader } from '../../../../shared/ui/page-header/page-header';
 
 /**
  * /profile/shelves/:shelfId/achievements — picks up to 12 achievements for an ACHIEVEMENTS shelf, from any of
@@ -9,7 +10,7 @@ import { ShelfPicker } from '../../data-access/shelf-picker';
 @Component({
   selector: 'app-picker-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterOutlet],
+  imports: [PageHeader, RouterOutlet],
   providers: [ShelfPicker],
   templateUrl: './picker.page.html',
   styleUrl: './picker.page.scss',

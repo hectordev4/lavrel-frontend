@@ -29,7 +29,9 @@ export class ShelvesApi {
 
   /** Every shelf id once, in the new order. */
   reorder(shelfIds: string[]): Observable<MyShelf[]> {
-    return this.http.put<{ shelves: MyShelf[] }>(this.url, { shelfIds }).pipe(map((r) => r.shelves));
+    return this.http
+      .put<{ shelves: MyShelf[] }>(this.url, { shelfIds })
+      .pipe(map((r) => r.shelves));
   }
 
   /** ACHIEVEMENTS shelves: up to 12 of my unlocks, in order. */

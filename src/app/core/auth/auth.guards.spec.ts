@@ -3,7 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { CanMatchFn, Router, UrlTree } from '@angular/router';
 import { fakeAuthProvider, signInAs } from '../../../testing/auth-testing';
 import { memberUser, testProviders, unverifiedUser } from '../../../testing/test-env';
-import { browseGuard, entryGuard, guestGuard, memberGuard, signedOutGuard, unverifiedGuard } from './auth.guards';
+import {
+  browseGuard,
+  entryGuard,
+  guestGuard,
+  memberGuard,
+  signedOutGuard,
+  unverifiedGuard,
+} from './auth.guards';
 import { GuestMode } from './guest-mode';
 import { AuthUser } from './models/auth-user.model';
 
@@ -11,7 +18,9 @@ async function run(guard: CanMatchFn): Promise<string | boolean> {
   const result: unknown = await runInInjectionContext(TestBed.inject(EnvironmentInjector), () =>
     (guard as (...args: unknown[]) => unknown)({}, []),
   );
-  return result instanceof UrlTree ? TestBed.inject(Router).serializeUrl(result) : (result as boolean);
+  return result instanceof UrlTree
+    ? TestBed.inject(Router).serializeUrl(result)
+    : (result as boolean);
 }
 
 describe('auth guards', () => {

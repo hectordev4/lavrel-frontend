@@ -31,7 +31,9 @@ export class CollectionsApi {
 
   /** New order: every collection exactly once. */
   reorder(ids: string[]): Observable<Collection[]> {
-    return this.http.put<{ collections: Collection[] }>(this.url, { collectionIds: ids }).pipe(map((r) => r.collections));
+    return this.http
+      .put<{ collections: Collection[] }>(this.url, { collectionIds: ids })
+      .pipe(map((r) => r.collections));
   }
 
   /** Only owned games (422 game_not_owned otherwise). Idempotent. */

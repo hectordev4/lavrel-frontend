@@ -3,13 +3,12 @@
   <h2>{{ game.title }}</h2>
 </div>
 
-<div class="segmented" role="group" aria-label="Order">
-  <button type="button" [class.on]="sort() === 'rarity'" [attr.aria-pressed]="sort() === 'rarity'" (click)="setSort('rarity')">Rarest first</button>
-  <button type="button" [class.on]="sort() === 'date'" [attr.aria-pressed]="sort() === 'date'" (click)="setSort('date')">Newest first</button>
-</div>
+<app-segmented label="Order" [options]="orders" [value]="sort()" (changed)="setSort($event)" />
 
 @if (picker.full()) {
-  <p class="note">You’ve picked {{ picker.max }}, the most a shelf shows. Remove one to pick another.</p>
+  <p class="note">
+    You’ve picked {{ picker.max }}, the most a shelf shows. Remove one to pick another.
+  </p>
 }
 
 @if (failed()) {
@@ -37,7 +36,10 @@
             <span class="name">{{ a.name }}</span>
             <span class="muted">
               @if (a.globalPercent !== null) {
-                <span class="share">{{ rare(a.globalPercent) ? 'Rare · ' : '' }}{{ a.globalPercent }}% of players</span>
+                <span class="share"
+                  >{{ rare(a.globalPercent) ? 'Rare · ' : '' }}{{ a.globalPercent }}% of
+                  players</span
+                >
               }
               @if (a.unlockedAt) {
                 · {{ a.unlockedAt | date: 'd MMM y' }}

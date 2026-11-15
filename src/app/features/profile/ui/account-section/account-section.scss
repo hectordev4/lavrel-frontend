@@ -1,0 +1,84 @@
+:host {
+  display: block;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.75rem;
+  padding: 0.625rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--line);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &.static {
+    cursor: default;
+  }
+
+  > svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex: none;
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+}
+
+.row-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.label {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.value {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.select {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--hairline);
+  background: var(--ink);
+  color: var(--line);
+  font: inherit;
+  font-size: 1rem;
+}

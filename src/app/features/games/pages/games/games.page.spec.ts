@@ -26,9 +26,14 @@ describe('GamesPage', () => {
   });
 
   it('shows counts per status and one card per game', async () => {
-    const el = await render([trackedGame(1, { pinPosition: 1 }), trackedGame(2, { status: 'BACKLOG' })]);
+    const el = await render([
+      trackedGame(1, { pinPosition: 1 }),
+      trackedGame(2, { status: 'BACKLOG' }),
+    ]);
     expect(el.textContent).toContain('2 tracked · 1 of 20 pinned to Home');
-    const chips = [...el.querySelectorAll('app-chip button')].map((b) => b.textContent!.replace(/\s+/g, ' ').trim());
+    const chips = [...el.querySelectorAll('app-chip button')].map((b) =>
+      b.textContent!.replace(/\s+/g, ' ').trim(),
+    );
     expect(chips).toEqual(['All 2', 'Playing 1', 'Backlog 1', 'Completed 0', 'Dropped 0']);
     expect(el.querySelectorAll('app-tracked-card').length).toBe(2);
   });

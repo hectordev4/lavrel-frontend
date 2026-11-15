@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { trackingErrorMessage } from './tracking-messages';
 
-const error = (status: number, code?: string) => new HttpErrorResponse({ status, error: code ? { error: code } : null });
+const error = (status: number, code?: string) =>
+  new HttpErrorResponse({ status, error: code ? { error: code } : null });
 
 describe('trackingErrorMessage', () => {
   it('explains a full Home', () => {

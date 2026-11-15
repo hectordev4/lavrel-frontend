@@ -1,10 +1,5 @@
 <main class="page picker">
-  <div class="heading">
-    <a class="icon-btn" routerLink="/profile" aria-label="Back to Profile">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-    </a>
-    <h1>Pick achievements</h1>
-  </div>
+  <app-page-header heading="Pick achievements" backLink="/profile" backLabel="Back to Profile" />
 
   @if (picker.error(); as e) {
     <p class="alert" role="alert">{{ e }}</p>
@@ -17,8 +12,16 @@
       <ol class="tray" aria-label="Your picks, in order">
         @for (p of picker.picked(); track p.achievementId) {
           <li>
-            <span class="text"><span class="name">{{ p.name }}</span><span class="muted">{{ p.gameTitle }}</span></span>
-            <button type="button" class="remove" [attr.aria-label]="'Remove ' + p.name" (click)="picker.remove(p.achievementId)">
+            <span class="text"
+              ><span class="name">{{ p.name }}</span
+              ><span class="muted">{{ p.gameTitle }}</span></span
+            >
+            <button
+              type="button"
+              class="remove"
+              [attr.aria-label]="'Remove ' + p.name"
+              (click)="picker.remove(p.achievementId)"
+            >
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18" /></svg>
             </button>
           </li>
@@ -31,11 +34,23 @@
       <p class="alert" role="alert">{{ e }}</p>
     }
     <div class="actions">
-      <button type="button" class="count" [attr.aria-expanded]="trayOpen()" (click)="trayOpen.set(!trayOpen())">
+      <button
+        type="button"
+        class="count"
+        [attr.aria-expanded]="trayOpen()"
+        (click)="trayOpen.set(!trayOpen())"
+      >
         {{ picker.count() }} of {{ picker.max }} picked
-        <svg viewBox="0 0 24 24" aria-hidden="true" [class.up]="trayOpen()"><path d="M6 15l6-6 6 6" /></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true" [class.up]="trayOpen()">
+          <path d="M6 15l6-6 6 6" />
+        </svg>
       </button>
-      <button type="button" class="btn btn-primary save" [disabled]="!picker.loaded() || picker.saving() || !picker.dirty()" (click)="save()">
+      <button
+        type="button"
+        class="btn btn-primary save"
+        [disabled]="!picker.loaded() || picker.saving() || !picker.dirty()"
+        (click)="save()"
+      >
         {{ picker.saving() ? 'Saving…' : 'Save' }}
       </button>
     </div>

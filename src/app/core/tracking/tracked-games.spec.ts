@@ -72,7 +72,9 @@ describe('TrackedGames', () => {
   it('returns a message when the backend refuses', async () => {
     const done = store.pin(3);
     await Promise.resolve();
-    http.expectOne('/api/currentuser/tracked/3/pin').flush({ error: 'quick_access_full' }, { status: 409, statusText: 'Conflict' });
+    http
+      .expectOne('/api/currentuser/tracked/3/pin')
+      .flush({ error: 'quick_access_full' }, { status: 409, statusText: 'Conflict' });
     expect(await done).toContain('20 pinned games');
   });
 
@@ -80,5 +82,22 @@ describe('TrackedGames', () => {
     signInAs(null);
     expect(store.games()).toEqual([]);
     expect(store.loadState()).toBe('idle');
+  });
+});
+
+describe('TrackedGames overlapping reloads', () => {
+  it('keeps the newest answer when an older reload finishes last', async () => {
+    TestBed.configureTestingModule({ providers: testProviders(fakeAuthProvider) });
+    signInAs(memberUser());
+    const store = TestBed.inject(TrackedGames);
+    const http = TestBed.inject(HttpTestingController);
+    const older = store.reload();
+    const newer = store.reload();
+    const [oldReq, newReq] = http.match('/api/currentuser/tracked');
+    newReq.flush({ games: [card(2)] });
+    await newer;
+    oldReq.flush({ games: [card(1)] });
+    await older;
+    expect(store.games().map((g) => g.gameId)).toEqual([2]);
   });
 });

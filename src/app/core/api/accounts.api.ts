@@ -27,7 +27,9 @@ export class AccountsApi {
 
   /** Removes the link; the games stay in the catalog, the member's copy of them goes. */
   unlink(account: PlatformAccount): Observable<void> {
-    return this.http.delete<void>(`${this.url}/${account.platform.toLowerCase()}/${encodeURIComponent(account.externalId)}`);
+    return this.http.delete<void>(
+      `${this.url}/${account.platform.toLowerCase()}/${encodeURIComponent(account.externalId)}`,
+    );
   }
 
   /** Automatic background sync of every linked account (on by default). */
@@ -36,7 +38,9 @@ export class AccountsApi {
   }
 
   setAutoSync(enabled: boolean): Observable<boolean> {
-    return this.http.put<{ enabled: boolean }>(`${this.autoSyncUrl}`, { enabled }).pipe(map((r) => r.enabled));
+    return this.http
+      .put<{ enabled: boolean }>(`${this.autoSyncUrl}`, { enabled })
+      .pipe(map((r) => r.enabled));
   }
 
   sync(account: PlatformAccount): Observable<SyncResult> {

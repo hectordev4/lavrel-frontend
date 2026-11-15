@@ -16,11 +16,17 @@ describe('ProfilePage', () => {
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     // The page and the shared avatar both read the current user.
-    http.match('/api/currentuser').forEach((r) => r.flush({ username: 'SwiftOtter', publicId: '4829103755210846', countryId: 2 }));
+    http
+      .match('/api/currentuser')
+      .forEach((r) =>
+        r.flush({ username: 'SwiftOtter', publicId: '4829103755210846', countryId: 2 }),
+      );
     http.expectOne('/api/countries').flush({ countries: [{ id: 2, code: 'ES', name: 'Spain' }] });
     await settle();
     fixture.detectChanges();
-    http.match(() => true).forEach((r) => r.flush(r.request.url.endsWith('accounts') ? { accounts: [] } : {}));
+    http
+      .match(() => true)
+      .forEach((r) => r.flush(r.request.url.endsWith('accounts') ? { accounts: [] } : {}));
     await settle();
     fixture.detectChanges();
 
@@ -41,11 +47,15 @@ describe('ProfilePage copy button', () => {
     const fixture = TestBed.createComponent(ProfilePage);
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
-    http.match('/api/currentuser').forEach((r) => r.flush({ username: 'SwiftOtter', publicId: '4829103755210846' }));
+    http
+      .match('/api/currentuser')
+      .forEach((r) => r.flush({ username: 'SwiftOtter', publicId: '4829103755210846' }));
     http.expectOne('/api/countries').flush({ countries: [] });
     await settle();
     fixture.detectChanges();
-    http.match(() => true).forEach((r) => r.flush(r.request.url.endsWith('accounts') ? { accounts: [] } : {}));
+    http
+      .match(() => true)
+      .forEach((r) => r.flush(r.request.url.endsWith('accounts') ? { accounts: [] } : {}));
     await settle();
     fixture.detectChanges();
 
@@ -57,7 +67,9 @@ describe('ProfilePage copy button', () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('4829103755210846');
     expect(el.querySelector('.copy .tick')).not.toBeNull();
     expect(el.querySelector('.copy .copy-btn')).not.toBeNull();
-    expect(el.querySelector('[role="status"].visually-hidden')!.textContent).toContain('Player id copied');
+    expect(el.querySelector('[role="status"].visually-hidden')!.textContent).toContain(
+      'Player id copied',
+    );
 
     await vi.advanceTimersByTimeAsync(1000);
     fixture.detectChanges();

@@ -22,3 +22,8 @@ export const SORT_LABELS: Record<GameSort, string> = {
   newest: 'Newest',
   name: 'Name, A to Z',
 };
+
+/** True for a sort search knows, so a value read from the page can be trusted. */
+export function isGameSort(value: string): value is GameSort {
+  return value in SORT_LABELS;
+}

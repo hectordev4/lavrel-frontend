@@ -4,7 +4,12 @@ import { testProviders } from '../../../testing/test-env';
 import { AccountsApi } from './accounts.api';
 import { PlatformAccount } from './models/platform-account.model';
 
-const steam: PlatformAccount = { platform: 'STEAM', externalId: '7656', displayName: 'Otter', lastSyncedAt: null };
+const steam: PlatformAccount = {
+  platform: 'STEAM',
+  externalId: '7656',
+  displayName: 'Otter',
+  lastSyncedAt: null,
+};
 
 describe('AccountsApi', () => {
   let api: AccountsApi;
@@ -36,7 +41,9 @@ describe('AccountsApi', () => {
 
   it('syncs and unlinks by platform and external id', () => {
     api.sync(steam).subscribe();
-    http.expectOne('/api/currentuser/accounts/steam/7656/sync').flush({ gamesSynced: 1, gamesSkipped: 0, unlocksRecorded: 0, gamesPending: 0 });
+    http
+      .expectOne('/api/currentuser/accounts/steam/7656/sync')
+      .flush({ gamesSynced: 1, gamesSkipped: 0, unlocksRecorded: 0, gamesPending: 0 });
     api.unlink(steam).subscribe();
     const del = http.expectOne('/api/currentuser/accounts/steam/7656');
     expect(del.request.method).toBe('DELETE');

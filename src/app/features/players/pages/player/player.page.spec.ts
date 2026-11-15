@@ -1,7 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { testProviders } from '../../../../../testing/test-env';
 import { PlayerPage } from './player.page';
 
@@ -36,5 +36,22 @@ describe('PlayerPage', () => {
     req.flush({ error: 'profile_not_found' }, { status: 404, statusText: 'x' });
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Profile not found');
+  });
+});
+
+describe('PlayerPage switching profiles', () => {
+  it('cancels the old request when the id changes, so a late answer never wins', () => {
+    const ids = new BehaviorSubject(convertToParamMap({ publicId: '1' }));
+    TestBed.configureTestingModule({ providers: testProviders({ provide: ActivatedRoute, useValue: { paramMap: ids } }) });
+    const fixture = TestBed.createComponent(PlayerPage);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    const first = http.expectOne('/api/users/1');
+    ids.next(convertToParamMap({ publicId: '2' }));
+    const second = http.expectOne('/api/users/2');
+    expect(first.cancelled).toBe(true);
+    second.flush({ profile: { publicId: '2', username: 'Second', memberSince: null, country: null, platforms: null }, shelves: [] });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h1').textContent).toBe('Second');
   });
 });

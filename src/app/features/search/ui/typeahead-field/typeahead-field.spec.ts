@@ -36,7 +36,9 @@ describe('TypeaheadField', () => {
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     expect(el.querySelector('.clear')).not.toBeNull();
-    el.querySelector('.field-wrap')!.dispatchEvent(new FocusEvent('focusout', { relatedTarget: null }));
+    el.querySelector('.field-wrap')!.dispatchEvent(
+      new FocusEvent('focusout', { relatedTarget: null }),
+    );
     fixture.detectChanges();
     expect(el.querySelector('.options')).toBeNull();
   });

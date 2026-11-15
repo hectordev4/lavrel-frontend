@@ -30,14 +30,26 @@
         @if (autoSyncError(); as e) {
           <p class="alert" role="alert">{{ e }}</p>
         }
-        <button type="button" class="btn btn-secondary" [disabled]="accounts.syncing() !== null" (click)="syncNow()">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          [disabled]="accounts.syncing() !== null"
+          (click)="syncNow()"
+        >
           @if (accounts.syncing(); as p) {
             Syncing… {{ p.gamesSynced }} games
           } @else {
             Sync now
           }
         </button>
-        <button type="button" class="link-btn unlink" [disabled]="accounts.syncing() !== null" (click)="unlink()">Unlink Steam</button>
+        <button
+          type="button"
+          class="link-btn unlink"
+          [disabled]="accounts.syncing() !== null"
+          (click)="unlink()"
+        >
+          Unlink Steam
+        </button>
       </div>
     } @else {
       <div class="card">
@@ -49,16 +61,27 @@
           </span>
         </div>
         <p class="muted small">
-          Sign in on Steam’s own page and we bring in your games, playtime and achievements. Your Steam game details
-          need to be public.
+          Sign in on Steam’s own page and we bring in your games, playtime and achievements. Your
+          Steam game details need to be public.
         </p>
-        <button type="button" class="btn btn-primary" [disabled]="accounts.linking()" (click)="connect()">Connect Steam</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="accounts.linking()"
+          (click)="connect()"
+        >
+          Connect Steam
+        </button>
       </div>
     }
   } @else if (accounts.loadState() === 'error') {
-    <button type="button" class="btn btn-secondary" (click)="accounts.reload()">Your platforms didn’t load. Try again</button>
+    <button type="button" class="btn btn-secondary" (click)="accounts.reload()">
+      Your platforms didn’t load. Try again
+    </button>
   }
 
   <div class="soon"><span class="name">Xbox</span><span class="muted small">Coming soon</span></div>
-  <div class="soon"><span class="name">PlayStation</span><span class="muted small">Coming soon</span></div>
+  <div class="soon">
+    <span class="name">PlayStation</span><span class="muted small">Coming soon</span>
+  </div>
 </section>

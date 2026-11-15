@@ -12,7 +12,9 @@ import { map } from 'rxjs';
 })
 export class PlaceholderPage {
   protected readonly data = toSignal(
-    inject(ActivatedRoute).data.pipe(map((d) => ({ title: d['heading'] as string, branch: d['branch'] as string }))),
+    inject(ActivatedRoute).data.pipe(
+      map((d) => ({ title: d['heading'] as string, branch: d['branch'] as string })),
+    ),
     { requireSync: true },
   );
 }

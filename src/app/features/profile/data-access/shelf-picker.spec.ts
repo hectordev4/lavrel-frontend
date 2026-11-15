@@ -5,7 +5,14 @@ import { ShelfPicker } from './shelf-picker';
 
 const settle = () => new Promise((resolve) => setTimeout(resolve));
 const game = { gameId: 7, title: 'Hades', slug: 'hades' };
-const unlock = (id: number) => ({ achievementId: id, name: `A${id}`, iconUrl: null, hidden: false, globalPercent: 10, unlockedAt: null });
+const unlock = (id: number) => ({
+  achievementId: id,
+  name: `A${id}`,
+  iconUrl: null,
+  hidden: false,
+  globalPercent: 10,
+  unlockedAt: null,
+});
 
 describe('ShelfPicker', () => {
   let picker: ShelfPicker;
@@ -25,7 +32,18 @@ describe('ShelfPicker', () => {
           position: 1,
           collectionId: null,
           achievementIds: [10],
-          achievements: [{ achievementId: 10, name: 'Phoenix Rising', iconUrl: null, gameId: 7, gameTitle: 'Hades', gameSlug: 'hades', globalPercent: 2.3, unlockedAt: null }],
+          achievements: [
+            {
+              achievementId: 10,
+              name: 'Phoenix Rising',
+              iconUrl: null,
+              gameId: 7,
+              gameTitle: 'Hades',
+              gameSlug: 'hades',
+              globalPercent: 2.3,
+              unlockedAt: null,
+            },
+          ],
         },
       ],
     });

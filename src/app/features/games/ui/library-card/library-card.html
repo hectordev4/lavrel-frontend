@@ -18,7 +18,9 @@
     </span>
     @if (game().total > 0) {
       @if (percent() === 100) {
-        <span class="perfect"><app-perfect-diamond label="" /><span class="number">100%</span></span>
+        <span class="perfect"
+          ><app-perfect-diamond label="" /><span class="number">100%</span></span
+        >
       } @else {
         <span class="number">{{ percent() }}%</span>
       }

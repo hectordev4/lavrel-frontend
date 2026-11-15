@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Avatar } from '../../../../shared/ui/avatar/avatar';
+import { formatPlayerId } from '../../../../shared/utils/player-id';
 import { PublicProfileHeader } from '../../models/public-profile.model';
 
 /** A player in search results: avatar, name, player id and country, linking to their profile. */
@@ -15,5 +16,5 @@ export class PlayerRow {
   readonly player = input.required<PublicProfileHeader>();
 
   protected readonly id = computed(() => String(this.player().publicId));
-  protected readonly spacedId = computed(() => this.id().replace(/(\d{4})(?=\d)/g, '$1 '));
+  protected readonly spacedId = computed(() => formatPlayerId(this.id()));
 }

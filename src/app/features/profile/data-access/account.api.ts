@@ -11,7 +11,9 @@ export class AccountApi {
   private readonly base = inject(APP_ENV).apiBaseUrl;
 
   countries(): Observable<Country[]> {
-    return this.http.get<{ countries: Country[] }>(`${this.base}/api/countries`).pipe(map((r) => r.countries));
+    return this.http
+      .get<{ countries: Country[] }>(`${this.base}/api/countries`)
+      .pipe(map((r) => r.countries));
   }
 
   /** PATCH /api/currentuser/username. Names don't need to be unique: the public id tells players apart. */
@@ -26,6 +28,8 @@ export class AccountApi {
 
   /** Deletes the account and everything in it. The backend asks for confirm=true. */
   deleteAccount(): Observable<void> {
-    return this.http.delete<void>(`${this.base}/api/currentuser`, { params: new HttpParams().set('confirm', 'true') });
+    return this.http.delete<void>(`${this.base}/api/currentuser`, {
+      params: new HttpParams().set('confirm', 'true'),
+    });
   }
 }

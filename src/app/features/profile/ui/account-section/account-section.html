@@ -1,0 +1,67 @@
+<section aria-labelledby="account-title">
+  <h2 id="account-title">Account</h2>
+  <button type="button" class="row" (click)="open('name')">
+    <span class="row-text">
+      <span class="label">Display name</span>
+      <span class="value">{{ account.user()?.username }}</span>
+      <span class="note">Doesn’t need to be unique. Your id tells you apart.</span>
+    </span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+  </button>
+  <button type="button" class="row" (click)="open('country')">
+    <span class="row-text">
+      <span class="label">Country</span>
+      <span class="value">{{ account.country()?.name ?? 'Not set' }}</span>
+      <span class="note">Only used for country achievement stats.</span>
+    </span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+  </button>
+  <div class="row static">
+    <span class="row-text">
+      <span class="label">E-mail</span>
+      <span class="value">{{ email() }}</span>
+      <span class="note">Only you can see this.</span>
+    </span>
+  </div>
+</section>
+
+<app-modal heading="Display name" [open]="sheet() === 'name'" (closed)="sheet.set(null)">
+  <form class="form" (submit)="$event.preventDefault(); saveName(name.value)">
+    <label class="field">
+      <span>Name others see</span>
+      <input
+        #name
+        type="text"
+        maxlength="20"
+        autocomplete="nickname"
+        [value]="account.user()?.username ?? ''"
+        (input)="formError.set(null)"
+      />
+    </label>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="busy()">Save</button>
+  </form>
+</app-modal>
+
+<app-modal heading="Country" [open]="sheet() === 'country'" (closed)="sheet.set(null)">
+  <form class="form" (submit)="$event.preventDefault(); saveCountry(country.value)">
+    <label class="field">
+      <span>Your country</span>
+      <select #country class="select">
+        <option value="">Not set</option>
+        @for (c of account.countries(); track c.id) {
+          <option [value]="c.id" [selected]="c.id === account.user()?.countryId">
+            {{ c.name }}
+          </option>
+        }
+      </select>
+    </label>
+    <p class="note">It’s only used to show how players in your country do on each achievement.</p>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="busy()">Save</button>
+  </form>
+</app-modal>

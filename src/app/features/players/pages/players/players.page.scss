@@ -6,54 +6,6 @@
   padding-top: 0.5rem;
 }
 
-.heading {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-
-  h1 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-}
-
-.box {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  min-height: 3.25rem;
-  padding: 0 0.875rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--hairline);
-  background: var(--ink-raised);
-
-  &:focus-within {
-    border-color: var(--unlock);
-  }
-
-  svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    flex: none;
-    fill: none;
-    stroke: var(--muted);
-    stroke-width: 2;
-    stroke-linecap: round;
-  }
-
-  input {
-    flex: 1;
-    min-width: 0;
-    border: 0;
-    outline: none;
-    background: transparent;
-    color: var(--line);
-    font: inherit;
-    font-size: 1rem;
-  }
-}
-
 .hint {
   margin: 0;
   color: var(--muted);

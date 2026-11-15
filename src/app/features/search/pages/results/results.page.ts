@@ -7,12 +7,24 @@ import { TrackingStatus } from '../../../../core/api/models/tracking-status.mode
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { TrackedGames } from '../../../../core/tracking/tracked-games';
 import { Chip } from '../../../../shared/ui/chip/chip';
+import { FiltersPage } from '../filters/filters.page';
 import { TrackControl } from '../../../../shared/ui/track-control/track-control';
-import { MODE_LABELS, SORT_LABELS, SYSTEM_LABELS } from '../../data-access/search-labels';
-import { activeFilterCount, emptyFilters, parseFilters, toQueryParams } from '../../data-access/search-query';
+import {
+  MODE_LABELS,
+  SORT_LABELS,
+  SYSTEM_LABELS,
+  isGameSort,
+} from '../../data-access/search-labels';
+import {
+  activeFilterCount,
+  emptyFilters,
+  parseFilters,
+  toQueryParams,
+} from '../../data-access/search-query';
 import { SearchResults } from '../../data-access/search-results';
 import { SearchFilters } from '../../models/search-filters.model';
 import { ResultCard } from '../../ui/result-card/result-card';
+import { SelectField } from '../../../../shared/ui/select-field/select-field';
 
 /** One removable chip for an active filter. */
 interface ActiveChip {
@@ -25,7 +37,7 @@ interface ActiveChip {
 @Component({
   selector: 'app-results-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Chip, ResultCard, TrackControl],
+  imports: [FiltersPage, SelectField, RouterLink, Chip, ResultCard, TrackControl],
   providers: [SearchResults],
   templateUrl: './results.page.html',
   styleUrl: './results.page.scss',
@@ -40,7 +52,9 @@ export class ResultsPage {
 
   protected readonly filterCount = computed(() => activeFilterCount(this.filters()));
   protected readonly queryParams = computed(() => toQueryParams(this.filters()));
-  protected readonly sort = computed<GameSort>(() => this.filters().sort ?? (this.filters().q ? 'relevance' : 'popular'));
+  protected readonly sort = computed<GameSort>(
+    () => this.filters().sort ?? (this.filters().q ? 'relevance' : 'popular'),
+  );
   protected readonly sortOptions = computed(() =>
     (Object.keys(SORT_LABELS) as GameSort[])
       .filter((s) => s !== 'relevance' || this.filters().q)
@@ -72,7 +86,7 @@ export class ResultsPage {
   }
 
   protected changeSort(value: string): void {
-    this.apply({ ...this.filters(), sort: value as GameSort });
+    if (isGameSort(value)) this.apply({ ...this.filters(), sort: value });
   }
 }
 
@@ -82,12 +96,20 @@ function chipsFor(f: SearchFilters): ActiveChip[] {
     label: tag.name,
     without: { ...f, tags: f.tags.filter((t) => t.id !== tag.id) },
   }));
-  if (f.franchise) chips.push({ key: 'franchise', label: f.franchise.name, without: { ...f, franchise: null } });
-  if (f.developer) chips.push({ key: 'developer', label: f.developer.name, without: { ...f, developer: null } });
-  if (f.publisher) chips.push({ key: 'publisher', label: f.publisher.name, without: { ...f, publisher: null } });
+  if (f.franchise)
+    chips.push({ key: 'franchise', label: f.franchise.name, without: { ...f, franchise: null } });
+  if (f.developer)
+    chips.push({ key: 'developer', label: f.developer.name, without: { ...f, developer: null } });
+  if (f.publisher)
+    chips.push({ key: 'publisher', label: f.publisher.name, without: { ...f, publisher: null } });
   for (const mode of f.modes) {
-    chips.push({ key: `mode-${mode}`, label: MODE_LABELS[mode], without: { ...f, modes: f.modes.filter((m) => m !== mode) } });
+    chips.push({
+      key: `mode-${mode}`,
+      label: MODE_LABELS[mode],
+      without: { ...f, modes: f.modes.filter((m) => m !== mode) },
+    });
   }
-  if (f.system) chips.push({ key: 'system', label: SYSTEM_LABELS[f.system], without: { ...f, system: null } });
+  if (f.system)
+    chips.push({ key: 'system', label: SYSTEM_LABELS[f.system], without: { ...f, system: null } });
   return chips;
 }

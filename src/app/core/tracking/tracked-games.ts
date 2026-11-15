@@ -4,6 +4,7 @@ import { TrackedGame } from '../api/models/tracked-game.model';
 import { TrackingStatus } from '../api/models/tracking-status.model';
 import { TrackingApi } from '../api/tracking.api';
 import { AuthStore } from '../auth/auth.store';
+import { LatestOnly } from '../util/latest-only';
 import { trackingErrorMessage } from './tracking-messages';
 
 export const MAX_PINNED = 20;
@@ -22,6 +23,7 @@ export class TrackedGames {
   private readonly _games = signal<TrackedGame[]>([]);
   private readonly _loadState = signal<LoadState>('idle');
   private readonly _busy = signal<ReadonlySet<number>>(new Set());
+  private readonly latest = new LatestOnly();
 
   readonly games = this._games.asReadonly();
   readonly loadState = this._loadState.asReadonly();
@@ -42,16 +44,20 @@ export class TrackedGames {
 
   /** Loads the list unless it is already loaded or loading. */
   ensureLoaded(): void {
-    if (this.auth.isVerified() && (this._loadState() === 'idle' || this._loadState() === 'error')) this.reload();
+    if (this.auth.isVerified() && (this._loadState() === 'idle' || this._loadState() === 'error'))
+      this.reload();
   }
 
   async reload(): Promise<void> {
+    const isLatest = this.latest.start();
     this._loadState.set('loading');
     try {
-      this._games.set(await firstValueFrom(this.api.list()));
+      const games = await firstValueFrom(this.api.list());
+      if (!isLatest()) return;
+      this._games.set(games);
       this._loadState.set('ready');
     } catch {
-      this._loadState.set('error');
+      if (isLatest()) this._loadState.set('error');
     }
   }
 
@@ -60,7 +66,9 @@ export class TrackedGames {
     return this.run(gameId, async () => {
       const card = await firstValueFrom(this.api.track(gameId, status));
       this._games.update((games) =>
-        games.some((g) => g.gameId === gameId) ? games.map((g) => (g.gameId === gameId ? card : g)) : [...games, card],
+        games.some((g) => g.gameId === gameId)
+          ? games.map((g) => (g.gameId === gameId ? card : g))
+          : [...games, card],
       );
     });
   }
@@ -73,7 +81,8 @@ export class TrackedGames {
   }
 
   pin(gameId: number): Promise<string | null> {
-    if (this.pinnedCount() >= MAX_PINNED) return Promise.resolve('Home already has 20 pinned games. Unpin one first.');
+    if (this.pinnedCount() >= MAX_PINNED)
+      return Promise.resolve('Home already has 20 pinned games. Unpin one first.');
     return this.run(gameId, async () => {
       const pinned = await firstValueFrom(this.api.pin(gameId));
       this.applyPins(pinned);
@@ -101,7 +110,9 @@ export class TrackedGames {
 
   private applyPins(pinned: TrackedGame[]): void {
     const positions = new Map(pinned.map((g) => [g.gameId, g.pinPosition]));
-    this._games.update((games) => games.map((g) => ({ ...g, pinPosition: positions.get(g.gameId) ?? null })));
+    this._games.update((games) =>
+      games.map((g) => ({ ...g, pinPosition: positions.get(g.gameId) ?? null })),
+    );
   }
 
   private async run(gameId: number, work: () => Promise<void>): Promise<string | null> {
@@ -129,5 +140,7 @@ function renumberPins(games: TrackedGame[]): TrackedGame[] {
     .filter((g) => g.pinPosition !== null)
     .sort((a, b) => (a.pinPosition ?? 0) - (b.pinPosition ?? 0))
     .map((g) => g.gameId);
-  return games.map((g) => (g.pinPosition === null ? g : { ...g, pinPosition: order.indexOf(g.gameId) + 1 }));
+  return games.map((g) =>
+    g.pinPosition === null ? g : { ...g, pinPosition: order.indexOf(g.gameId) + 1 },
+  );
 }

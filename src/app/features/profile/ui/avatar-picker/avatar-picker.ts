@@ -1,9 +1,18 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AvatarApi } from '../../../../core/api/avatar.api';
 import { ProfileAvatar } from '../../../../core/api/models/profile-avatar.model';
 import { MyAvatar } from '../../../../core/profile/my-avatar';
 import { Avatar } from '../../../../shared/ui/avatar/avatar';
+import { Segmented } from '../../../../shared/ui/segmented/segmented';
 
 type Source = 'GENERATED' | 'GALLERY' | 'UPLOADED';
 
@@ -16,7 +25,7 @@ const MAX_GIF_BYTES = 1024 * 1024;
 @Component({
   selector: 'app-avatar-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Avatar],
+  imports: [Segmented, Avatar],
   templateUrl: './avatar-picker.html',
   styleUrl: './avatar-picker.scss',
 })
@@ -45,7 +54,11 @@ export class AvatarPicker {
       case 'GALLERY':
         return { kind: 'GALLERY', galleryId: this.galleryChoice(), imageUrl: null };
       case 'UPLOADED':
-        return { kind: 'UPLOADED', galleryId: null, imageUrl: this.filePreview() ?? this.me.avatar()?.imageUrl ?? null };
+        return {
+          kind: 'UPLOADED',
+          galleryId: null,
+          imageUrl: this.filePreview() ?? this.me.avatar()?.imageUrl ?? null,
+        };
       default:
         return { kind: 'GENERATED', galleryId: null, imageUrl: null };
     }
@@ -60,7 +73,11 @@ export class AvatarPicker {
   constructor() {
     void firstValueFrom(this.api.galleryIds())
       .then((ids) => this.galleryIds.set(ids))
-      .catch(() => this.error.set('The gallery didn’t load. You can still use the generated avatar or upload one.'));
+      .catch(() =>
+        this.error.set(
+          'The gallery didn’t load. You can still use the generated avatar or upload one.',
+        ),
+      );
     inject(DestroyRef).onDestroy(() => this.revokePreview());
   }
 
@@ -73,7 +90,9 @@ export class AvatarPicker {
       return;
     }
     if (file && file.size > (file.type === 'image/gif' ? MAX_GIF_BYTES : MAX_BYTES)) {
-      this.error.set(file.type === 'image/gif' ? 'GIFs can be up to 1 MB.' : 'Pictures can be up to 2 MB.');
+      this.error.set(
+        file.type === 'image/gif' ? 'GIFs can be up to 1 MB.' : 'Pictures can be up to 2 MB.',
+      );
       input.value = '';
       return;
     }

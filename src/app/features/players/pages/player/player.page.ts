@@ -1,16 +1,28 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { map } from 'rxjs';
+import { Subject, catchError, map, of, startWith, switchMap } from 'rxjs';
 import { Avatar } from '../../../../shared/ui/avatar/avatar';
+import { formatPlayerId } from '../../../../shared/utils/player-id';
 import { PlayersApi } from '../../data-access/players.api';
 import { memberSinceLabel } from '../../data-access/shelf-labels';
 import { PlayerPageState } from '../../models/player-page-state.model';
 import { Shelf } from '../../ui/shelf/shelf';
 
-const PLATFORM_NAMES: Record<string, string> = { STEAM: 'Steam', XBOX: 'Xbox', PLAYSTATION: 'PlayStation' };
+const PLATFORM_NAMES: Record<string, string> = {
+  STEAM: 'Steam',
+  XBOX: 'Xbox',
+  PLAYSTATION: 'PlayStation',
+};
 
 /** /players/:publicId: someone's public profile. Open to everyone; private profiles look like unknown ones. */
 @Component({
@@ -23,7 +35,6 @@ const PLATFORM_NAMES: Record<string, string> = { STEAM: 'Steam', XBOX: 'Xbox', P
 export class PlayerPage {
   private readonly api = inject(PlayersApi);
   protected readonly state = signal<PlayerPageState>({ kind: 'loading' });
-  private publicId = '';
 
   protected readonly header = computed(() => {
     const s = this.state();
@@ -33,17 +44,42 @@ export class PlayerPage {
     const s = this.state();
     return s.kind === 'ready' ? s.profile.shelves : [];
   });
-  protected readonly playerId = computed(() => String(this.header()?.publicId ?? '').replace(/(\d{4})(?=\d)/g, '$1 '));
+  protected readonly playerId = computed(() => formatPlayerId(this.header()?.publicId));
   protected readonly joined = computed(() => memberSinceLabel(this.header()?.memberSince ?? null));
   protected readonly platformName = (p: string) => PLATFORM_NAMES[p] ?? p;
 
+  /** Asks for the current profile again (Try again). */
+  private readonly retry = new Subject<void>();
+
   constructor() {
-    inject(ActivatedRoute)
-      .paramMap.pipe(map((p) => p.get('publicId') ?? ''), takeUntilDestroyed())
-      .subscribe((id) => {
-        this.publicId = id;
-        this.load();
-      });
+    // One request at a time: a new id (or Try again) cancels the request still running, so an older answer
+    // can never replace the profile of the address you are on.
+    const publicId$ = inject(ActivatedRoute).paramMap.pipe(map((p) => p.get('publicId') ?? ''));
+    publicId$
+      .pipe(
+        switchMap((id) =>
+          this.retry.pipe(
+            startWith(undefined),
+            map(() => id),
+          ),
+        ),
+        switchMap((id) =>
+          this.api.profile(id).pipe(
+            map((profile): PlayerPageState => ({ kind: 'ready', profile })),
+            catchError((e: unknown) =>
+              of<PlayerPageState>(
+                e instanceof HttpErrorResponse && e.status === 404
+                  ? { kind: 'not-found' }
+                  : { kind: 'error' },
+              ),
+            ),
+            startWith<PlayerPageState>({ kind: 'loading' }),
+          ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((state) => this.state.set(state));
+
     const title = inject(Title);
     effect(() => {
       const h = this.header();
@@ -52,11 +88,6 @@ export class PlayerPage {
   }
 
   protected load(): void {
-    this.state.set({ kind: 'loading' });
-    this.api.profile(this.publicId).subscribe({
-      next: (profile) => this.state.set({ kind: 'ready', profile }),
-      error: (e: unknown) =>
-        this.state.set(e instanceof HttpErrorResponse && e.status === 404 ? { kind: 'not-found' } : { kind: 'error' }),
-    });
+    this.retry.next();
   }
 }

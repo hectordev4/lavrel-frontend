@@ -2,7 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, input, output, signal } f
 import { RouterLink } from '@angular/router';
 import { TrackedGame } from '../../../../core/api/models/tracked-game.model';
 import { TrackingStatus } from '../../../../core/api/models/tracking-status.model';
-import { TRACKING_STATUSES, TRACKING_STATUS_LABELS } from '../../../../core/tracking/tracking-labels';
+import {
+  TRACKING_STATUSES,
+  TRACKING_STATUS_LABELS,
+  isTrackingStatus,
+} from '../../../../core/tracking/tracking-labels';
 import { GameCover } from '../../../../shared/ui/game-cover/game-cover';
 import { DismissableMenu } from '../../../../shared/ui/menu/dismissable-menu';
 import { PerfectDiamond } from '../../../../shared/ui/perfect-diamond/perfect-diamond';
@@ -25,10 +29,15 @@ export class TrackedCard {
   readonly pinToggle = output<void>();
   readonly remove = output<void>();
 
-  protected readonly statuses = TRACKING_STATUSES.map((value) => ({ value, label: TRACKING_STATUS_LABELS[value] }));
+  protected readonly statuses = TRACKING_STATUSES.map((value) => ({
+    value,
+    label: TRACKING_STATUS_LABELS[value],
+  }));
   protected readonly revealed = signal<ReadonlySet<number>>(new Set());
   protected readonly link = computed(() => gameLink(this.game().slug));
-  protected readonly percent = computed(() => progressPercent(this.game().unlocked, this.game().total));
+  protected readonly percent = computed(() =>
+    progressPercent(this.game().unlocked, this.game().total),
+  );
   protected readonly pinned = computed(() => this.game().pinPosition !== null);
 
   protected reveal(id: number): void {
@@ -36,6 +45,6 @@ export class TrackedCard {
   }
 
   protected onStatus(value: string): void {
-    this.statusChange.emit(value as TrackingStatus);
+    if (isTrackingStatus(value)) this.statusChange.emit(value);
   }
 }

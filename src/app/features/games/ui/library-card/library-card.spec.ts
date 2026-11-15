@@ -20,8 +20,12 @@ describe('LibraryCard', () => {
   });
 
   it('shows the diamond when complete, and no bar without achievements', () => {
-    expect(render(libraryGame(1, { unlocked: 10 })).querySelector('app-perfect-diamond')).not.toBeNull();
+    expect(
+      render(libraryGame(1, { unlocked: 10 })).querySelector('app-perfect-diamond'),
+    ).not.toBeNull();
     TestBed.resetTestingModule();
-    expect(render(libraryGame(1, { total: 0, unlocked: 0 })).querySelector('app-progress-bar')).toBeNull();
+    expect(
+      render(libraryGame(1, { total: 0, unlocked: 0 })).querySelector('app-progress-bar'),
+    ).toBeNull();
   });
 });

@@ -5,6 +5,7 @@ import { Platform } from '../api/models/platform.model';
 import { PlatformAccount } from '../api/models/platform-account.model';
 import { AuthStore } from '../auth/auth.store';
 import { TrackedGames } from '../tracking/tracked-games';
+import { LatestOnly } from '../util/latest-only';
 import { linkErrorMessage, platformErrorMessage } from './platform-messages';
 
 /** Calls in one "Sync now": each imports a limited number of new games. */
@@ -35,6 +36,7 @@ export class PlatformAccounts {
   private readonly _message = signal<string | null>(null);
   private readonly _syncVersion = signal(0);
   private readonly _linking = signal(false);
+  private readonly latest = new LatestOnly();
 
   readonly accounts = this._accounts.asReadonly();
   readonly loadState = this._loadState.asReadonly();
@@ -56,16 +58,20 @@ export class PlatformAccounts {
   }
 
   ensureLoaded(): void {
-    if (this.auth.isVerified() && (this._loadState() === 'idle' || this._loadState() === 'error')) void this.reload();
+    if (this.auth.isVerified() && (this._loadState() === 'idle' || this._loadState() === 'error'))
+      void this.reload();
   }
 
   async reload(): Promise<void> {
+    const isLatest = this.latest.start();
     this._loadState.set('loading');
     try {
-      this._accounts.set(await firstValueFrom(this.api.list()));
+      const accounts = await firstValueFrom(this.api.list());
+      if (!isLatest()) return;
+      this._accounts.set(accounts);
       this._loadState.set('ready');
     } catch {
-      this._loadState.set('error');
+      if (isLatest()) this._loadState.set('error');
     }
   }
 
@@ -103,11 +109,15 @@ export class PlatformAccounts {
       for (let round = 0; round < MAX_SYNC_ROUNDS; round++) {
         const result = await firstValueFrom(this.api.sync(account));
         const before = this._syncing() ?? { gamesSynced: 0, gamesPending: 0 };
-        this._syncing.set({ gamesSynced: Math.max(before.gamesSynced, result.gamesSynced), gamesPending: result.gamesPending });
+        this._syncing.set({
+          gamesSynced: Math.max(before.gamesSynced, result.gamesSynced),
+          gamesPending: result.gamesPending,
+        });
         if (result.gamesPending === 0) break;
       }
       const left = this._syncing()?.gamesPending ?? 0;
-      if (left > 0) this._message.set(`${left} games are still waiting. Sync again to bring them in.`);
+      if (left > 0)
+        this._message.set(`${left} games are still waiting. Sync again to bring them in.`);
       await Promise.all([this.reload(), this.tracked.reload()]);
       this._syncVersion.update((v) => v + 1);
       return true;

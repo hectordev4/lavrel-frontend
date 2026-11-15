@@ -7,7 +7,9 @@ describe('FilterOptionsApi', () => {
   it('asks for creators by role in lowercase and unwraps them', () => {
     TestBed.configureTestingModule({ providers: testProviders() });
     let names: string[] = [];
-    TestBed.inject(FilterOptionsApi).creators('DEVELOPER', 'val').subscribe((c) => (names = c.map((x) => x.name)));
+    TestBed.inject(FilterOptionsApi)
+      .creators('DEVELOPER', 'val')
+      .subscribe((c) => (names = c.map((x) => x.name)));
     const req = TestBed.inject(HttpTestingController).expectOne((r) => r.url === '/api/creators');
     expect(req.request.params.get('role')).toBe('developer');
     expect(req.request.params.get('q')).toBe('val');

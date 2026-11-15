@@ -1,0 +1,54 @@
+<section aria-labelledby="playing-title">
+  <div class="section-head">
+    <div>
+      <h2 id="playing-title">Playing now</h2>
+      <span class="muted small">
+        @if (tracked.pinnedCount()) {
+          {{ tracked.pinnedCount() }} of {{ maxPinned }} pinned
+        } @else {
+          Pin up to {{ maxPinned }} games to keep them one tap away.
+        }
+      </span>
+    </div>
+    @if (tracked.pinnedCount()) {
+      <a class="edit" routerLink="/games">Edit</a>
+    }
+  </div>
+
+  @switch (tracked.loadState()) {
+    @case ('ready') {
+      @if (tracked.pinnedCount()) {
+        <div class="rows">
+          @for (game of tracked.pinned(); track game.gameId) {
+            <app-pinned-row [game]="game" />
+          }
+        </div>
+        <a
+          class="dashed"
+          [routerLink]="tracked.games().length > tracked.pinnedCount() ? '/games' : '/search'"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
+          <span>Pin a game</span>
+        </a>
+      } @else {
+        <div class="empty">
+          <span class="strong">Nothing pinned yet</span>
+          <span class="muted small"
+            >Find a game in Search, track it, and pin it here. Any game in the catalog works, owned
+            or not.</span
+          >
+          <a class="btn btn-secondary" routerLink="/search">Find a game</a>
+        </div>
+      }
+    }
+    @case ('error') {
+      <p class="failed">
+        Your pinned games didn’t load.
+        <button type="button" (click)="tracked.reload()">Try again</button>
+      </p>
+    }
+    @default {
+      <div class="skeleton" role="status" aria-label="Loading your pinned games"></div>
+    }
+  }
+</section>

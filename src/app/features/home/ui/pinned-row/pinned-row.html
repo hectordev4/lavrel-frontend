@@ -4,7 +4,9 @@
     <span class="line">
       <span class="title">{{ game().title }}</span>
       @if (percent() === 100) {
-        <span class="perfect"><app-perfect-diamond label="" /><span class="number">100%</span></span>
+        <span class="perfect"
+          ><app-perfect-diamond label="" /><span class="number">100%</span></span
+        >
       } @else {
         <span class="number">{{ percent() }}%</span>
       }

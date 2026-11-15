@@ -1,5 +1,7 @@
+import { GamePage } from '../../../core/api/models/game-page.model';
 import { Injectable, inject, signal } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, catchError, map, of, switchMap } from 'rxjs';
 import { GameCatalogApi } from '../../../core/api/game-catalog.api';
 import { ResultsState } from '../models/results-state.model';
 import { SearchFilters } from '../models/search-filters.model';
@@ -14,9 +16,28 @@ export class SearchResults {
   private readonly api = inject(GameCatalogApi);
   private filters: SearchFilters | null = null;
   private page = 0;
-  private request: Subscription | null = null;
+  /** Each page asked for; a newer search or page cancels the one still loading. */
+  private readonly fetches = new Subject<{
+    filters: SearchFilters;
+    page: number;
+    append: boolean;
+  }>();
 
   readonly state = signal<ResultsState>({ kind: 'loading' });
+
+  constructor() {
+    this.fetches
+      .pipe(
+        switchMap((req) =>
+          this.api.search(toApiParams(req.filters, req.page, PAGE_SIZE)).pipe(
+            map((result) => ({ req, result, error: null as unknown })),
+            catchError((error: unknown) => of({ req, result: null, error })),
+          ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe(({ req, result, error }) => this.apply(req.page, req.append, result, error));
+  }
 
   load(filters: SearchFilters): void {
     this.filters = filters;
@@ -37,23 +58,26 @@ export class SearchResults {
   }
 
   private fetch(page: number, append: boolean): void {
-    if (!this.filters) return;
-    this.request?.unsubscribe();
-    this.request = this.api.search(toApiParams(this.filters, page, PAGE_SIZE)).subscribe({
-      next: (result) => {
-        this.page = page;
-        const before = this.state();
-        const games = append && before.kind === 'ready' ? [...before.games, ...result.games] : result.games;
-        this.state.set({ kind: 'ready', games, hasMore: result.hasMore, loadingMore: false, moreError: null });
-      },
-      error: (error: unknown) => {
-        const before = this.state();
-        if (append && before.kind === 'ready') {
-          this.state.set({ ...before, loadingMore: false, moreError: searchErrorMessage(error) });
-        } else {
-          this.state.set({ kind: 'error', message: searchErrorMessage(error) });
-        }
-      },
-    });
+    if (this.filters) this.fetches.next({ filters: this.filters, page, append });
+  }
+
+  private apply(page: number, append: boolean, result: GamePage | null, error: unknown): void {
+    const before = this.state();
+    if (result) {
+      this.page = page;
+      const games =
+        append && before.kind === 'ready' ? [...before.games, ...result.games] : result.games;
+      this.state.set({
+        kind: 'ready',
+        games,
+        hasMore: result.hasMore,
+        loadingMore: false,
+        moreError: null,
+      });
+    } else if (append && before.kind === 'ready') {
+      this.state.set({ ...before, loadingMore: false, moreError: searchErrorMessage(error) });
+    } else {
+      this.state.set({ kind: 'error', message: searchErrorMessage(error) });
+    }
   }
 }

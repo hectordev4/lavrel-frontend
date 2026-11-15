@@ -25,6 +25,75 @@ domain to Firebase → Authentication → Settings → **Authorized domains**.
 On macOS older than the Dart SDK supports (e.g. Monterey), Sass fails to start: set
 `export NG_BUILD_SASS_EMBEDDED=false` in your shell profile to use the JavaScript compiler.
 
+## Errors
+
+Expected failures (a request that doesn't load) are handled where they happen: each section or page shows its own
+message and *Try again*. Anything unexpected ends in `AppErrorHandler` (`core/errors`), which logs it once with the
+address it happened on and keeps the latest 20 in memory, ready for a future "report a problem" screen.
+
+## Phone and desktop
+
+One codebase, two layouts, switching at **64rem (1024 px)**:
+
+- **Phone** (narrower): header on top, one column, the bottom tab bar. This is also what the Play Store app shows.
+- **Desktop** (wider): the tabs move to a sidebar (`SideNav`), the header spans the width with a search field (Enter
+  opens the results), and pages get wider: 48rem by default, 72.5rem for screens with their own desktop layout
+  (`.page-wide`). The tab bar and the sidebar share `activeTabPath()`.
+
+On desktop, **Home** puts the totals and the Steam line in one row, then Playing now on the left and Almost there
+and Recent unlocks on the right; the **game page** shows the cover beside the title and actions, then the
+achievements on the left and About, Tags and Details on the right; **search results** form a three-column grid; and
+the **Search** page drops its own field, since the header's opens the results (and shows the current search on the
+results page). Results keep the **filters open as a side panel** (the filters screen with `embedded`), following the
+address. **Games** lists tracked games in two columns, **My library** shows four games per row, **Profile** places
+its sections two by two, and the AI chat's reply box and the picker's bar sit at the window's bottom (no tab bar). On phones the same parts stack as
+before (the desktop wrappers use `display: contents`).
+
+The start-up splash is full screen on both; loading inside a page happens in the main area, so the sidebar and
+header stay. The desktop mockups live on the "Lavrel — Desktop" canvas.
+
+## Installable app and the Play Store
+
+Lavrel is a **PWA**: `public/manifest.webmanifest`, icons in `public/icons/` (rendered from `lavrel-icon.svg`,
+including a maskable one), and the Angular service worker (`ngsw-config.json`, production builds only). The service
+worker caches the app's own files, never API answers, and leaves `/.well-known/` alone. When a new version has
+downloaded, a line at the top offers to reload into it.
+
+The **Play Store** app is the same site wrapped as a **Trusted Web Activity (TWA)** with Google's Bubblewrap. Each
+Vercel deploy updates it; a store update is only needed to change the wrapper itself (icon, name, package).
+
+1. Deploy, then check the PWA: Chrome DevTools → Application → Manifest shows no errors, and *Install Lavrel*
+   appears.
+2. Install Bubblewrap (needs Node and a JDK; it can download both): `npm i -g @bubblewrap/cli`.
+3. In an empty folder **outside this repo**: `bubblewrap init --manifest https://<your-domain>/manifest.webmanifest`.
+   Choose the package id (for example `app.lavrel.twa`) and let it create a signing key. Keep the key and its
+   passwords safe and out of git: every future update must be signed with it.
+4. `bubblewrap build` produces an `.aab` (for the Play Store) and an `.apk` (to try on a phone).
+5. Get the SHA-256 fingerprint: `bubblewrap fingerprint list`, or, once uploaded, Play Console → Setup → App
+   signing (use **Google's app signing key** fingerprint if Play signs the app).
+6. Copy `docs/twa/assetlinks.example.json` to `public/.well-known/assetlinks.json`, fill in the package id and the
+   fingerprint (both keys if you test the local `.apk` too), commit and deploy. Check it at
+   `https://<your-domain>/.well-known/assetlinks.json`. Without it the app still opens, but with a browser bar.
+7. Upload the `.aab` in Play Console (internal testing first).
+
+The phone layout is what Android shows; the desktop layout only appears from 1024 px wide.
+
+## Typed templates
+
+Templates never use `$any`. A state with several shapes is read once with `@let` and switched on, so Angular narrows
+it per case; form values come from template references (`#sortSelect`), and strings from selects pass a type guard
+(`isGameSort`, `isLibrarySort`, `isTrackedSort`, `isTrackingStatus`) before use. A wrong field is a build error.
+
+## Async requests
+
+A screen must never show an answer to an older question. Two rules keep it that way:
+
+- **Requests driven by changing input** (an address id, a search box, an order toggle, a reload after sync) go
+  through `switchMap`: a new value cancels the request still running, and `takeUntilDestroyed()` cancels it when the
+  screen closes. Every store and page works this way, with no exceptions: no request is ever cancelled by hand.
+- **Shared stores that load with `async`/`await`** (`TrackedGames`, `PlatformAccounts`, `MyCollections`,
+  `MyShelves`) use `LatestOnly` (`core/util`): each reload takes a ticket, and only the most recent one may write.
+
 ## Tests and CI
 
 - `npm test` runs the unit tests (Vitest) and watches for changes; `npm run test:ci` runs them once.
@@ -66,7 +135,8 @@ src/app
 ├── layout/                   the frame around in-app pages
 │   ├── app-shell/            header + page + tab bar
 │   ├── app-header/           static wordmark, avatar (members) or Sign in (guests)
-│   ├── tab-bar/              Home, Search, AI, Games (Profile: the avatar at the top right)
+│   ├── tab-bar/              Home, Search, AI, Games on phones (Profile: the avatar at the top right)
+│   ├── side-nav/             the same tabs as a sidebar on desktop
 │   └── placeholder-page/     stands in for tabs whose branch hasn't landed
 ├── shared/ui/                dumb, reusable components
 │   ├── cube-logo/            animated cube L (+ geometry, models/)
@@ -79,7 +149,9 @@ src/app
 │   ├── modal/                bottom sheet on the native <dialog>
 │   ├── switch/               on/off setting (role="switch")
 │   ├── avatar/               animated round avatar (upload, gallery or generated Pixelbot)
-├── shared/utils/             relativeTime ("2 hours ago"), gameLink (/games/{slug}), avatar-art (Pixelbot drawing)
+│   ├── search-box/, segmented/, select-field/, page-header/, connect-steam-card/, copy-button/ (shared building blocks)
+├── shared/utils/             relativeTime, gameLink, avatar-art, formatPlayerId, isRare (under 5%), syncedLabel,
+│                             greetingFor: helpers used by more than one page live here, never copied
 │   ├── game-cover/           cover image with an initials fallback
 │   ├── game-row/, game-tile/ a game in a list / in a sideways row
 │   └── loading-screen/       full-screen loading page
@@ -106,27 +178,30 @@ src/app
     │   └── models/           PublicProfile, Shelf and its items, PlayerPageState
     ├── profile/
     │   ├── pages/            profile (the Profile tab), picker, picker-games, picker-achievements
-    │   ├── ui/               privacy-section, platforms-section, avatar-picker, shelves-section
+    │   ├── ui/               account-section, account-end, privacy-section, platforms-section, avatar-picker,
+    │   │                     shelves-section (the Profile page only shows the header and places these)
     │   ├── data-access/      AccountApi (name, country, countries, delete), MyAccount, PrivacyApi, messages
     │   └── models/           Country, AccountState, ProfileSettings
     ├── games/                the Games tab for members
     │   ├── pages/            games (tracking list), library (/library)
-    │   ├── ui/               tracked-card, library-card
-    │   ├── data-access/      tracked-list (filter and sort), MyLibrary (paging), CollectionsApi, MyCollections,
+    │   ├── ui/               tracked-card, library-card, collections-bar, library-game-menu
+    │   ├── data-access/      tracked-list (filter and sort), MyLibrary (paging), MyCollections, CollectionsUi,
     │   │                     library labels, messages
     │   └── models/           StatusFilter, TrackedSort, LibraryQuery, LibraryState, Collection
     ├── game/
-    │   ├── pages/            game (/games/:slug)
-    │   ├── ui/               progress-card, achievement-item
+    │   ├── pages/            game (/games/:slug): loads the game and lays out its parts
+    │   ├── sections/         achievements (progress + list, own data and error, deferred)
+    │   ├── ui/               progress-card, achievement-item, game-tracking, game-about, game-labels
     │   ├── data-access/      GameDetailsApi → GET /api/games/{id}, GameAchievementsApi → …/achievements,
     │   │                     GamePage, GameAchievementsStore (filter, show all, reveal), game-facts, messages
     │   └── models/           GameDetails, GamePageState, Achievement, GameAchievements, AchievementFilter,
     │                         AchievementsState
     ├── home/
-    │   ├── pages/            home (members), guest-home (discover)
+    │   ├── pages/            home (members: greeting + sections), guest-home (discover)
+    │   ├── sections/         sync, stats, playing-now, almost-there, recent-unlocks, discover (each loads and fails on its own)
     │   ├── ui/               pinned-row, almost-tile, stats-row, recent-unlock
     │   ├── data-access/      HomeProfile (loads the current user), Discover (popular, newest), AlmostThere,
-    │   │                     MemberOverviewApi → /api/currentuser/stats, …/achievements/recent, MemberOverview, messages
+    │   │                     sectionLoader (switchMap + error state per section), messages
     │   └── models/           HomeState, DiscoverSection, AlmostThereState, MemberStats, RecentUnlock
     └── search/
         ├── pages/            search (box + suggestions), results, filters (full screen)
@@ -241,6 +316,16 @@ automatically* (`GET` / `PUT /api/currentuser/auto-sync`), *Sync now* and *Unlin
 (`DELETE /api/currentuser/accounts/{platform}/{externalId}`). Not connected: *Connect Steam*. Xbox and PlayStation
 show as coming soon.
 
+## First setup
+
+Until the backend says otherwise, a member who reaches Home goes to `/setup`, "Make it yours": the name Lavrel gave
+them, the generated avatar (*Change avatar* opens the avatar sheet) and an optional country. The flag comes from the
+same `GET /api/currentuser` Home already makes: `setupCompleted` is `false` for a new account. *Save and continue*
+saves only what changed; *Skip for now* keeps the defaults (the given name, the generated avatar, no country). Either
+way `FirstSetup` calls `PUT /api/currentuser/setup` (no body, 204) and goes to Home. If that call fails the person
+still goes on, and the setup is offered again the next time Lavrel opens. It follows the account across devices;
+everything stays editable in Profile.
+
 ## Avatars
 
 Every robot is **[Pixelbot](https://www.dicebear.com/styles/pixelbot/) by DiceBear**, released under
@@ -329,6 +414,11 @@ characters). Inside a collection: *Rename*, *Delete* (the games stay in the libr
 Every game's menu has *Add to collection…*, a sheet listing the collections. Sheets use the shared `Modal`.
 
 ## Home for members
+
+Home is built from **self-contained sections**. The page itself only waits for the first `GET /api/currentuser` (which
+creates the user), greets, and places them. Each section loads its own data and, if that fails, shows one quiet line
+with *Try again* while the rest of Home stays. Almost there, Recent unlocks and Discover are in `@defer (on viewport)`,
+so their code loads as they scroll into view.
 
 In order: a greeting with the username, the Steam line (*synced 2 hours ago* and **Sync now**, which shows how many
 games came in), **Playing now** (pinned games in their pin order, with the tiered bar and the diamond at 100%,
@@ -434,7 +524,7 @@ are example data.
 7. Profile, in several branches:
    - `feat/profile-account` ✓: header, display name, country, e-mail, sign out, delete account
    - `feat/profile-privacy` ✓: public profile switches
-   - `feat/profile-platforms` ✓: Steam (connected state, Sync now, automatic sync, unlink), Xbox and PlayStation soon
+   - `feat/profile-platforms` ✓: Steam (connected state, Sync now, automatic sync, unlink); Xbox and PlayStation later, after a separate discussion
    - `feat/profile-avatar` ✓: animated avatars and the avatar picker (generated, gallery, upload)
 8. Public profiles, in branches:
    - `feat/public-profile` ✓: the public profile page with its shelves

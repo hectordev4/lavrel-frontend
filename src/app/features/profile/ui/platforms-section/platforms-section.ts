@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { AccountsApi } from '../../../../core/api/accounts.api';
 import { PlatformAccounts } from '../../../../core/platforms/platform-accounts';
 import { Switch } from '../../../../shared/ui/switch/switch';
-import { relativeTime } from '../../../../shared/utils/relative-time';
+import { syncedLabel } from '../../../../shared/utils/synced-label';
 
 /** Linked platforms on the Profile tab: Steam connected (sync, automatic sync, unlink) or Connect Steam. */
 @Component({
@@ -20,8 +20,8 @@ export class PlatformsSection {
   protected readonly autoSync = signal<boolean | null>(null);
   protected readonly autoSyncError = signal<string | null>(null);
   protected readonly lastSynced = computed(() => {
-    const at = this.accounts.steam()?.lastSyncedAt;
-    return at ? `Last synced ${relativeTime(at)}` : 'Not synced yet';
+    const label = syncedLabel(this.accounts.steam()?.lastSyncedAt);
+    return label.charAt(0).toUpperCase() + label.slice(1);
   });
 
   constructor() {
@@ -57,7 +57,9 @@ export class PlatformsSection {
   protected unlink(): void {
     const steam = this.accounts.steam();
     if (!steam) return;
-    const ok = confirm('Unlink Steam? Your Steam games, playtime and achievements leave your Lavrel library. You can link it again later.');
+    const ok = confirm(
+      'Unlink Steam? Your Steam games, playtime and achievements leave your Lavrel library. You can link it again later.',
+    );
     if (ok) void this.accounts.unlink(steam);
   }
 

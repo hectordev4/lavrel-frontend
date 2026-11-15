@@ -1,9 +1,12 @@
 <main class="page search">
+  @let suggestionsState = suggestions.state();
   <h1>Search</h1>
 
   <form role="search" (submit)="$event.preventDefault(); submit()">
     <label class="box">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" /></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14z M20 20l-3.5-3.5" />
+      </svg>
       <span class="visually-hidden">Search games, tags and franchises</span>
       <input
         #box
@@ -29,7 +32,7 @@
   </a>
 
   <div class="results" aria-live="polite">
-    @switch (suggestions.state().kind) {
+    @switch (suggestionsState.kind) {
       @case ('idle') {
         <p class="hint">Find a game by name, or a tag or franchise to browse.</p>
       }
@@ -37,12 +40,16 @@
         <p class="hint" role="status">Searching…</p>
       }
       @case ('error') {
-        <p class="alert" role="alert">{{ $any(suggestions.state()).message }}</p>
+        <p class="alert" role="alert">{{ suggestionsState.message }}</p>
       }
       @case ('ready') {
-        <app-suggestion-list [results]="$any(suggestions.state()).results" />
-        <a class="btn btn-primary" routerLink="/search/results" [queryParams]="{ q: $any(suggestions.state()).query }">
-          See all results for “{{ $any(suggestions.state()).query }}”
+        <app-suggestion-list [results]="suggestionsState.results" />
+        <a
+          class="btn btn-primary"
+          routerLink="/search/results"
+          [queryParams]="{ q: suggestionsState.query }"
+        >
+          See all results for “{{ suggestionsState.query }}”
         </a>
       }
     }

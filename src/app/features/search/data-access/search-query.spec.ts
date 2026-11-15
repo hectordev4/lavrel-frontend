@@ -1,5 +1,11 @@
 import { convertToParamMap } from '@angular/router';
-import { activeFilterCount, emptyFilters, parseFilters, toApiParams, toQueryParams } from './search-query';
+import {
+  activeFilterCount,
+  emptyFilters,
+  parseFilters,
+  toApiParams,
+  toQueryParams,
+} from './search-query';
 
 describe('search-query', () => {
   const params = convertToParamMap({

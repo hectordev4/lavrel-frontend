@@ -16,8 +16,12 @@ describe('MyAvatar', () => {
     me = TestBed.inject(MyAvatar);
     http = TestBed.inject(HttpTestingController);
     const loading = me.ensureLoaded();
-    http.expectOne('/api/currentuser').flush({ username: 'swiftOtter', publicId: '4829103755210846' });
-    http.expectOne('/api/currentuser/profile/avatar').flush({ kind: 'GENERATED', galleryId: null, imageUrl: null });
+    http
+      .expectOne('/api/currentuser')
+      .flush({ username: 'swiftOtter', publicId: '4829103755210846' });
+    http
+      .expectOne('/api/currentuser/profile/avatar')
+      .flush({ kind: 'GENERATED', galleryId: null, imageUrl: null });
     await loading;
   });
 
@@ -31,7 +35,10 @@ describe('MyAvatar', () => {
     await settle();
     http
       .expectOne('/api/currentuser/profile/avatar')
-      .flush({ error: 'invalid_avatar', message: 'Use a JPG, PNG or GIF.' }, { status: 400, statusText: 'x' });
+      .flush(
+        { error: 'invalid_avatar', message: 'Use a JPG, PNG or GIF.' },
+        { status: 400, statusText: 'x' },
+      );
     expect(await done).toBe('Use a JPG, PNG or GIF.');
   });
 

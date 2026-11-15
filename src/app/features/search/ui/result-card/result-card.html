@@ -4,7 +4,13 @@
     <div class="info">
       <a class="title" [routerLink]="link()">{{ game().title }}</a>
       @if (year() || modes()) {
-        <span class="meta">{{ year() }}@if (year() && modes()) { · }{{ modes() }}</span>
+        <span class="meta"
+          >{{ year() }}
+          @if (year() && modes()) {
+            ·
+          }
+          {{ modes() }}</span
+        >
       }
       @if (game().reviewPercentPositive !== null) {
         <span class="meta">

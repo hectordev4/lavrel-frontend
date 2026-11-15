@@ -16,14 +16,24 @@ describe('LibraryPage', () => {
     const fixture = TestBed.createComponent(LibraryPage);
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
-    http.expectOne('/api/currentuser/accounts').flush({ accounts: [{ platform: 'STEAM', externalId: '1', displayName: null, lastSyncedAt: null }] });
-    http.expectOne((r) => r.url === '/api/currentuser/games').flush({ games: [libraryGame(1), libraryGame(2)], page: 0, size: 48, hasMore: false });
-    http.expectOne('/api/currentuser/collections').flush({ collections: [{ id: 'c1', name: 'Cozy', position: 1, gameCount: 3 }] });
+    http
+      .expectOne('/api/currentuser/accounts')
+      .flush({
+        accounts: [{ platform: 'STEAM', externalId: '1', displayName: null, lastSyncedAt: null }],
+      });
+    http
+      .expectOne((r) => r.url === '/api/currentuser/games')
+      .flush({ games: [libraryGame(1), libraryGame(2)], page: 0, size: 48, hasMore: false });
+    http
+      .expectOne('/api/currentuser/collections')
+      .flush({ collections: [{ id: 'c1', name: 'Cozy', position: 1, gameCount: 3 }] });
     await settle();
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelectorAll('app-library-card').length).toBe(2);
-    const chips = [...el.querySelectorAll('.collections app-chip button')].map((b) => b.textContent!.replace(/\s+/g, ' ').trim());
+    const chips = [...el.querySelectorAll('.collections app-chip button')].map((b) =>
+      b.textContent!.replace(/\s+/g, ' ').trim(),
+    );
     expect(chips).toEqual(['All games', 'Cozy 3']);
   });
 });

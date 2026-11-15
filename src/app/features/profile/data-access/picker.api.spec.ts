@@ -15,7 +15,9 @@ describe('PickerApi', () => {
     expect(games.request.params.get('page')).toBe('1');
     expect(games.request.params.get('size')).toBe('24');
     api.unlocked(7, 'date').subscribe();
-    const unlocked = http.expectOne((r) => r.url === '/api/currentuser/games/7/achievements/unlocked');
+    const unlocked = http.expectOne(
+      (r) => r.url === '/api/currentuser/games/7/achievements/unlocked',
+    );
     expect(unlocked.request.params.get('sort')).toBe('date');
   });
 });

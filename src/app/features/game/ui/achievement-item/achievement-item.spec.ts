@@ -23,14 +23,19 @@ describe('AchievementItem', () => {
   });
 
   it('never blurs a hidden achievement you unlocked', () => {
-    const el = render(achievement(1, { hidden: true, unlocked: true }), true).nativeElement as HTMLElement;
+    const el = render(achievement(1, { hidden: true, unlocked: true }), true)
+      .nativeElement as HTMLElement;
     expect(el.querySelector('.blur')).toBeNull();
   });
 
   it('shows the country figure only when signed in, with — when unknown', () => {
-    expect((render(achievement(1)).nativeElement as HTMLElement).textContent).not.toContain('in your country');
+    expect((render(achievement(1)).nativeElement as HTMLElement).textContent).not.toContain(
+      'in your country',
+    );
     TestBed.resetTestingModule();
-    expect((render(achievement(1), true).nativeElement as HTMLElement).textContent).toContain('— in your country');
+    expect((render(achievement(1), true).nativeElement as HTMLElement).textContent).toContain(
+      '— in your country',
+    );
   });
 });
 
@@ -38,8 +43,15 @@ describe('AchievementItem guide button', () => {
   it('links members to the AI guide, hiding a hidden achievement’s name', () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const fixture = TestBed.createComponent(AchievementItem);
-    fixture.componentRef.setInput('achievement', achievement(42, { hidden: true, name: 'Behind the Waterfall' }));
-    fixture.componentRef.setInput('guideFor', { gameId: 7, slug: 'rogue-harbor', title: 'Rogue Harbor' });
+    fixture.componentRef.setInput(
+      'achievement',
+      achievement(42, { hidden: true, name: 'Behind the Waterfall' }),
+    );
+    fixture.componentRef.setInput('guideFor', {
+      gameId: 7,
+      slug: 'rogue-harbor',
+      title: 'Rogue Harbor',
+    });
     fixture.detectChanges();
     const link = fixture.nativeElement.querySelector('.guide') as HTMLAnchorElement;
     expect(link.getAttribute('href')).toContain('/assistant/guide/7/42?');

@@ -59,11 +59,24 @@ export function toApiParams(f: SearchFilters, page: number, size: number): GameS
 
 /** How many filters are on, not counting the query and the sort. */
 export function activeFilterCount(f: SearchFilters): number {
-  return f.tags.length + [f.franchise, f.developer, f.publisher, f.system].filter(Boolean).length + f.modes.length;
+  return (
+    f.tags.length +
+    [f.franchise, f.developer, f.publisher, f.system].filter(Boolean).length +
+    f.modes.length
+  );
 }
 
 export function emptyFilters(q: string | null = null): SearchFilters {
-  return { q, tags: [], franchise: null, developer: null, publisher: null, modes: [], system: null, sort: null };
+  return {
+    q,
+    tags: [],
+    franchise: null,
+    developer: null,
+    publisher: null,
+    modes: [],
+    system: null,
+    sort: null,
+  };
 }
 
 function parseNamed(value: string | null): NamedFilter | null {

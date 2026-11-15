@@ -12,7 +12,11 @@ export function toAuthUser(user: User): AuthUser {
     uid: user.uid,
     email: user.email,
     emailVerified: user.emailVerified,
-    provider: providerIds.includes('google.com') ? 'google' : providerIds.includes('password') ? 'password' : 'other',
+    provider: providerIds.includes('google.com')
+      ? 'google'
+      : providerIds.includes('password')
+        ? 'password'
+        : 'other',
   };
 }
 

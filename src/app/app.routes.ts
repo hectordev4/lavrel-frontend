@@ -10,6 +10,13 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', canMatch: [entryGuard], children: [] },
   { path: '', loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES) },
   {
+    // First time a new account opens Lavrel: name, avatar and country, or Skip for now.
+    path: 'setup',
+    canMatch: [memberGuard],
+    title: 'Make it yours · Lavrel',
+    loadComponent: () => import('./features/profile/pages/setup/setup.page').then((m) => m.SetupPage),
+  },
+  {
     // Full-screen, without header and tab bar.
     path: 'search/filters',
     canMatch: [browseGuard],

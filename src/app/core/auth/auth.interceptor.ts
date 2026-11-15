@@ -17,11 +17,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   return from(gateway.idToken()).pipe(
-    switchMap((token) => next(token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req)),
+    switchMap((token) =>
+      next(token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req),
+    ),
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse) {
         if (error.status === 401) void router.navigateByUrl('/welcome');
-        if (error.status === 403 && error.error?.error === 'email_not_verified') void router.navigateByUrl('/verify-email');
+        if (error.status === 403 && error.error?.error === 'email_not_verified')
+          void router.navigateByUrl('/verify-email');
       }
       return throwError(() => error);
     }),

@@ -1,6 +1,15 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, catchError, debounceTime, distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
+import {
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { SuggestionsState } from '../models/suggestions-state.model';
 import { QuickSearchApi } from './quick-search.api';
 import { searchErrorMessage } from './search-messages';
@@ -26,7 +35,9 @@ export class SearchSuggestions {
           if (query.length < MIN_LENGTH) return of<SuggestionsState>({ kind: 'idle' });
           return this.api.search(query).pipe(
             map((results): SuggestionsState => ({ kind: 'ready', query, results })),
-            catchError((error: unknown) => of<SuggestionsState>({ kind: 'error', query, message: searchErrorMessage(error) })),
+            catchError((error: unknown) =>
+              of<SuggestionsState>({ kind: 'error', query, message: searchErrorMessage(error) }),
+            ),
             startWith<SuggestionsState>({ kind: 'loading', query }),
           );
         }),

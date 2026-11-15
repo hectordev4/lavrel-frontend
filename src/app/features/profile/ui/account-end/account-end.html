@@ -1,0 +1,27 @@
+<section class="end">
+  <button type="button" class="btn btn-secondary" (click)="signOut()">Sign out</button>
+  <button type="button" class="link-btn danger" (click)="open('delete')">Delete account</button>
+</section>
+
+<app-modal heading="Delete your account" [open]="sheet() === 'delete'" (closed)="sheet.set(null)">
+  <form class="form" (submit)="$event.preventDefault(); deleteAccount(confirmation.value)">
+    <p class="note">
+      This removes your profile, linked accounts, tracking list, collections and shelves from
+      Lavrel. It can’t be undone.
+    </p>
+    <label class="field">
+      <span>Type DELETE to confirm</span>
+      <input
+        #confirmation
+        type="text"
+        autocomplete="off"
+        autocapitalize="characters"
+        (input)="formError.set(null)"
+      />
+    </label>
+    @if (formError(); as e) {
+      <p class="alert" role="alert">{{ e }}</p>
+    }
+    <button type="submit" class="btn btn-danger" [disabled]="busy()">Delete my account</button>
+  </form>
+</app-modal>

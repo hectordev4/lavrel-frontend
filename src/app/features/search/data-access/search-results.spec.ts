@@ -13,9 +13,13 @@ describe('SearchResults', () => {
     const http = TestBed.inject(HttpTestingController);
 
     results.load(emptyFilters('doom'));
-    http.expectOne((r) => r.params.get('page') === '0').flush({ games: [game(1)], page: 0, size: 20, hasMore: true });
+    http
+      .expectOne((r) => r.params.get('page') === '0')
+      .flush({ games: [game(1)], page: 0, size: 20, hasMore: true });
     results.loadMore();
-    http.expectOne((r) => r.params.get('page') === '1').flush({ games: [game(2)], page: 1, size: 20, hasMore: false });
+    http
+      .expectOne((r) => r.params.get('page') === '1')
+      .flush({ games: [game(2)], page: 1, size: 20, hasMore: false });
 
     const s = results.state();
     expect(s.kind === 'ready' && s.games.map((g) => g.id)).toEqual([1, 2]);
@@ -33,5 +37,21 @@ describe('SearchResults', () => {
     const s = results.state();
     expect(s.kind === 'ready' && s.games.length).toBe(1);
     expect(s.kind === 'ready' && s.moreError).toContain('Search didn’t work');
+  });
+});
+
+describe('SearchResults, a new search while one is loading', () => {
+  it('cancels the older request', () => {
+    TestBed.configureTestingModule({ providers: testProviders(SearchResults) });
+    const results = TestBed.inject(SearchResults);
+    const http = TestBed.inject(HttpTestingController);
+    results.load(emptyFilters('doom'));
+    const first = http.expectOne((r) => r.params.get('q') === 'doom');
+    results.load(emptyFilters('hades'));
+    expect(first.cancelled).toBe(true);
+    http
+      .expectOne((r) => r.params.get('q') === 'hades')
+      .flush({ games: [], page: 0, size: 20, hasMore: false });
+    expect(results.state().kind).toBe('ready');
   });
 });
