@@ -1,0 +1,11 @@
+<nav class="segmented" aria-label="Games views">
+  @for (view of views; track view.link) {
+    <a
+      [routerLink]="view.link"
+      routerLinkActive="on"
+      ariaCurrentWhenActive="page"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >{{ view.label }}</a
+    >
+  }
+</nav>

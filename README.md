@@ -117,7 +117,7 @@ A screen must never show an answer to an older question. Two rules keep it that 
   - **auth and first setup**: welcome and the guest sign-in gate, e-mail sign-in into Home, a failed sign-in,
     the verify page, Home → setup for a new account, Skip for now and Save and continue
   - **my library**: first page and default sort, sort change, name filter after the debounce, Show more, Connect
-    Steam with no account, lost connection and Try again
+    Steam with no account, lost connection and Try again, Tracked ↔ My library both ways
   - **collections**: create, add from a game menu, browse, rename, remove a game, delete after confirming,
     empty and duplicate names
   - **API communication**: the token on API calls only; a stale token recovering unseen; a dead session ending on
@@ -446,6 +446,8 @@ when `curated` (written or rewritten by an admin). Admins are unlimited (`unlimi
 *Show more*: cover, title, tiered bar, unlocked of total, playtime and the diamond at 100%. A name filter (2+
 characters, after a 300 ms pause) and five sorts: recently played (default), name, most played, most completed and
 newest release. Without Steam it shows *Connect Steam*. The Games tab stays lit on /games and /library but not on game pages.
+Both views share one nav, `GamesViews` (`features/games/ui/games-views`): *Tracked* (/games) and *My library*
+(/library), with its own router directives, so which view is on (and `aria-current`) comes from the address.
 
 **Collections** (`/api/currentuser/collections`, owned games only, up to 50): chips above the grid switch between
 *All games* and each collection with its game count; *New collection* opens a sheet for the name (up to 40

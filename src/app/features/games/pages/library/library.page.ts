@@ -11,6 +11,7 @@ import { LIBRARY_SORT_LABELS, isLibrarySort } from '../../data-access/library-la
 import { MyCollections } from '../../data-access/my-collections';
 import { MyLibrary } from '../../data-access/my-library';
 import { CollectionsBar } from '../../ui/collections-bar/collections-bar';
+import { GamesViews } from '../../ui/games-views/games-views';
 import { LibraryCard } from '../../ui/library-card/library-card';
 import { LibraryGameMenu } from '../../ui/library-game-menu/library-game-menu';
 
@@ -18,7 +19,7 @@ import { LibraryGameMenu } from '../../ui/library-game-menu/library-game-menu';
 @Component({
   selector: 'app-library-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ConnectSteamCard, SearchBox, SelectField, LibraryCard, CollectionsBar, LibraryGameMenu],
+  imports: [GamesViews, ConnectSteamCard, SearchBox, SelectField, LibraryCard, CollectionsBar, LibraryGameMenu],
   providers: [MyLibrary, MyCollections, CollectionsUi],
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
