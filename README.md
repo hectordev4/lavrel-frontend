@@ -494,6 +494,11 @@ login), not linked (*Connect Steam*), and linked to another Lavrel account (`acc
 "already linked" answer counts as success when the account is yours. The page cleans its address after reading it,
 and goes Home when opened without a result.
 
+Why the Steam login didn't link (linked elsewhere, `link_expired`, not confirmed) is shown on `/steam/linked`
+only. `PlatformAccounts.message`, which Home and Profile show, holds sync, connect and unlink errors. The store
+belongs to one signed-in member: signing out or switching accounts clears the accounts, the message and any sync
+or link in progress, and drops a load still on its way.
+
 ## Logo modes (`<app-cube-logo mode="…">`)
 
 `still`, `intro` (cubes drop in one by one with a gold unlock flash, then idle), `idle` (a shake wave runs

@@ -3,6 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { fakeAuthProvider, signInAs } from '../../../../../testing/auth-testing';
 import { memberUser, testProviders } from '../../../../../testing/test-env';
+import { PlatformAccounts } from '../../../../core/platforms/platform-accounts';
+import { SyncSection } from '../../../home/sections/sync/sync.section';
+import { PlatformsSection } from '../../../profile/ui/platforms-section/platforms-section';
 import { SteamLinkedPage } from './steam-linked.page';
 
 const settle = () => new Promise((resolve) => setTimeout(resolve));
@@ -61,4 +64,28 @@ describe('SteamLinkedPage', () => {
     const { navigateByUrl } = await render({}, []);
     expect(navigateByUrl).toHaveBeenCalledWith('/home', { replaceUrl: true });
   });
+
+  it('keeps the "linked elsewhere" reason on this page: Home and Profile don’t show it', async () => {
+    const { fixture, http } = await render({ status: 'error', reason: 'account_linked_elsewhere' }, []);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('linked to another Lavrel account');
+    expect(TestBed.inject(PlatformAccounts).message()).toBeNull();
+
+    const home = TestBed.createComponent(SyncSection);
+    home.detectChanges();
+    const profile = TestBed.createComponent(PlatformsSection);
+    profile.detectChanges();
+    http.match('/api/currentuser/auto-sync');
+    for (const section of [home, profile])
+      expect((section.nativeElement as HTMLElement).textContent).not.toContain('linked to another Lavrel account');
+  });
+
+  it('explains an expired link with the backend’s reason', async () => {
+    const { fixture } = await render({ status: 'error', reason: 'link_expired' }, []);
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Steam isn’t linked yet');
+    expect(el.querySelector('[role="alert"]')!.textContent!.trim()).toBe(
+      'The link took too long. Start again from your profile.',
+    );
+  });
 });
+

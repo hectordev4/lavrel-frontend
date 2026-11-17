@@ -33,13 +33,14 @@
     }
     @case ('elsewhere') {
       <app-cta-card [centered]="true" heading="This Steam account is taken">
-        <p class="alert" role="alert">{{ accounts.message() }}</p>
+        <p class="alert" role="alert">{{ failure() }}</p>
         <a class="btn btn-secondary" routerLink="/profile">Go to Profile</a>
       </app-cta-card>
     }
     @case ('link-failed') {
       <app-cta-card [centered]="true" heading="Steam isn’t linked yet">
-        <p class="alert" role="alert">{{ accounts.message() }}</p>
+        <!-- If Connect Steam fails here too (offline, say), that newer error replaces the login's reason. -->
+        <p class="alert" role="alert">{{ accounts.message() ?? failure() }}</p>
         <button type="button" class="btn btn-primary" [disabled]="accounts.linking()" (click)="connectAgain()">Connect Steam</button>
         <a class="btn btn-secondary" routerLink="/home">Go to Home</a>
       </app-cta-card>

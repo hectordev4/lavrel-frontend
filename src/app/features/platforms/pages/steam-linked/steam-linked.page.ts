@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PlatformAccounts } from '../../../../core/platforms/platform-accounts';
-import { LINKED_ELSEWHERE_REASONS } from '../../../../core/platforms/platform-messages';
+import {
+  LINKED_ELSEWHERE_REASONS,
+  linkErrorMessage,
+} from '../../../../core/platforms/platform-messages';
 import { CtaCard } from '../../../../shared/ui/cta-card/cta-card';
 
 /**
@@ -26,6 +29,11 @@ export class SteamLinkedPage {
   protected readonly accounts = inject(PlatformAccounts);
   private readonly router = inject(Router);
   protected readonly phase = signal<Phase>('syncing');
+  /**
+   * Why Steam's login didn't link, for the elsewhere and link-failed phases. Kept on this page: the shared
+   * PlatformAccounts.message shows on Home and Profile too, where this would follow the person around.
+   */
+  protected readonly failure = signal<string | null>(null);
 
   constructor() {
     const params = inject(ActivatedRoute).snapshot.queryParamMap;
@@ -45,12 +53,12 @@ export class SteamLinkedPage {
     const steam = this.accounts.steam();
     // Steam may say "already linked" when it is linked to *you*: that is a success, so sync it.
     if (!linked && !steam && reason && LINKED_ELSEWHERE_REASONS.includes(reason)) {
-      this.accounts.linkFailed(reason);
+      this.failure.set(linkErrorMessage(reason));
       this.phase.set('elsewhere');
       return;
     }
     if (!steam) {
-      this.accounts.linkFailed(reason);
+      this.failure.set(linkErrorMessage(reason));
       this.phase.set('link-failed');
       return;
     }
