@@ -55,4 +55,111 @@ describe('My library collection parts', () => {
     await done;
     expect(ui.message()).toBe('Added Game 1 to Cozy.');
   });
+  describe('saving a name', () => {
+    const cozy = { id: 'c1', name: 'Cozy', position: 1, gameCount: 0 };
+    const posts = (http: HttpTestingController) =>
+      http.match((r) => r.method === 'POST' && r.url === '/api/currentuser/collections');
+
+    /** The open sheet's submit button, after a render. */
+    function submitButton(f: {
+      detectChanges(): void;
+      nativeElement: HTMLElement;
+    }): HTMLButtonElement {
+      f.detectChanges();
+      return f.nativeElement.querySelector('dialog[open] button[type="submit"]')!;
+    }
+
+    it('sends one create for a double tap, with the button disabled until the answer', async () => {
+      const { http, loading } = setUp([]);
+      await loading;
+      const ui = TestBed.inject(CollectionsUi);
+      const f = TestBed.createComponent(CollectionsBar);
+      ui.openCreate();
+
+      const first = ui.create('Cozy');
+      const second = ui.create('Cozy');
+      await second;
+      await settle();
+
+      const sent = posts(http);
+      expect(sent.length).toBe(1);
+      expect(ui.saving()).toBe(true);
+      const button = submitButton(f);
+      expect(button.disabled).toBe(true);
+      expect(button.textContent!.trim()).toBe('Creating…');
+
+      sent[0].flush(cozy, { status: 201, statusText: 'Created' });
+      await first;
+      expect(ui.saving()).toBe(false);
+      expect(ui.creating()).toBe(false);
+      expect(ui.formError()).toBeNull();
+      http.match(() => true); // the library reload for the new collection
+    });
+
+    it('lets the person try again after a failed create', async () => {
+      const { http, loading } = setUp([]);
+      await loading;
+      const ui = TestBed.inject(CollectionsUi);
+      const f = TestBed.createComponent(CollectionsBar);
+      ui.openCreate();
+
+      const done = ui.create('Cozy');
+      await settle();
+      posts(http)[0].flush(
+        { error: 'collection_name_taken' },
+        { status: 409, statusText: 'Conflict' },
+      );
+      await done;
+
+      expect(ui.saving()).toBe(false);
+      expect(ui.formError()).toBe('You already have a collection with that name.');
+      const button = submitButton(f);
+      expect(button.disabled).toBe(false);
+      expect(button.textContent!.trim()).toBe('Create collection');
+
+      const again = ui.create('Cozier');
+      await settle();
+      const retry = posts(http);
+      expect(retry.length).toBe(1);
+      retry[0].flush({ ...cozy, name: 'Cozier' }, { status: 201, statusText: 'Created' });
+      await again;
+      expect(ui.saving()).toBe(false);
+      expect(ui.creating()).toBe(false);
+      http.match(() => true); // the library reload for the new collection
+    });
+
+    it('sends one rename for a double tap, and saves again after a failure', async () => {
+      const { http, loading } = setUp([cozy]);
+      await loading;
+      const ui = TestBed.inject(CollectionsUi);
+      ui.browse('c1');
+      http.match(() => true); // the library load for the collection
+      const f = TestBed.createComponent(CollectionsBar);
+      ui.openRename();
+
+      const first = ui.rename('Comfy');
+      await ui.rename('Comfy');
+      await settle();
+      const patches = http.match((r) => r.method === 'PATCH');
+      expect(patches.length).toBe(1);
+      const button = submitButton(f);
+      expect(button.disabled).toBe(true);
+      expect(button.textContent!.trim()).toBe('Saving…');
+
+      patches[0].flush({ error: 'collection_name_taken' }, { status: 409, statusText: 'Conflict' });
+      await first;
+      expect(ui.saving()).toBe(false);
+      expect(ui.renaming()).toBe(true);
+      expect(submitButton(f).disabled).toBe(false);
+
+      const retry = ui.rename('Comfy evenings');
+      await settle();
+      http
+        .expectOne({ method: 'PATCH', url: '/api/currentuser/collections/c1' })
+        .flush({ ...cozy, name: 'Comfy evenings' });
+      await retry;
+      expect(ui.saving()).toBe(false);
+      expect(ui.renaming()).toBe(false);
+    });
+  });
 });

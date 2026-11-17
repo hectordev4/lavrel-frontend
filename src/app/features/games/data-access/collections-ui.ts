@@ -22,6 +22,11 @@ export class CollectionsUi {
   readonly renaming = signal(false);
   /** The game whose "Add to collection" sheet is open. */
   readonly adding = signal<LibraryGame | null>(null);
+  /**
+   * A create or rename is on its way to the API. Its sheet's button is disabled meanwhile, and a second tap or
+   * Enter is ignored: a double tap used to send two requests, and the second came back as "name taken".
+   */
+  readonly saving = signal(false);
   readonly formError = signal<string | null>(null);
   readonly message = signal<string | null>(null);
 
@@ -36,17 +41,23 @@ export class CollectionsUi {
   }
 
   async create(name: string): Promise<void> {
+    if (this.saving()) return;
     if (!name.trim()) {
       this.formError.set('Give the collection a name.');
       return;
     }
-    const result = await this.collections.create(name);
-    if (typeof result === 'string') {
-      this.formError.set(result);
-      return;
+    this.saving.set(true);
+    try {
+      const result = await this.collections.create(name);
+      if (typeof result === 'string') {
+        this.formError.set(result);
+        return;
+      }
+      this.creating.set(false);
+      this.browse(result.id);
+    } finally {
+      this.saving.set(false);
     }
-    this.creating.set(false);
-    this.browse(result.id);
   }
 
   openRename(): void {
@@ -56,14 +67,19 @@ export class CollectionsUi {
 
   async rename(name: string): Promise<void> {
     const c = this.current();
-    if (!c) return;
+    if (!c || this.saving()) return;
     if (!name.trim()) {
       this.formError.set('Give the collection a name.');
       return;
     }
-    const error = await this.collections.rename(c.id, name);
-    if (error) this.formError.set(error);
-    else this.renaming.set(false);
+    this.saving.set(true);
+    try {
+      const error = await this.collections.rename(c.id, name);
+      if (error) this.formError.set(error);
+      else this.renaming.set(false);
+    } finally {
+      this.saving.set(false);
+    }
   }
 
   async deleteCurrent(): Promise<void> {

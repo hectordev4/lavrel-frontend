@@ -451,6 +451,8 @@ newest release. Without Steam it shows *Connect Steam*. The Games tab stays lit 
 *All games* and each collection with its game count; *New collection* opens a sheet for the name (up to 40
 characters). Inside a collection: *Rename*, *Delete* (the games stay in the library) and, per game, *Remove from …*.
 Every game's menu has *Add to collection…*, a sheet listing the collections. Sheets use the shared `Modal`.
+While a name is being saved, the sheet's button is disabled and reads *Creating…* or *Saving…*, and a second tap
+or Enter is ignored: one request per name, never a false "name taken".
 
 ## Home for members
 
