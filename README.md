@@ -117,7 +117,7 @@ A screen must never show an answer to an older question. Two rules keep it that 
   - **auth and first setup**: welcome and the guest sign-in gate, e-mail sign-in into Home, a failed sign-in,
     the verify page, Home → setup for a new account, Skip for now and Save and continue
   - **my library**: first page and default sort, sort change, name filter after the debounce, Show more, Connect
-    Steam with no account, lost connection and Try again
+    Steam with no account, lost connection and Try again, Tracked ↔ My library both ways
   - **collections**: create, add from a game menu, browse, rename, remove a game, delete after confirming,
     empty and duplicate names
   - **API communication**: the token on API calls only; a stale token recovering unseen; a dead session ending on
@@ -446,11 +446,15 @@ when `curated` (written or rewritten by an admin). Admins are unlimited (`unlimi
 *Show more*: cover, title, tiered bar, unlocked of total, playtime and the diamond at 100%. A name filter (2+
 characters, after a 300 ms pause) and five sorts: recently played (default), name, most played, most completed and
 newest release. Without Steam it shows *Connect Steam*. The Games tab stays lit on /games and /library but not on game pages.
+Both views share one nav, `GamesViews` (`features/games/ui/games-views`): *Tracked* (/games) and *My library*
+(/library), with its own router directives, so which view is on (and `aria-current`) comes from the address.
 
 **Collections** (`/api/currentuser/collections`, owned games only, up to 50): chips above the grid switch between
 *All games* and each collection with its game count; *New collection* opens a sheet for the name (up to 40
 characters). Inside a collection: *Rename*, *Delete* (the games stay in the library) and, per game, *Remove from …*.
 Every game's menu has *Add to collection…*, a sheet listing the collections. Sheets use the shared `Modal`.
+While a name is being saved, the sheet's button is disabled and reads *Creating…* or *Saving…*, and a second tap
+or Enter is ignored: one request per name, never a false "name taken".
 
 ## Home for members
 
@@ -491,6 +495,11 @@ either). `/steam/linked` tells three outcomes apart: linked but the sync didn't 
 login), not linked (*Connect Steam*), and linked to another Lavrel account (`account_linked_elsewhere`, no retry). An
 "already linked" answer counts as success when the account is yours. The page cleans its address after reading it,
 and goes Home when opened without a result.
+
+Why the Steam login didn't link (linked elsewhere, `link_expired`, not confirmed) is shown on `/steam/linked`
+only. `PlatformAccounts.message`, which Home and Profile show, holds sync, connect and unlink errors. The store
+belongs to one signed-in member: signing out or switching accounts clears the accounts, the message and any sync
+or link in progress, and drops a load still on its way.
 
 ## Logo modes (`<app-cube-logo mode="…">`)
 

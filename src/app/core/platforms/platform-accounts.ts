@@ -6,7 +6,7 @@ import { PlatformAccount } from '../api/models/platform-account.model';
 import { AuthStore } from '../auth/auth.store';
 import { TrackedGames } from '../tracking/tracked-games';
 import { LatestOnly } from '../util/latest-only';
-import { linkErrorMessage, platformErrorMessage } from './platform-messages';
+import { platformErrorMessage } from './platform-messages';
 
 /** Calls in one "Sync now": each imports a limited number of new games. */
 const MAX_SYNC_ROUNDS = 10;
@@ -23,6 +23,8 @@ export interface SyncProgress {
  * The member's linked accounts, shared by Home and Profile: loading them, sending the browser to the
  * platform login to link one, and syncing (repeating while games are pending). After a sync the tracked
  * games reload, because their progress changed, and syncVersion goes up so other lists can reload too.
+ * `message` is for sync, connect and unlink errors; a failed Steam login is told on its return page only.
+ * Everything here belongs to one signed-in member: signing out or switching accounts starts it over.
  */
 @Injectable({ providedIn: 'root' })
 export class PlatformAccounts {
@@ -49,12 +51,25 @@ export class PlatformAccounts {
   readonly steam = computed(() => this._accounts().find((a) => a.platform === 'STEAM') ?? null);
 
   constructor() {
+    // Whose accounts these are: a verified member's uid, or null. The store is app-wide, so when the owner
+    // changes (sign-out, or straight to another account) nothing of the previous one may stay on screen.
+    let owner: string | null | undefined;
     effect(() => {
-      if (!this.auth.isVerified()) {
-        this._accounts.set([]);
-        this._loadState.set('idle');
-      }
+      const uid = this.auth.isVerified() ? (this.auth.user()?.uid ?? null) : null;
+      const previous = owner;
+      owner = uid;
+      if (previous !== undefined && previous !== uid) this.reset();
+      else if (uid === null) this.reset();
     });
+  }
+
+  private reset(): void {
+    this.latest.start(); // a load still on its way belongs to the previous owner
+    this._accounts.set([]);
+    this._loadState.set('idle');
+    this._message.set(null);
+    this._syncing.set(null);
+    this._linking.set(false);
   }
 
   ensureLoaded(): void {
@@ -141,14 +156,5 @@ export class PlatformAccounts {
       this._message.set(platformErrorMessage(error));
       return false;
     }
-  }
-
-  /** For the page the platform login returns to. */
-  linkFailed(reason: string | null): void {
-    this._message.set(linkErrorMessage(reason));
-  }
-
-  clearMessage(): void {
-    this._message.set(null);
   }
 }

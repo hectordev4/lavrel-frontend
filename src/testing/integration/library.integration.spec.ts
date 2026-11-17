@@ -1,6 +1,6 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { libraryGame } from '../fixtures';
+import { libraryGame, trackedGame } from '../fixtures';
 import { startApp } from './integration-app';
 
 const hades = libraryGame(1, { title: 'Hades', playtimeMinutes: 300 });
@@ -88,5 +88,29 @@ describe('Integration · my library', () => {
 
     await app.click('Try again');
     expect(app.cardTitles()).toEqual(['Hades', 'Celeste', 'Outer Wilds']);
+  });
+
+  it('switches between Tracked and My library both ways with the Games views nav', async () => {
+    const app = await startApp({
+      backend: (b) => {
+        b.games = [hades, celeste];
+        b.tracked = [trackedGame(9, { title: 'Outer Wilds' })];
+      },
+    });
+    await app.visit('/games');
+    expect(app.text()).toContain('Outer Wilds');
+
+    await app.click('My library');
+    expect(app.url).toBe('/library');
+    expect(app.cardTitles()).toEqual(['Hades', 'Celeste']);
+    expect(app.control('My library').getAttribute('aria-current')).toBe('page');
+
+    await app.click('Tracked');
+    expect(app.url).toBe('/games');
+    expect(app.text()).toContain('Outer Wilds');
+    expect(app.control('Tracked').getAttribute('aria-current')).toBe('page');
+
+    await app.click('My library');
+    expect(app.url).toBe('/library');
   });
 });

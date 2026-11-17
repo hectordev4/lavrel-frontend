@@ -11,6 +11,7 @@ import { Chip } from '../../../../shared/ui/chip/chip';
 import { SORT_LABELS, filterAndSort, isTrackedSort } from '../../data-access/tracked-list';
 import { StatusFilter } from '../../models/status-filter.model';
 import { TrackedSort } from '../../models/tracked-sort.model';
+import { GamesViews } from '../../ui/games-views/games-views';
 import { TrackedCard } from '../../ui/tracked-card/tracked-card';
 import { SelectField } from '../../../../shared/ui/select-field/select-field';
 
@@ -18,7 +19,7 @@ import { SelectField } from '../../../../shared/ui/select-field/select-field';
 @Component({
   selector: 'app-games-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SelectField, RouterLink, Chip, TrackedCard],
+  imports: [GamesViews, SelectField, RouterLink, Chip, TrackedCard],
   templateUrl: './games.page.html',
   styleUrl: './games.page.scss',
 })

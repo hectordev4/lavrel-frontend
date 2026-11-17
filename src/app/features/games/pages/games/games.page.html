@@ -9,10 +9,7 @@
     }
   </div>
 
-  <nav class="segmented" aria-label="Games views">
-    <a routerLink="/games" aria-current="page" class="on">Tracked</a>
-    <a routerLink="/library">My library</a>
-  </nav>
+  <app-games-views />
 
   @if (message(); as m) {
     <p class="alert" role="alert">{{ m }}</p>

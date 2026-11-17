@@ -5,10 +5,7 @@
     <span class="sub">Games you own on your linked accounts</span>
   </div>
 
-  <nav class="segmented" aria-label="Games views">
-    <a routerLink="/games">Tracked</a>
-    <a routerLink="/library" aria-current="page" class="on">My library</a>
-  </nav>
+  <app-games-views />
 
   @if (accounts.loadState() === 'ready' && !accounts.steam()) {
     <app-connect-steam-card

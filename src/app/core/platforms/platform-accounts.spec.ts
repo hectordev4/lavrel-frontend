@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { fakeAuthProvider, signInAs } from '../../../testing/auth-testing';
 import { memberUser, testProviders } from '../../../testing/test-env';
 import { PlatformAccount } from '../api/models/platform-account.model';
+import { AuthStore } from '../auth/auth.store';
 import { PlatformAccounts } from './platform-accounts';
 
 const steam: PlatformAccount = {
@@ -90,3 +91,62 @@ describe('PlatformAccounts.connect', () => {
     await done;
   });
 });
+
+describe('PlatformAccounts when the member changes', () => {
+  let accounts: PlatformAccounts;
+  let http: HttpTestingController;
+
+  /** Signs in, loads Steam and leaves a sync error in `message`, as a session that saw a failure. */
+  async function memberWithAMessage(): Promise<void> {
+    TestBed.configureTestingModule({ providers: testProviders(fakeAuthProvider) });
+    signInAs(memberUser());
+    accounts = TestBed.inject(PlatformAccounts);
+    http = TestBed.inject(HttpTestingController);
+    TestBed.tick();
+    const loading = accounts.reload();
+    http.expectOne('/api/currentuser/accounts').flush({ accounts: [steam] });
+    await loading;
+    const syncing = accounts.sync(steam);
+    await settle();
+    http.expectOne('/api/currentuser/accounts/steam/7656/sync').flush(null, { status: 502, statusText: 'x' });
+    await syncing;
+    expect(accounts.message()).not.toBeNull();
+  }
+
+  afterEach(() => http.verify());
+
+  it('forgets everything on sign-out', async () => {
+    await memberWithAMessage();
+    signInAs(null);
+    expect(accounts.message()).toBeNull();
+    expect(accounts.accounts()).toEqual([]);
+    expect(accounts.loadState()).toBe('idle');
+    expect(accounts.syncing()).toBeNull();
+    expect(accounts.linking()).toBe(false);
+  });
+
+  it('forgets everything when another account signs in straight away', async () => {
+    await memberWithAMessage();
+    signInAs({ ...memberUser(), uid: 'u2', email: 'other@example.com' });
+    expect(accounts.message()).toBeNull();
+    expect(accounts.steam()).toBeNull();
+    expect(accounts.loadState()).toBe('idle');
+  });
+
+  it('drops a load that was still on its way for the previous member', async () => {
+    await memberWithAMessage();
+    const loading = accounts.reload();
+    signInAs({ ...memberUser(), uid: 'u2' });
+    http.expectOne('/api/currentuser/accounts').flush({ accounts: [steam] });
+    await loading;
+    expect(accounts.steam()).toBeNull();
+  });
+
+  it('keeps everything while the same member stays signed in', async () => {
+    await memberWithAMessage();
+    signInAs({ ...memberUser() }); // the same uid again, e.g. after reloading the Firebase user
+    expect(accounts.message()).not.toBeNull();
+    expect(accounts.steam()).toEqual(steam);
+  });
+});
+

@@ -11,6 +11,7 @@ import { PlatformAccount } from '../../app/core/api/models/platform-account.mode
 import { Collection } from '../../app/core/api/models/collection.model';
 import { CurrentUser } from '../../app/core/api/models/current-user.model';
 import { LibraryGame } from '../../app/core/api/models/library-game.model';
+import { TrackedGame } from '../../app/core/api/models/tracked-game.model';
 
 /** What a route handler returns: a body (200), or an error status with an optional `{ error: code }` body. */
 type Reply = { status?: number; body?: unknown };
@@ -18,7 +19,7 @@ type Handler = (req: HttpRequest<unknown>, match: RegExpMatchArray) => Reply;
 
 /**
  * A small in-memory Lavrel API for integration tests. It answers the endpoints the tested journeys use from
- * state the test sets up (the user, the linked accounts, the library and the collections) and changes that
+ * state the test sets up (the user, the linked accounts, the tracked games, the library and the collections) and changes that
  * state on writes, so a journey sees its own changes like it would on the real backend. Every request it sees
  * is kept in `requests`, with the headers the real interceptors added.
  *
@@ -37,6 +38,7 @@ export class FakeBackend {
     { platform: 'STEAM', externalId: '7656', displayName: 'player', lastSyncedAt: null },
   ];
   games: LibraryGame[] = [];
+  tracked: TrackedGame[] = [];
   collections: Collection[] = [];
   /** Which games are in each collection, by collection id. */
   readonly inCollection = new Map<string, Set<number>>();
@@ -81,6 +83,7 @@ export class FakeBackend {
       }),
     ],
     ['GET', /^\/api\/currentuser\/accounts$/, () => ({ body: { accounts: this.accounts } })],
+    ['GET', /^\/api\/currentuser\/tracked$/, () => ({ body: { games: this.tracked } })],
     ['GET', /^\/api\/currentuser\/games$/, (req) => ({ body: this.libraryPage(req) })],
     [
       'GET',
