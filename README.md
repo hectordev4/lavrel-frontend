@@ -97,6 +97,7 @@ A screen must never show an answer to an older question. Two rules keep it that 
 ## Tests and CI
 
 - `npm test` runs the unit tests (Vitest) and watches for changes; `npm run test:ci` runs them once.
+  `npm run test:integration` runs only the integration tests (they also run with the rest).
 - Every component, service and helper gets a `*.spec.ts` next to it, written with the feature that adds it.
 - Shared test setup lives in `src/testing/` (left out of the app build): `testProviders()` (HTTP testing, empty
   router, test environment), `memberUser()` / `unverifiedUser()`, `FakeAuthGateway` (no Firebase, spy methods) and
@@ -106,6 +107,23 @@ A screen must never show an answer to an older question. Two rules keep it that 
   bar, header, placeholder) and every **feature** (auth, search, game, games and library, both Homes, profile,
   Steam return page) plus the root `App`. `src/testing/fixtures.ts` builds sample games, achievements, tracked
   and library games. About 200 tests, all run by CI.
+- **Integration tests** (`src/testing/integration/*.integration.spec.ts`) start the app as the browser does: the
+  real routes, guards, lazy pages and auth interceptor, with `FakeAuthGateway` instead of Firebase and
+  `FakeBackend` instead of the API. `FakeBackend` is a small in-memory Lavrel API (user, linked accounts, library,
+  collections) that keeps what each call saved, records every request with its headers, and can fail
+  (`failNext`, status 0 for no connection) or hold (`hold`, released by the test) the next answer.
+  `startApp({ user, backend })` returns an `IntegrationApp` that visits URLs and clicks, types and selects by the
+  text a person sees. Journeys covered:
+  - **auth and first setup**: welcome and the guest sign-in gate, e-mail sign-in into Home, a failed sign-in,
+    the verify page, Home → setup for a new account, Skip for now and Save and continue
+  - **my library**: first page and default sort, sort change, name filter after the debounce, Show more, Connect
+    Steam with no account, lost connection and Try again
+  - **collections**: create, add from a game menu, browse, rename, remove a game, delete after confirming,
+    empty and duplicate names
+  - **API communication**: the token on API calls only; a stale token recovering unseen; a dead session ending on
+    welcome with its message (signed out, or expired when Firebase can't renew it), once for many failing calls;
+    email_not_verified cleared by a fresh token or opening the verify page; guests left alone; other 403s staying
+    on the page; newest answer wins; counts refreshed from the backend
 - **GitHub Actions** (`.github/workflows/ci.yml`) runs on pushes to `main`, `dev`, `feat/**`, `fix/**` and `ci/**`
   and on pull requests into `main` and `dev`: `npm ci`, environment files copied from `environment.example.ts`, a
   production build and `npm run test:ci`. A newer push cancels the run still going on the same branch.
@@ -242,6 +260,27 @@ tabs show a sign-in screen.
 | `/home` | discover home | verify-email | member home |
 | `/search`, `/search/results`, `/search/filters`, `/games/:slug`, `/players`, `/players/:publicId` | ✓ | verify-email | ✓ |
 | `/games`, `/library`, `/assistant`, `/profile` | sign-in screen | verify-email | ✓ |
+
+**When the API refuses a signed-in person** (`core/auth/auth.interceptor.ts`). Firebase keeps players signed in
+on its own (local persistence, a fresh ID token every hour). Even so, the backend can answer 401, or 403
+`email_not_verified`:
+
+1. The call is sent again once with a fresh token: usually the token was just stale, and nobody notices.
+2. Firebase can't give a fresh token (password changed elsewhere, account disabled or deleted) → the session
+   ends with `session_expired`.
+3. Still 401 → the session ends with `signed_out`.
+4. Still 403 `email_not_verified` → the account is marked unverified and the verify page opens.
+
+Ending a session (`AuthSession.endSession(reason)`) signs out, clears the user and guest mode, and opens
+`/welcome?reason=…`. Several failing calls share one sign-out. Welcome shows the reason's text from
+`core/auth/sign-out-reason.ts` in its alert spot, and only for reasons it knows:
+
+| `reason` | Welcome says |
+|---|---|
+| `session_expired` | Your session has expired. Please sign in again. |
+| `signed_out` | You’ve been signed out. Please sign in again. |
+
+Guests get no retry and stay where they are; their page shows its own error.
 
 ## Search
 
@@ -537,4 +576,5 @@ are example data.
 
 Done alongside: `ci/github-actions` ✓ (build and tests on GitHub Actions) and the `test/*` pass ✓ (`test/core`,
 `test/shared`, `test/layout`, `test/features`) adding specs for every component built so far. From here on, every
-feature branch brings its own specs.
+feature branch brings its own specs. Then `test/integration` ✓ (journeys across pages, routes and the API, see
+Tests and CI) and `test/e2e` next (Playwright in a real browser, mocked API, Firebase Auth emulator).

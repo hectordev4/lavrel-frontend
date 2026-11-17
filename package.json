@@ -7,7 +7,8 @@
     "build": "node set-env.js && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:ci": "ng test --watch=false"
+    "test:ci": "ng test --watch=false",
+    "test:integration": "ng test --watch=false --include=src/testing/integration/*.spec.ts"
   },
   "private": true,
   "packageManager": "npm@10.9.7",
