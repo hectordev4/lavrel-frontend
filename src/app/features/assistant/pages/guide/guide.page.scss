@@ -120,6 +120,18 @@
   color: var(--muted);
 }
 
+/* "x / 500" near the question limit: muted, gold once the box is full. */
+.count {
+  align-self: flex-end;
+  font-family: var(--font-mark);
+  font-size: 0.75rem;
+  color: var(--muted);
+
+  &.full {
+    color: var(--unlock);
+  }
+}
+
 .choice {
   display: grid;
   gap: 0.75rem;

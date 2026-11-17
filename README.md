@@ -124,6 +124,8 @@ A screen must never show an answer to an older question. Two rules keep it that 
     welcome with its message (signed out, or expired when Firebase can't renew it), once for many failing calls;
     email_not_verified cleared by a fresh token or opening the verify page; guests left alone; other 403s staying
     on the page; newest answer wins; counts refreshed from the backend
+  - **AI chat**: a question the backend rejects goes back to the box and is never sent again; after a failed answer
+    the question is sent alone
 - **GitHub Actions** (`.github/workflows/ci.yml`) runs on pushes to `main`, `dev`, `feat/**`, `fix/**` and `ci/**`
   and on pull requests into `main` and `dev`: `npm ci`, environment files copied from `environment.example.ts`, a
   production build and `npm run test:ci`. A newer push cancels the run still going on the same branch.
@@ -424,6 +426,12 @@ Members get a **Guide** button on each achievement of a game page. It opens `/as
    and its **sources at the very bottom as rounded pills** (site name; title and license for screen readers; the
    licenses in a line under them).
 4. Under the reply box: the new answers left today (`GET /api/currentuser/assistant/usage`). Saved guides don't count.
+
+Questions are up to **500 characters**, the backend's limit (`MAX_QUESTION_LENGTH` in
+`features/assistant/data-access/question-limit.ts`); from 400 the box shows *x / 500*, in gold when full. A question
+whose request fails (too long, the assistant resting, no connection) leaves the thread and goes back into the box to
+edit or send again, so only answered questions are ever sent back with the next one. Enter while an answer is on its
+way leaves the question in the box.
 
 A hidden achievement keeps its name out of the title until spoilers are chosen; asked without spoilers, the backend's
 `SPOILER_CONSENT_REQUIRED` shows a consent step. `lang=` is the device's language (two letters, English if unknown).

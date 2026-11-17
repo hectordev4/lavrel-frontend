@@ -66,4 +66,25 @@ describe('GuideConversation', () => {
     await done;
     expect(convo.error()).toContain('today’s guides');
   });
+
+  it('takes a failed follow-up back out, gives its text back, and asks again cleanly', async () => {
+    const first = convo.start(false);
+    http.expectOne((r) => r.url.endsWith('/guide')).flush(ready('Steps', true));
+    await first;
+
+    const failed = convo.ask('Is it missable?');
+    expect(convo.messages().map((m) => m.role)).toEqual(['assistant', 'user']);
+    http
+      .expectOne((r) => r.url.endsWith('/questions'))
+      .flush({ error: 'invalid_question' }, { status: 400, statusText: 'x' });
+    expect(await failed).toBe('Is it missable?');
+    expect(convo.messages().map((m) => m.role)).toEqual(['assistant']);
+    expect(convo.status()).toBe('failed');
+
+    const again = convo.ask('Is it missable at all?');
+    http.expectOne((r) => r.url.endsWith('/questions')).flush(ready('No.', true));
+    expect(await again).toBeNull();
+    expect(convo.messages().map((m) => m.text)).toEqual(['Steps', 'Is it missable at all?', 'No.']);
+    expect(convo.status()).toBe('ready');
+  });
 });

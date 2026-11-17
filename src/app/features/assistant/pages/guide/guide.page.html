@@ -55,8 +55,9 @@
         <textarea
           #box
           rows="1"
-          maxlength="500"
+          [maxLength]="maxQuestion"
           placeholder="Ask a follow-up"
+          (input)="typed.set(box.value.length)"
           (keydown)="onKey($event, box)"
         ></textarea>
         <button
@@ -68,6 +69,11 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2-6z" /></svg>
         </button>
       </label>
+      @if (typed() >= showCountFrom) {
+        <span class="count" [class.full]="typed() >= maxQuestion"
+          >{{ typed() }} / {{ maxQuestion }}</span
+        >
+      }
       @if (convo.unlimited()) {
         <span class="left">No daily limit for you</span>
       } @else if (convo.left() !== null) {

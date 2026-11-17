@@ -12,7 +12,7 @@
         <ul class="starters">
           @for (s of starters; track s) {
             <li>
-              <button type="button" class="starter" (click)="chat.send(s)">{{ s }}</button>
+              <button type="button" class="starter" (click)="ask(s, box)">{{ s }}</button>
             </li>
           }
         </ul>
@@ -49,8 +49,9 @@
       <textarea
         #box
         rows="1"
-        maxlength="1000"
+        [maxLength]="maxQuestion"
         [placeholder]="'Ask about ' + gameTitle"
+        (input)="typed.set(box.value.length)"
         (keydown)="onKey($event, box)"
       ></textarea>
       <button
@@ -62,6 +63,9 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2-6z" /></svg>
       </button>
     </label>
+    @if (typed() >= showCountFrom) {
+      <span class="count" [class.full]="typed() >= maxQuestion">{{ typed() }} / {{ maxQuestion }}</span>
+    }
     @if (chat.unlimited()) {
       <span class="left">No daily limit for you</span>
     } @else if (chat.left() !== null) {

@@ -65,4 +65,39 @@ describe('GuidePage', () => {
     const fixture = await render({ name: 'Behind the Waterfall', hidden: '1' });
     expect(fixture.nativeElement.querySelector('h1').textContent).toBe('Hidden achievement');
   });
+
+  it('allows 500 characters and puts a failed follow-up back in the box', async () => {
+    const fixture = await render({ name: 'Night Owl Run', game: 'Rogue Harbor' });
+    const el = fixture.nativeElement as HTMLElement;
+    const http = TestBed.inject(HttpTestingController);
+    ([...el.querySelectorAll('.option')][0] as HTMLButtonElement).click();
+    http
+      .expectOne((r) => r.url.endsWith('/guide'))
+      .flush({
+        status: 'READY',
+        text: 'Steps',
+        grounded: true,
+        sources: [],
+        saved: true,
+        createdAt: null,
+      });
+    await settle();
+    fixture.detectChanges();
+
+    const box = el.querySelector('textarea')!;
+    expect(box.getAttribute('maxlength')).toBe('500');
+    box.value = 'Is it missable?';
+    box.dispatchEvent(new Event('input'));
+    el.querySelector('form.reply')!.dispatchEvent(new Event('submit', { cancelable: true }));
+    expect(box.value).toBe('');
+
+    http
+      .expectOne((r) => r.url.endsWith('/questions'))
+      .flush(null, { status: 0, statusText: 'Unknown Error' });
+    await settle();
+    fixture.detectChanges();
+    expect(box.value).toBe('Is it missable?');
+    expect(el.querySelector('.question')).toBeNull();
+    expect(el.querySelector('[role="alert"]')).not.toBeNull();
+  });
 });

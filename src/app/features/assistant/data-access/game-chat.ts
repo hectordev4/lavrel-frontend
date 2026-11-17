@@ -13,7 +13,8 @@ const MAX_SENT = 40;
 
 /**
  * An open chat about one game while the screen is open (never stored): the frontend keeps the conversation and
- * sends it with each question.
+ * sends it with each question. Only answered questions stay in it: a question whose request fails is taken back
+ * out, so it is never sent again with the next one (a rejected question used to block every question after it).
  */
 @Injectable()
 export class GameChat {
@@ -36,18 +37,27 @@ export class GameChat {
     void this.refreshUsage();
   }
 
-  async send(question: string): Promise<void> {
+  /**
+   * Asks a question. Resolves to null once it is answered (or ignored: empty, or one already on its way), and to
+   * the question's text when the request failed: the question leaves the thread, and the page puts it back in the
+   * box to edit or send again.
+   */
+  async send(question: string): Promise<string | null> {
     const text = question.trim();
-    if (!text || this.answering()) return;
-    this.messages.update((m) => [...m, { role: 'user', text }]);
+    if (!text || this.answering()) return null;
+    const before = this.messages();
+    this.messages.set([...before, { role: 'user', text }]);
     this.answering.set(true);
     this.error.set(null);
     try {
       const answer = await firstValueFrom(this.api.chat(this.gameId, this.turns(), this.lang));
       this.messages.update((m) => [...m, toMessage(answer)]);
       void this.refreshUsage();
+      return null;
     } catch (error) {
+      this.messages.set(before);
       this.error.set(assistantErrorMessage(error));
+      return text;
     } finally {
       this.answering.set(false);
     }

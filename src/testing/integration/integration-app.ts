@@ -128,7 +128,7 @@ export class IntegrationApp {
     await this.settle();
   }
 
-  /** Types into the input with this placeholder, or inside the label with this text. */
+  /** Types into the input or textarea with this placeholder, or inside the label with this text. */
   async type(field: string, value: string): Promise<void> {
     const input = this.input(field);
     input.value = value;
@@ -137,7 +137,9 @@ export class IntegrationApp {
   }
 
   input(field: string): HTMLInputElement {
-    const byPlaceholder = this.el.querySelector<HTMLInputElement>(`input[placeholder="${field}"]`);
+    const byPlaceholder = this.el.querySelector<HTMLInputElement>(
+      `input[placeholder="${field}"], textarea[placeholder="${field}"]`,
+    );
     if (byPlaceholder) return byPlaceholder;
     const label = [...this.el.querySelectorAll('label')].find((l) =>
       squash(l.textContent).startsWith(field),
@@ -157,6 +159,14 @@ export class IntegrationApp {
     if (!select) throw new Error(`No select "${label}"`);
     select.value = value;
     select.dispatchEvent(new Event('change'));
+    await this.settle();
+  }
+
+  /** Submits the form this field belongs to, as Enter or a send button would. */
+  async submit(field: string): Promise<void> {
+    this.input(field)
+      .closest('form')!
+      .dispatchEvent(new Event('submit', { cancelable: true }));
     await this.settle();
   }
 

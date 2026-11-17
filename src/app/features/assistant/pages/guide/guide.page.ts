@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { gameLink } from '../../../../shared/utils/game-link';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { GuideConversation } from '../../data-access/guide-conversation';
+import { MAX_QUESTION_LENGTH, SHOW_COUNT_FROM } from '../../data-access/question-limit';
 import { GuideAnswer } from '../../ui/guide-answer/guide-answer';
 import { PageHeader } from '../../../../shared/ui/page-header/page-header';
 
@@ -37,11 +38,27 @@ export class GuidePage {
     this.convo.open(gameId, achievementId);
   }
 
+  protected readonly maxQuestion = MAX_QUESTION_LENGTH;
+  protected readonly showCountFrom = SHOW_COUNT_FROM;
+  /** Characters in the box, for the "x / 500" counter. */
+  protected readonly typed = signal(0);
+
   protected send(input: HTMLTextAreaElement): void {
     const text = input.value;
-    if (!text.trim()) return;
+    // While an answer is on its way the question waits in the box instead of being dropped.
+    if (!text.trim() || this.convo.status() === 'answering') return;
     input.value = '';
-    void this.convo.ask(text);
+    this.typed.set(0);
+    void this.ask(text, input);
+  }
+
+  /** Asks, and puts a question whose request failed back in the box (unless something new was typed there). */
+  private async ask(text: string, input: HTMLTextAreaElement): Promise<void> {
+    const back = await this.convo.ask(text);
+    if (back !== null && !input.value.trim()) {
+      input.value = back;
+      this.typed.set(back.length);
+    }
   }
 
   protected onKey(event: KeyboardEvent, input: HTMLTextAreaElement): void {
