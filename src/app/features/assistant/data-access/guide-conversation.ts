@@ -44,28 +44,41 @@ export class GuideConversation {
     await this.request(() => this.api.guide(this.gameId, this.achievementId, spoilers, this.lang));
   }
 
-  async ask(question: string): Promise<void> {
+  /**
+   * A follow-up question. Resolves to null once answered (or ignored), and to the question's text when the request
+   * failed: the unanswered question leaves the thread, and the page puts it back in the box.
+   */
+  async ask(question: string): Promise<string | null> {
     const text = question.trim();
-    if (!text || this.status() === 'answering' || this.spoilers() === null) return;
-    this.messages.update((m) => [...m, { role: 'user', text }]);
-    await this.request(() => this.api.ask(this.gameId, this.achievementId, text, this.spoilers()!, this.lang));
+    if (!text || this.status() === 'answering' || this.spoilers() === null) return null;
+    const before = this.messages();
+    this.messages.set([...before, { role: 'user', text }]);
+    const answered = await this.request(() =>
+      this.api.ask(this.gameId, this.achievementId, text, this.spoilers()!, this.lang),
+    );
+    if (answered) return null;
+    this.messages.set(before);
+    return text;
   }
 
-  private async request(call: () => ReturnType<AssistantApi['guide']>): Promise<void> {
+  /** True once the request got an answer (a guide, or the consent question); false when it failed. */
+  private async request(call: () => ReturnType<AssistantApi['guide']>): Promise<boolean> {
     this.status.set('answering');
     this.error.set(null);
     try {
       const answer = await firstValueFrom(call());
       if (answer.status === 'SPOILER_CONSENT_REQUIRED') {
         this.status.set('consent');
-        return;
+        return true;
       }
       this.messages.update((m) => [...m, toMessage(answer)]);
       this.status.set('ready');
       if (!answer.saved) void this.refreshUsage();
+      return true;
     } catch (error) {
       this.error.set(assistantErrorMessage(error));
       this.status.set('failed');
+      return false;
     }
   }
 

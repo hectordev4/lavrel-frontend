@@ -84,6 +84,36 @@ export class FakeBackend {
     ],
     ['GET', /^\/api\/currentuser\/accounts$/, () => ({ body: { accounts: this.accounts } })],
     ['GET', /^\/api\/currentuser\/tracked$/, () => ({ body: { games: this.tracked } })],
+    [
+      'GET',
+      /^\/api\/currentuser\/assistant\/usage$/,
+      () => ({ body: { usedToday: 0, dailyLimit: 20, unlimited: false } }),
+    ],
+    [
+      'POST',
+      /^\/api\/games\/(\d+)\/chat$/,
+      (req) => {
+        // Like the backend: every question in the conversation must fit Questions.MAX_LENGTH, not only the last.
+        const { messages } = req.body as { messages: { role: string; content: string }[] };
+        if (messages.some((m) => m.role === 'user' && m.content.length > 500))
+          return {
+            status: 400,
+            body: { error: 'invalid_question', message: 'A question has at most 500 characters' },
+          };
+        const question = messages.at(-1)!.content;
+        return {
+          body: {
+            status: 'READY',
+            text: `About ${question}`,
+            grounded: false,
+            sources: [],
+            saved: false,
+            createdAt: null,
+            curated: false,
+          },
+        };
+      },
+    ],
     ['GET', /^\/api\/currentuser\/games$/, (req) => ({ body: this.libraryPage(req) })],
     [
       'GET',

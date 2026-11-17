@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GameChat } from '../../data-access/game-chat';
+import { MAX_QUESTION_LENGTH, SHOW_COUNT_FROM } from '../../data-access/question-limit';
 import { GuideAnswer } from '../../ui/guide-answer/guide-answer';
 import { PageHeader } from '../../../../shared/ui/page-header/page-header';
 
@@ -39,11 +40,27 @@ export class ChatPage {
     this.chat.open(Number(this.route.paramMap.get('gameId')));
   }
 
+  protected readonly maxQuestion = MAX_QUESTION_LENGTH;
+  protected readonly showCountFrom = SHOW_COUNT_FROM;
+  /** Characters in the box, for the "x / 500" counter. */
+  protected readonly typed = signal(0);
+
   protected send(input: HTMLTextAreaElement): void {
     const text = input.value;
-    if (!text.trim()) return;
+    // While an answer is on its way the question waits in the box instead of being dropped.
+    if (!text.trim() || this.chat.answering()) return;
     input.value = '';
-    void this.chat.send(text);
+    this.typed.set(0);
+    void this.ask(text, input);
+  }
+
+  /** Asks, and puts a question whose request failed back in the box (unless something new was typed there). */
+  protected async ask(text: string, input: HTMLTextAreaElement): Promise<void> {
+    const back = await this.chat.send(text);
+    if (back !== null && !input.value.trim()) {
+      input.value = back;
+      this.typed.set(back.length);
+    }
   }
 
   protected onKey(event: KeyboardEvent, input: HTMLTextAreaElement): void {
