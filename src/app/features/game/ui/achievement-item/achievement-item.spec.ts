@@ -1,4 +1,4 @@
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { achievement } from '../../../../../testing/fixtures';
 import { AchievementItem } from './achievement-item';
@@ -118,10 +118,14 @@ describe('AchievementItem guide button', () => {
     });
 
     it('reveals from the row, but not from the Guide button', () => {
+      // Stubbed so the Guide click doesn't start a real navigation that outlives the test.
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
       const { el, spy } = hidden();
       (el.querySelector('.guide') as HTMLAnchorElement).dispatchEvent(
         new MouseEvent('click', { bubbles: true, cancelable: true }),
       );
+      expect(navigate).toHaveBeenCalledOnce();
+      expect(String(navigate.mock.calls[0][0])).toContain('/assistant/guide/7/1?');
       expect(spy).not.toHaveBeenCalled();
       (el.querySelector('.reveal') as HTMLButtonElement).click();
       expect(spy).toHaveBeenCalledOnce();
