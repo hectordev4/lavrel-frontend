@@ -423,15 +423,17 @@ Members get a **Guide** button on each achievement of a game page. It opens `/as
 2. The guide (`GET …/guide?spoilers=&lang=`), then the fixed line *Is there anything else I can help with?* and a reply
    box for follow-ups (`POST …/guide/questions`, with the same spoiler choice).
 3. Each answer: a note when `grounded` is false (couldn't be checked against a source, may be inaccurate), the text,
-   and its **sources at the very bottom as rounded pills** (title and license for screen readers; the licenses in a
-   line under them).
-
-Each source is `{title, url, site, license, licenseUrl}`. The pill shows `site`, the wiki's own name (*Terraria Wiki*),
-or the page's host when `site` is null (older saved guides, wikis not re-approved since backend 0.17.0). Each license
-is listed once and links to `licenseUrl` when one of its sources has it (only `http(s)` links), which completes the
-credit CC BY-SA asks for. Sources can come from Fandom, wiki.gg or any approved MediaWiki site. Chat answers use the
-same pills.
+   and its **sources at the very bottom** (see below).
 4. Under the reply box: the new answers left today (`GET /api/currentuser/assistant/usage`). Saved guides don't count.
+
+**Sources** close an answer as one small button: each wiki's icon once (overlapping, up to three), *N sources* and a
+chevron. It opens a list in place (no floating menu): per page, the wiki's icon and name, then the page title, each
+row opening the page in a new tab; then *Text under* each license once, linked to `licenseUrl` when one of its sources
+has it (only `http(s)` links), which completes the credit CC BY-SA asks for. Each source is
+`{title, url, site, license, licenseUrl}`: the name is `site` (*Terraria Wiki*), or the page's host when `site` is null
+(older saved guides, wikis not re-approved since backend 0.17.0). The icon (`SiteIcon`) is `iconUrl` if the backend
+ever sends one, else `{wiki}/favicon.ico` loaded straight from the wiki with no referrer, else a tile with the wiki's
+initial. Sources can come from Fandom, wiki.gg or any approved MediaWiki site; guides and chat answers share this.
 
 Questions are up to **500 characters**, the backend's limit (`MAX_QUESTION_LENGTH` in
 `features/assistant/data-access/question-limit.ts`); from 400 the box shows *x / 500*, in gold when full. A question

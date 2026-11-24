@@ -7,30 +7,57 @@
   }
   @if (!grounded()) {
     <p class="unchecked">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z M12 10v4 M12 17v.5" /></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 4l9 16H3z M12 10v4 M12 17v.5" />
+      </svg>
       <span>This answer couldn’t be checked against a source and may be inaccurate.</span>
     </p>
   }
   <div class="text" [innerHTML]="html()"></div>
-  @if (sources().length) {
-    <ul class="sources" aria-label="Sources">
-      @for (s of pills(); track s.url) {
-        <li>
-          <a class="pill" [href]="s.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="s.title + ', ' + s.name + ', ' + s.license">
-            {{ s.name }}
-          </a>
-        </li>
+  @if (rows().length) {
+    <div class="sources">
+      <button
+        type="button"
+        class="toggle"
+        [attr.aria-expanded]="open()"
+        [attr.aria-controls]="listId"
+        (click)="toggle()"
+      >
+        <span class="stack" aria-hidden="true">
+          @for (r of stack(); track r.site) {
+            <app-site-icon [src]="r.icon" [letter]="r.letter" [tone]="r.tone" />
+          }
+        </span>
+        {{ count() }}
+        <svg class="chevron" viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M3 4.5l3 3 3-3" />
+        </svg>
+      </button>
+      @if (open()) {
+        <ul class="list" [id]="listId" aria-label="Sources">
+          @for (r of rows(); track r.url) {
+            <li>
+              <a class="row" [href]="r.url" target="_blank" rel="noopener noreferrer">
+                <app-site-icon [src]="r.icon" [letter]="r.letter" [tone]="r.tone" />
+                <span class="site">{{ r.site }}</span>
+                <span class="title">{{ r.title }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+        <p class="license">
+          Text under
+          @for (l of licenses(); track l.name) {
+            <span class="name">
+              @if (l.url) {
+                <a [href]="l.url" target="_blank" rel="noopener noreferrer license">{{ l.name }}</a>
+              } @else {
+                {{ l.name }}
+              }
+            </span>
+          }
+        </p>
       }
-    </ul>
-    <p class="license">
-      Sources:
-      @for (l of licenses(); track l.name) {
-        @if (l.url) {
-          <a [href]="l.url" target="_blank" rel="noopener noreferrer license">{{ l.name }}</a>
-        } @else {
-          <span>{{ l.name }}</span>
-        }{{ $last ? '' : ', ' }}
-      }
-    </p>
+    </div>
   }
 </article>

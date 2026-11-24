@@ -24,4 +24,6 @@ export interface GuideSource {
   license: string;
   site?: string | null;
   licenseUrl?: string | null;
+  /** Optional: the wiki's own icon, if the backend ever sends it. Otherwise the app tries {host}/favicon.ico. */
+  iconUrl?: string | null;
 }
