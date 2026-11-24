@@ -14,14 +14,23 @@
   <div class="text" [innerHTML]="html()"></div>
   @if (sources().length) {
     <ul class="sources" aria-label="Sources">
-      @for (s of sources(); track s.url) {
+      @for (s of pills(); track s.url) {
         <li>
-          <a class="pill" [href]="s.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="s.title + ', ' + site(s.url) + ', ' + s.license">
-            {{ site(s.url) }}
+          <a class="pill" [href]="s.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="s.title + ', ' + s.name + ', ' + s.license">
+            {{ s.name }}
           </a>
         </li>
       }
     </ul>
-    <p class="license">Sources: {{ licenses() }}</p>
+    <p class="license">
+      Sources:
+      @for (l of licenses(); track l.name) {
+        @if (l.url) {
+          <a [href]="l.url" target="_blank" rel="noopener noreferrer license">{{ l.name }}</a>
+        } @else {
+          <span>{{ l.name }}</span>
+        }{{ $last ? '' : ', ' }}
+      }
+    </p>
   }
 </article>
