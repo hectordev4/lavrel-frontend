@@ -50,9 +50,19 @@ describe('TrackedCard', () => {
       }),
     );
     const el = fixture.nativeElement as HTMLElement;
+    const line = el.querySelector('.next li')!;
+    expect(line.classList).toContain('hidden-one');
+    expect(line.querySelector('.hidden-name svg')).not.toBeNull();
+    expect(line.querySelector('.hidden-name')!.getAttribute('aria-hidden')).toBe('true');
+    expect(line.querySelector('.reveal')!.textContent!.trim()).toBe(
+      'Hidden achievement, may contain spoilers. Reveal it.',
+    );
+    expect(line.textContent).toContain('40%');
+
     (el.querySelector('.reveal') as HTMLButtonElement).click();
     fixture.detectChanges();
     expect(el.querySelector('.blur')).toBeNull();
+    expect(el.querySelector('.next li')!.classList).not.toContain('hidden-one');
     expect(el.textContent).toContain('Secret');
   });
 });

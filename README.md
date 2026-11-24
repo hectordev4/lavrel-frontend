@@ -320,7 +320,12 @@ filtered by it. Systems come from the backend's `availableOn`, or PC when Steam 
 Achievements come from `GET /api/games/{id}/achievements`. Everyone sees the list with worldwide percentages
 (first 10, then *Show all*). Signed in, the token adds a **Your progress** card (tiered bar, diamond at 100%),
 unlock dates, the percentage in your country (“—” until enough players there own the game) and an
-All / Unlocked / Locked filter. Hidden achievements stay blurred until tapped, unless you unlocked them.
+All / Unlocked / Locked filter. Hidden achievements stay blurred, unless you unlocked them: under the blurred name, a
+gold eye with *Hidden to avoid spoilers*, and *Tap to reveal* in bold on the next line (*Click to reveal* with a mouse,
+chosen by how the device points, not by its width). The whole row is one button, so a tap or click anywhere on it
+reveals it; only the Guide button keeps its own action. On desktop the row lights up under the mouse; with the
+keyboard it takes the gold focus ring. The tracked-game cards' *Easiest next* lines work the same way, with the gold
+eye before the blurred name.
 The percentage on the bar is rounded down, so it only reads 100% when everything is unlocked.
 
 ## Tracking
