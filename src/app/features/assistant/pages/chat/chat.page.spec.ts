@@ -31,7 +31,10 @@ describe('ChatPage', () => {
     await settle();
     fixture.detectChanges();
     expect(el.querySelector('.question')!.textContent).toBe('Where should I start?');
-    expect(el.querySelector('.pill')!.textContent!.trim()).toBe('w.fandom.com');
+    expect(el.querySelector('.sources .toggle')!.textContent!.trim()).toBe('1 source');
+    (el.querySelector('.sources .toggle') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(el.querySelector('.row .site')!.textContent).toBe('w.fandom.com');
     expect(el.textContent).toContain('Is there anything else I can help with?');
   });
 

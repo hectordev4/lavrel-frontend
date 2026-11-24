@@ -1,4 +1,10 @@
-<div class="item" [class.unlocked]="achievement().unlocked">
+<div class="item" [class.unlocked]="achievement().unlocked" [class.hidden-one]="blurred()">
+  @if (blurred()) {
+    <!-- Covers the whole row, so a tap anywhere reveals it; the Guide button sits above it. -->
+    <button type="button" class="reveal" (click)="reveal.emit()">
+      <span class="visually-hidden">Hidden achievement, may contain spoilers. Reveal it.</span>
+    </button>
+  }
   <div class="icon" aria-hidden="true">
     @if (achievement().iconUrl && !blurred()) {
       <img [src]="achievement().iconUrl" alt="" loading="lazy" />
@@ -15,11 +21,18 @@
       <span class="visually-hidden">Unlocked. </span>
     }
     @if (blurred()) {
-      <button type="button" class="reveal" (click)="reveal.emit()">
-        <span class="blur" aria-hidden="true">{{ achievement().name }}</span>
-        <span class="visually-hidden">Hidden achievement. Reveal it.</span>
-      </button>
-      <span class="desc">Hidden achievement · tap to reveal</span>
+      <span class="name blur" aria-hidden="true">{{ achievement().name }}</span>
+      <span class="hint" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"
+          />
+        </svg>
+        <span class="why">Hidden to avoid spoilers</span>
+        <span class="how"
+          ><span class="touch">Tap</span><span class="mouse">Click</span> to reveal</span
+        >
+      </span>
     } @else {
       <span class="name">{{ achievement().name }}</span>
       @if (achievement().description) {

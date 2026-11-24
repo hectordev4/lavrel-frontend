@@ -1,0 +1,13 @@
+@if (showImage()) {
+  <img
+    [src]="src()"
+    alt=""
+    width="16"
+    height="16"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+    (error)="onError()"
+  />
+} @else {
+  <span class="letter" [attr.data-tone]="tone() % 4">{{ letter() }}</span>
+}

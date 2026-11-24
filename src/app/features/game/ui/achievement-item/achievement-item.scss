@@ -50,19 +50,78 @@
   font-size: 0.9375rem;
 }
 
+/* A hidden achievement: the whole row is one button (the Guide link sits above it). */
+.hidden-one {
+  position: relative;
+}
+
 .reveal {
-  align-self: flex-start;
-  min-height: 2.75rem;
-  margin: -0.625rem 0;
+  position: absolute;
+  inset: 0.25rem -0.5rem;
+  z-index: 1;
   padding: 0;
   border: 0;
+  border-radius: 0.75rem;
   background: transparent;
-  color: var(--line);
-  font: inherit;
-  font-weight: 700;
-  font-size: 0.9375rem;
-  text-align: left;
   cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--unlock);
+    outline-offset: 0;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: rgb(242 240 234 / 0.05);
+    }
+  }
+}
+
+.hidden-one .guide {
+  position: relative;
+  z-index: 2;
+}
+
+/* What's hidden and why, then what to do on the next line, under the text. */
+.hint {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.375rem;
+  align-items: center;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--muted);
+
+  svg {
+    width: 0.9375rem;
+    height: 0.9375rem;
+    fill: none;
+    stroke: var(--unlock);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .how {
+    grid-column: 2;
+    color: var(--line);
+    font-weight: 700;
+  }
+}
+
+/* "Tap" on touch screens, "Click" with a mouse: by how the device points, not by its width. */
+.mouse {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .touch {
+    display: none;
+  }
+
+  .mouse {
+    display: inline;
+  }
 }
 
 .blur {

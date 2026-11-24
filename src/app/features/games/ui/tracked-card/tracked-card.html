@@ -65,12 +65,22 @@
       <h3>Easiest next</h3>
       <ul>
         @for (a of game().nextAchievements; track a.achievementId) {
-          <li>
+          <li [class.hidden-one]="a.hidden && !revealed().has(a.achievementId)">
             @if (a.hidden && !revealed().has(a.achievementId)) {
+              <!-- Covers the whole line, so a tap anywhere on it reveals it. -->
               <button type="button" class="reveal" (click)="reveal(a.achievementId)">
-                <span class="blur" aria-hidden="true">{{ a.name }}</span>
-                <span class="visually-hidden">Hidden achievement. Reveal it.</span>
+                <span class="visually-hidden"
+                  >Hidden achievement, may contain spoilers. Reveal it.</span
+                >
               </button>
+              <span class="hidden-name" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"
+                  />
+                </svg>
+                <span class="blur">{{ a.name }}</span>
+              </span>
             } @else {
               <span class="name">{{ a.name }}</span>
             }

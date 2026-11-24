@@ -320,7 +320,12 @@ filtered by it. Systems come from the backend's `availableOn`, or PC when Steam 
 Achievements come from `GET /api/games/{id}/achievements`. Everyone sees the list with worldwide percentages
 (first 10, then *Show all*). Signed in, the token adds a **Your progress** card (tiered bar, diamond at 100%),
 unlock dates, the percentage in your country (“—” until enough players there own the game) and an
-All / Unlocked / Locked filter. Hidden achievements stay blurred until tapped, unless you unlocked them.
+All / Unlocked / Locked filter. Hidden achievements stay blurred, unless you unlocked them: under the blurred name, a
+gold eye with *Hidden to avoid spoilers*, and *Tap to reveal* in bold on the next line (*Click to reveal* with a mouse,
+chosen by how the device points, not by its width). The whole row is one button, so a tap or click anywhere on it
+reveals it; only the Guide button keeps its own action. On desktop the row lights up under the mouse; with the
+keyboard it takes the gold focus ring. The tracked-game cards' *Easiest next* lines work the same way, with the gold
+eye before the blurred name.
 The percentage on the bar is rounded down, so it only reads 100% when everything is unlocked.
 
 ## Tracking
@@ -423,9 +428,17 @@ Members get a **Guide** button on each achievement of a game page. It opens `/as
 2. The guide (`GET …/guide?spoilers=&lang=`), then the fixed line *Is there anything else I can help with?* and a reply
    box for follow-ups (`POST …/guide/questions`, with the same spoiler choice).
 3. Each answer: a note when `grounded` is false (couldn't be checked against a source, may be inaccurate), the text,
-   and its **sources at the very bottom as rounded pills** (site name; title and license for screen readers; the
-   licenses in a line under them).
+   and its **sources at the very bottom** (see below).
 4. Under the reply box: the new answers left today (`GET /api/currentuser/assistant/usage`). Saved guides don't count.
+
+**Sources** close an answer as one small button: each wiki's icon once (overlapping, up to three), *N sources* and a
+chevron. It opens a list in place (no floating menu): per page, the wiki's icon and name, then the page title, each
+row opening the page in a new tab; then *Text under* each license once, linked to `licenseUrl` when one of its sources
+has it (only `http(s)` links), which completes the credit CC BY-SA asks for. Each source is
+`{title, url, site, license, licenseUrl}`: the name is `site` (*Terraria Wiki*), or the page's host when `site` is null
+(older saved guides, wikis not re-approved since backend 0.17.0). The icon (`SiteIcon`) is `iconUrl` if the backend
+ever sends one, else `{wiki}/favicon.ico` loaded straight from the wiki with no referrer, else a tile with the wiki's
+initial. Sources can come from Fandom, wiki.gg or any approved MediaWiki site; guides and chat answers share this.
 
 Questions are up to **500 characters**, the backend's limit (`MAX_QUESTION_LENGTH` in
 `features/assistant/data-access/question-limit.ts`); from 400 the box shows *x / 500*, in gold when full. A question

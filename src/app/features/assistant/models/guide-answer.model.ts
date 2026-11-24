@@ -14,8 +14,16 @@ export interface GuideAnswer {
   curated?: boolean;
 }
 
+/**
+ * Where a grounded answer comes from. site (the wiki's own name, "Terraria Wiki") and licenseUrl (the license's
+ * page) arrive since backend 0.17.0 and can be null: older saved guides, or wikis not re-approved yet.
+ */
 export interface GuideSource {
   title: string;
   url: string;
   license: string;
+  site?: string | null;
+  licenseUrl?: string | null;
+  /** Optional: the wiki's own icon, if the backend ever sends it. Otherwise the app tries {host}/favicon.ico. */
+  iconUrl?: string | null;
 }
